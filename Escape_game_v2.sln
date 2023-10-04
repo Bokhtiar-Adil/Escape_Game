@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.7.34018.315
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Escape_game_v2", "Escape_game_v2.vcxproj", "{B40EA07B-446B-422F-BC0D-1380316FBCEE}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B40EA07B-446B-422F-BC0D-1380316FBCEE}.Debug|x64.ActiveCfg = Debug|x64
+		{B40EA07B-446B-422F-BC0D-1380316FBCEE}.Debug|x64.Build.0 = Debug|x64
+		{B40EA07B-446B-422F-BC0D-1380316FBCEE}.Debug|x86.ActiveCfg = Debug|Win32
+		{B40EA07B-446B-422F-BC0D-1380316FBCEE}.Debug|x86.Build.0 = Debug|Win32
+		{B40EA07B-446B-422F-BC0D-1380316FBCEE}.Release|x64.ActiveCfg = Release|x64
+		{B40EA07B-446B-422F-BC0D-1380316FBCEE}.Release|x64.Build.0 = Release|x64
+		{B40EA07B-446B-422F-BC0D-1380316FBCEE}.Release|x86.ActiveCfg = Release|Win32
+		{B40EA07B-446B-422F-BC0D-1380316FBCEE}.Release|x86.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {B48FBD81-F270-41FB-B0E1-CBA53F2B21ED}
+	EndGlobalSection
+EndGlobal
