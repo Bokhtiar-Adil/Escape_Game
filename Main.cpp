@@ -43,6 +43,7 @@ void drawCube(unsigned int& cubeVAO, Shader& shader, glm::mat4 model);
 // components
 void road(unsigned int& VAO, Shader& shader, glm::mat4 offset, glm::mat4 alTogether = glm::mat4(1.0f));
 void table(unsigned int& VAO, Shader& shader, glm::mat4 offset, glm::mat4 alTogether = glm::mat4(1.0f));
+void box(unsigned int& VAO, Shader& shader, glm::mat4 offset, glm::mat4 alTogether = glm::mat4(1.0f));
 void classroom(unsigned int& VAO, Shader& shader, glm::mat4 offset, glm::mat4 alTogether = glm::mat4(1.0f));
 
 
@@ -183,7 +184,7 @@ int main()
 
 	// render
 
-	glm::mat4 offset, projection, view, translate, rotate, scale, identity = glm::mat4(1.0f);
+	glm::mat4 offset, altogether, projection, view, translate, rotate, scale, identity = glm::mat4(1.0f);
 	float xoffset = 0.0f, yoffset = 0.0f, zoffset = 0.0f;
 
 	while (!glfwWindowShouldClose(window)) {
@@ -194,7 +195,7 @@ int main()
 
 		processInput(window);
 
-		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		shader.use();
@@ -222,6 +223,7 @@ int main()
 		xoffset = 0.5f, yoffset = 0.5f;
 		offset = glm::translate(identity, glm::vec3(xoffset, yoffset, zoffset));
 		road(VAO, shader, offset);
+		box(VAO, shader, offset);
 		classroom(VAO, shader, offset);
 
 		glfwSwapBuffers(window);
@@ -287,6 +289,31 @@ void road(unsigned int& VAO, Shader& shader, glm::mat4 offset, glm::mat4 alToget
 void table(unsigned int& VAO, Shader& shader, glm::mat4 offset, glm::mat4 alTogether)
 {
 
+}
+
+void box(unsigned int& VAO, Shader& shader, glm::mat4 offset, glm::mat4 alTogether)
+{
+	float boxWidth = 0.5f;
+	float boxHeight = 0.5f;
+	
+	glm::mat4 identity, model, scale, translate;
+	identity = glm::mat4(1.0f);
+
+	shader.setBool("withTexture", true);
+	unsigned int diffuseMap = loadTexture("container2.png");
+	unsigned int specularMap = loadTexture("container2_specular.png");
+	shader.setInt("materialtex.diffuse", 0);
+	shader.setInt("materialtex.specular", 1);
+	shader.setFloat("materialtex.shininess", 32.0f);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, diffuseMap);
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, specularMap);
+
+	scale = glm::scale(identity, glm::vec3(boxWidth, boxHeight, boxWidth));
+	//translate = glm::translate(identity, glm::vec3(0.5f, 0.5f, 0.0f));
+	model = alTogether * scale * offset;
+	drawCube(VAO, shader, model);
 }
 
 void classroom(unsigned int& VAO, Shader& shader, glm::mat4 offset, glm::mat4 alTogether)

@@ -1,6 +1,8 @@
 ﻿  Main.cpp
-D:\CMake\Projects\Escape_game_v2\Main.cpp(186,38): warning C4101: 'translate': unreferenced local variable
-D:\CMake\Projects\Escape_game_v2\Main.cpp(186,49): warning C4101: 'rotate': unreferenced local variable
-D:\CMake\Projects\Escape_game_v2\Main.cpp(186,57): warning C4101: 'scale': unreferenced local variable
-D:\CMake\Projects\Escape_game_v2\Main.cpp(264,29): warning C4101: 'translate': unreferenced local variable
+D:\CMake\Projects\Escape_game_v2\Main.cpp(187,50): warning C4101: 'translate': unreferenced local variable
+D:\CMake\Projects\Escape_game_v2\Main.cpp(187,61): warning C4101: 'rotate': unreferenced local variable
+D:\CMake\Projects\Escape_game_v2\Main.cpp(187,69): warning C4101: 'scale': unreferenced local variable
+D:\CMake\Projects\Escape_game_v2\Main.cpp(187,20): warning C4101: 'altogether': unreferenced local variable
+D:\CMake\Projects\Escape_game_v2\Main.cpp(266,29): warning C4101: 'translate': unreferenced local variable
+D:\CMake\Projects\Escape_game_v2\Main.cpp(299,36): warning C4101: 'translate': unreferenced local variable
   Escape_game_v2.vcxproj -> D:\CMake\Projects\Escape_game_v2\x64\Debug\Escape_game_v2.exe
