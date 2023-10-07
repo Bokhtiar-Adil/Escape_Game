@@ -2,6 +2,9 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb_image.h>
+
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -34,8 +37,14 @@ float FLOOR_TILES_GAP = 0.005f;
 void frame_buffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void processInput(GLFWwindow* window);
+unsigned int loadTexture(char const* path);
 void drawCube(unsigned int& cubeVAO, Shader& shader, glm::mat4 model);
-void bed(unsigned int& cubeVAO, Shader& shader, glm::mat4 alTogether);
+
+// components
+void road(unsigned int& VAO, Shader& shader, glm::mat4 offset, glm::mat4 alTogether = glm::mat4(1.0f));
+void table(unsigned int& VAO, Shader& shader, glm::mat4 offset, glm::mat4 alTogether = glm::mat4(1.0f));
+void classroom(unsigned int& VAO, Shader& shader, glm::mat4 offset, glm::mat4 alTogether = glm::mat4(1.0f));
+
 
 int main()
 {
@@ -44,7 +53,7 @@ int main()
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-	GLFWwindow* window = glfwCreateWindow(WIN_WIDTH, WIN_HEIGHT, "Assignment-02: Classroom", NULL, NULL);
+	GLFWwindow* window = glfwCreateWindow(WIN_WIDTH, WIN_HEIGHT, "Escape Game", NULL, NULL);
 	if (window == NULL) {
 		cout << "Failed to load window\n";
 		glfwTerminate();
@@ -64,19 +73,65 @@ int main()
 
 	// shader creation
 
-	Shader shader("vsSrcPrimary.vs", "fsSrcPrimary.fs");
+	Shader shader("vsSrc.vs", "fsSrcLightsPhong.fs");
+	//Shader lightCubeShader("light_cube.vs", "light_cube.fs");
 
 	// vertices and buffers
 
+	//float vertices[] = {
+	//	0.0f, 0.0f, 0.0f,  // 0
+	//	1.0f, 0.0f, 0.0f,  // 1
+	//	1.0f, 0.0f, -1.0f, // 2
+	//	0.0f, 0.0f, -1.0f,  // 3
+	//	0.0f, 1.0f, 0.0f,  // 4
+	//	1.0f, 1.0f, 0.0f,  //5
+	//	1.0f, 1.0f, -1.0f,  // 6
+	//	0.0f, 1.0f, -1.0f,  // 7
+	//};
+
 	float vertices[] = {
-		0.0f, 0.0f, 0.0f,  // 0
-		1.0f, 0.0f, 0.0f,  // 1
-		1.0f, 0.0f, -1.0f, // 2
-		0.0f, 0.0f, -1.0f,  // 3
-		0.0f, 1.0f, 0.0f,  // 4
-		1.0f, 1.0f, 0.0f,  //5
-		1.0f, 1.0f, -1.0f,  // 6
-		0.0f, 1.0f, -1.0f,  // 7
+		// positions          // normals           // texture coords
+		-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f,  0.0f,
+		 0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f,  0.0f,
+		 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f,  1.0f,
+		 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f,  1.0f,
+		-0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f,  1.0f,
+		-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f,  0.0f,
+
+		-0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  0.0f,  0.0f,
+		 0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  1.0f,  0.0f,
+		 0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  1.0f,  1.0f,
+		 0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  1.0f,  1.0f,
+		-0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  0.0f,  1.0f,
+		-0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  0.0f,  0.0f,
+
+		-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  1.0f,  0.0f,
+		-0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  1.0f,  1.0f,
+		-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  0.0f,  1.0f,
+		-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  0.0f,  1.0f,
+		-0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  0.0f,  0.0f,
+		-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  1.0f,  0.0f,
+
+		 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  1.0f,  0.0f,
+		 0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  1.0f,  1.0f,
+		 0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  0.0f,  1.0f,
+		 0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  0.0f,  1.0f,
+		 0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  0.0f,  0.0f,
+		 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  1.0f,  0.0f,
+
+		-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  0.0f,  1.0f,
+		 0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  1.0f,  1.0f,
+		 0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  1.0f,  0.0f,
+		 0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  1.0f,  0.0f,
+		-0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  0.0f,  0.0f,
+		-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  0.0f,  1.0f,
+
+		-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f,  1.0f,
+		 0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  1.0f,  1.0f,
+		 0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  1.0f,  0.0f,
+		 0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  1.0f,  0.0f,
+		-0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  0.0f,  0.0f,
+		-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f,  1.0f
 	};
 
 	unsigned int indices[] = {
@@ -94,22 +149,35 @@ int main()
 		0, 7, 4,
 	};
 
-	unsigned int VBO, VAO, EBO;
+
+	unsigned int VBO, VAO;
 	glGenVertexArrays(1, &VAO);
-	glGenBuffers(1, &VBO);
-	glGenBuffers(1, &EBO);
+	glGenBuffers(1, &VBO); 
+
+	glBindBuffer(GL_ARRAY_BUFFER, VBO); 
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW); 
 
 	glBindVertexArray(VAO);
 
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0); 
+	glEnableVertexAttribArray(0); 
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float))); 
+	glEnableVertexAttribArray(1); 
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float))); 
+	glEnableVertexAttribArray(2); 
 
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(0);
+	glBindVertexArray(0);
 
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+	unsigned int lightCubeVAO; 
+	glGenVertexArrays(1, &lightCubeVAO); 
+	glBindVertexArray(lightCubeVAO); 
 
+	glBindBuffer(GL_ARRAY_BUFFER, VBO); 
+
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0); 
+	glEnableVertexAttribArray(0); 
+
+	glBindVertexArray(0);
 
 	glEnable(GL_DEPTH_TEST);
 
@@ -133,14 +201,28 @@ int main()
 		projection = glm::perspective(glm::radians(camera.Zoom), (float)WIN_WIDTH / (float)WIN_HEIGHT, 0.1f, 100.0f); 
 		shader.setMat4("projection", projection);
 		view = camera.GetViewMatrix(); 
-		shader.setMat4("view", view);
-		shader.setVec3("color", glm::vec3(1.0f, 1.0f, 1.0f));
+		shader.setMat4("view", view);		
 		
-		offset = glm::translate(identity, glm::vec3(xoffset, yoffset, zoffset)); 
 		/*bed(VAO, shader, offset);*/
-		scale = glm::scale(identity, glm::vec3(0.5f, 0.5f, 0.5f));
-		glm::mat4 model = scale * offset;
-		drawCube(VAO, shader, model);
+		/*scale = glm::scale(identity, glm::vec3(0.5f, 0.5f, 0.5f));
+		glm::mat4 model = scale * offset;*/
+		//drawCube(VAO, shader, model);
+		shader.setBool("nightMode", false);
+		shader.setBool("flashlightOn", false);
+		
+		shader.setInt("numberofPointlights", 0);		
+		shader.setVec3("viewPos", camera.Position);
+
+		// light properties
+		shader.setVec3("dirLight.direction", 0.5f, -3.0f, 3.0f);
+		shader.setVec3("dirLight.ambient", 0.2f, 0.2f, 0.2f);
+		shader.setVec3("dirLight.diffuse", 1.0f, 1.0f, 1.0f);
+		shader.setVec3("dirLight.specular", 1.0f, 1.0f, 1.0f);
+
+		xoffset = 0.5f, yoffset = 0.5f;
+		offset = glm::translate(identity, glm::vec3(xoffset, yoffset, zoffset));
+		road(VAO, shader, offset);
+		classroom(VAO, shader, offset);
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
@@ -148,7 +230,7 @@ int main()
 
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);
-	glDeleteBuffers(1, &EBO);
+	//glDeleteBuffers(1, &EBO);
 	shader.deleteProgram();
 
 	glfwTerminate();
@@ -168,13 +250,113 @@ void drawCube(unsigned int& cubeVAO, Shader& shader, glm::mat4 model = glm::mat4
 
 	shader.setMat4("model", model);
 	glBindVertexArray(cubeVAO);
-	glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+	//glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+	glDrawArrays(GL_TRIANGLES, 0, 36);
 }
 
 
 
+void road(unsigned int& VAO, Shader& shader, glm::mat4 offset, glm::mat4 alTogether)
+{
+	float roadWidth = 2.0f;
+	float roadLength = 20.0f;
 
+	glm::mat4 identity, model, translate, scale;
+	identity = glm::mat4(1.0f);
 
+	shader.setBool("withTexture", true);
+	unsigned int diffuseMap = loadTexture("roadLined.jpg");
+	unsigned int specularMap = loadTexture("roadLined.jpg");	
+	shader.setInt("materialtex.diffuse", 0);
+	shader.setInt("materialtex.specular", 1);
+	shader.setFloat("materialtex.shininess", 32.0f);
+
+	glActiveTexture(GL_TEXTURE0); 
+	glBindTexture(GL_TEXTURE_2D, diffuseMap);
+	glActiveTexture(GL_TEXTURE1); 
+	glBindTexture(GL_TEXTURE_2D, specularMap); 
+
+	scale = glm::scale(identity, glm::vec3(roadWidth, 0.1f, roadLength));
+	//translate = glm::translate(identity, glm::vec3(0.0f, 0.0f, -1 * roadLength));
+	model = alTogether * scale * offset;
+
+	shader.setMat4("model", model);
+	drawCube(VAO, shader, model);
+}
+
+void table(unsigned int& VAO, Shader& shader, glm::mat4 offset, glm::mat4 alTogether)
+{
+
+}
+
+void classroom(unsigned int& VAO, Shader& shader, glm::mat4 offset, glm::mat4 alTogether)
+{
+	float crWidth = 5.0f;
+	float crLength = 5.0f;
+	float crHeight = 1.5f;
+	float numTables = 16;
+
+	glm::mat4 identity, model, translate, scale, rotate;
+	identity = glm::mat4(1.0f);
+
+	shader.setBool("withTexture", true);
+	shader.setInt("materialtex.diffuse", 0);
+	shader.setInt("materialtex.specular", 1);
+	shader.setFloat("materialtex.shininess", 32.0f);
+
+	unsigned int diffuseMap = loadTexture("floortiles.jpg");
+	unsigned int specularMap = loadTexture("floortiles.jpg");
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, diffuseMap);
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, specularMap);
+
+	// floor
+	scale = glm::scale(identity, glm::vec3(-crWidth, 0.1f, crLength));	
+	model = alTogether * scale * offset;
+	drawCube(VAO, shader, model);
+
+	diffuseMap = loadTexture("concrete.png");
+	specularMap = loadTexture("concrete.png");
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, diffuseMap);
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, specularMap);
+
+	//ceilling
+	glm::mat4 model2 = model;
+	translate = glm::translate(identity, glm::vec3(0.0f, crHeight-0.1f, 0.0f));
+	model2 = alTogether * translate * model2;
+	drawCube(VAO, shader, model2);
+
+	// walls
+	rotate = glm::rotate(identity, glm::radians(-90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+	scale = glm::scale(identity, glm::vec3(1.0f, 0.3f, 1.0f));
+	translate = glm::translate(identity, glm::vec3(-0.1f, 0.0f, 0.0f));
+	model = alTogether * translate * scale * rotate * model;
+	drawCube(VAO, shader, model);
+
+	translate = glm::translate(identity, glm::vec3(-crWidth + 0.1f, 0.0f, 0.0f));
+	model = alTogether * translate * model;
+	drawCube(VAO, shader, model);
+
+	rotate = glm::rotate(identity, glm::radians(-90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+	translate = glm::translate(identity, glm::vec3(-crWidth/2.0f, 0.0f, crWidth / 2.0f));
+	model = alTogether * translate * rotate * model;
+	drawCube(VAO, shader, model);
+
+	translate = glm::translate(identity, glm::vec3(0.0f, 0.0f, crWidth));
+	model = alTogether * translate * model;
+	drawCube(VAO, shader, model);
+
+	/*glm::mat4 offset = glm::translate(identity, glm::vec3(-crWidth+0.2f, 0.0f, 0.0f));
+	for (int row = 0; row < 4; row++) {
+		glm::mat4 offset = glm::translate(identity, glm::vec3(-crWidth + 0.2f, 0.0f, 0.0f));
+		for (int col = 0; col < 4; col++) {
+			table(VAO, shader, offset, alTogether);
+		}
+	}*/
+}
 
 /*------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 /*------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
@@ -235,4 +417,41 @@ void mouse_callback(GLFWwindow* window, double xposIn, double yposIn)
 	float yoffset = lastY - ypos; // reversed since y-coordinates go from bottom to top
 	lastX = xpos;
 	lastY = ypos;
+}
+
+unsigned int loadTexture(char const* path)
+{
+	unsigned int textureID;
+	glGenTextures(1, &textureID);
+
+	int width, height, nrComponents;
+	unsigned char* data = stbi_load(path, &width, &height, &nrComponents, 0);
+	if (data)
+	{
+		GLenum format;
+		if (nrComponents == 1)
+			format = GL_RED;
+		else if (nrComponents == 3)
+			format = GL_RGB;
+		else if (nrComponents == 4)
+			format = GL_RGBA;
+
+		glBindTexture(GL_TEXTURE_2D, textureID);
+		glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+		glGenerateMipmap(GL_TEXTURE_2D);
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+		stbi_image_free(data);
+	}
+	else
+	{
+		std::cout << "Texture failed to load at path: " << path << std::endl;
+		stbi_image_free(data);
+	}
+
+	return textureID;
 }

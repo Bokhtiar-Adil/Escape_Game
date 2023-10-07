@@ -140,8 +140,24 @@
     <ClInclude Include="Shader.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="fsSrcLightsPhong.fs" />
     <None Include="fsSrcPrimary.fs" />
+    <None Include="lightCube.fs" />
+    <None Include="lightCube.vs" />
+    <None Include="vsSrc.vs" />
     <None Include="vsSrcPrimary.vs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="brickwall.jpg" />
+    <Image Include="concrete.png" />
+    <Image Include="container2.png" />
+    <Image Include="container2_specular.png" />
+    <Image Include="floortiles.jpg" />
+    <Image Include="grass.png" />
+    <Image Include="metal.png" />
+    <Image Include="roadConcrete.png" />
+    <Image Include="roadCracked.jpg" />
+    <Image Include="roadLined.jpg" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -33,5 +33,49 @@
   <ItemGroup>
     <None Include="vsSrcPrimary.vs" />
     <None Include="fsSrcPrimary.fs" />
+    <None Include="fsSrcLightsPhong.fs">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="lightCube.fs">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="lightCube.vs">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="vsSrc.vs">
+      <Filter>Source Files</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="brickwall.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="concrete.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="grass.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="metal.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="container2.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="container2_specular.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="roadConcrete.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="roadCracked.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="roadLined.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="floortiles.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>
