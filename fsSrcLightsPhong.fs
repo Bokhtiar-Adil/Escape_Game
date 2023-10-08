@@ -68,6 +68,9 @@ uniform bool withTexture;
 uniform bool nightMode;
 uniform bool exposedToSun;
 uniform bool flashlightOn;
+uniform bool ambientOn;
+uniform bool diffuseOn;
+uniform bool specularOn;
 
 // function prototypes
 vec3 CalcDirectionalLight(DirectionalLight light, vec3 normal, vec3 viewDir);
@@ -107,20 +110,27 @@ vec3 CalcDirectionalLight(DirectionalLight light, vec3 normal, vec3 viewDir)
     vec3 diffuse;
     vec3 specular;
     if (withTexture == true) {
-        ambient = light.ambient * vec3(texture(materialtex.diffuse, TexCoords));
-        diffuse = light.diffuse * diff * vec3(texture(materialtex.diffuse, TexCoords));        
-        float spectex = pow(max(dot(viewDir, reflectDir), 0.0), materialtex.shininess);
-        specular = light.specular * spectex * vec3(texture(materialtex.specular, TexCoords));
+        if (ambientOn == true) ambient = light.ambient * vec3(texture(materialtex.diffuse, TexCoords));
+        if (diffuseOn == true) diffuse = light.diffuse * diff * vec3(texture(materialtex.diffuse, TexCoords));        
+        if (specularOn == true) {
+            float spectex = pow(max(dot(viewDir, reflectDir), 0.0), materialtex.shininess);
+            specular = light.specular * spectex * vec3(texture(materialtex.specular, TexCoords));
+        }
+        
     }
     else {
-        ambient = light.ambient * material.ambient;
-        diffuse = light.diffuse * (diff * material.diffuse);
-        float spec = pow(max(dot(viewDir, reflectDir), 0.0f), material.shininess);
-        
-        specular = light.specular * (spec * material.specular);
+        if (ambientOn == true) ambient = light.ambient * material.ambient;
+        if (diffuseOn == true) diffuse = light.diffuse * (diff * material.diffuse);
+        if (specularOn == true) {
+            float spec = pow(max(dot(viewDir, reflectDir), 0.0f), material.shininess);        
+            specular = light.specular * (spec * material.specular);
+        }
     }
-   
-    return (ambient + diffuse + specular);
+    vec3 result = vec3(0.0f, 0.0f, 0.0f);
+    if (ambientOn == true) result += ambient;
+    if (diffuseOn == true) result += diffuse;
+    if (specularOn == true) result += specular;
+    return result;
 }
 
 // calculates the color when using a point light.
@@ -135,21 +145,30 @@ vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir)
     vec3 diffuse;
     vec3 specular;
     if (withTexture == true) {
-        ambient = light.ambient * vec3(texture(materialtex.diffuse, TexCoords));
-        diffuse = light.diffuse * diff * vec3(texture(materialtex.diffuse, TexCoords));        
-        float spectex = pow(max(dot(viewDir, reflectDir), 0.0f), materialtex.shininess);
-        specular = light.specular * spectex * vec3(texture(materialtex.specular, TexCoords));
+        if (ambientOn == true) ambient = light.ambient * vec3(texture(materialtex.diffuse, TexCoords));
+        if (diffuseOn == true) diffuse = light.diffuse * diff * vec3(texture(materialtex.diffuse, TexCoords));        
+        if (specularOn == true) {
+            float spectex = pow(max(dot(viewDir, reflectDir), 0.0f), materialtex.shininess);
+            specular = light.specular * spectex * vec3(texture(materialtex.specular, TexCoords));
+        }         
     }
     else {
-        ambient = light.ambient * material.ambient;
-        diffuse = light.diffuse * (diff * material.diffuse);
-        float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
-        specular = light.specular * (spec * material.specular);
+        if (ambientOn == true) ambient = light.ambient * material.ambient;
+        if (diffuseOn == true) diffuse = light.diffuse * (diff * material.diffuse);
+        if (specularOn == true) {
+            float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
+            specular = light.specular * (spec * material.specular);
+        }         
     }
-    ambient *= attenuation;
-    diffuse *= attenuation;
-    specular *= attenuation;
-    return (ambient + diffuse + specular);
+    if (ambientOn == true) ambient *= attenuation;
+    if (diffuseOn == true) diffuse *= attenuation;
+    if (specularOn == true) specular *= attenuation;
+    
+    vec3 result = vec3(0.0f, 0.0f, 0.0f);
+    if (ambientOn == true) result += ambient;
+    if (diffuseOn == true) result += diffuse;
+    if (specularOn == true) result += specular;
+    return result;
 }
 
 // calculates the color when using a spot light.
@@ -170,20 +189,28 @@ vec3 CalcSpotLight(SpotLight light, vec3 normal, vec3 fragPos, vec3 viewDir)
     vec3 diffuse;
     vec3 specular;
     if (withTexture == true) {
-        ambient = light.ambient * vec3(texture(materialtex.diffuse, TexCoords));
-        diffuse = light.diffuse * diff * vec3(texture(materialtex.diffuse, TexCoords));        
-        float spectex = pow(max(dot(viewDir, reflectDir), 0.0f), materialtex.shininess);
-        specular = light.specular * spectex * vec3(texture(materialtex.specular, TexCoords));
+        if (ambientOn == true) ambient = light.ambient * vec3(texture(materialtex.diffuse, TexCoords));
+        if (diffuseOn == true) diffuse = light.diffuse * diff * vec3(texture(materialtex.diffuse, TexCoords));        
+        if (specularOn == true) {
+            float spectex = pow(max(dot(viewDir, reflectDir), 0.0f), materialtex.shininess);
+            specular = light.specular * spectex * vec3(texture(materialtex.specular, TexCoords));
+        }        
     }
     else {
-        ambient = light.ambient * material.ambient;
-        diffuse = light.diffuse * (diff * material.diffuse);
-        float spec = pow(max(dot(viewDir, reflectDir), 0.0f), material.shininess);
-        specular = light.specular * (spec * material.specular);
+        if (ambientOn == true) ambient = light.ambient * material.ambient;
+        if (diffuseOn == true) diffuse = light.diffuse * (diff * material.diffuse);
+        if (specularOn == true) {
+            float spec = pow(max(dot(viewDir, reflectDir), 0.0f), material.shininess);
+            specular = light.specular * (spec * material.specular);
+        }        
     }
-    ambient *= attenuation * intensity;
-    diffuse *= attenuation * intensity;
-    specular *= attenuation * intensity;
+    if (ambientOn == true) ambient *= attenuation * intensity;
+    if (diffuseOn == true) diffuse *= attenuation * intensity;
+    if (specularOn == true) specular *= attenuation * intensity;
 
-    return (ambient + diffuse + specular);
+    vec3 result = vec3(0.0f, 0.0f, 0.0f);
+    if (ambientOn == true) result += ambient;
+    if (diffuseOn == true) result += diffuse;
+    if (specularOn == true) result += specular;
+    return result;
 }

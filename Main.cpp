@@ -53,6 +53,9 @@ void classroom(unsigned int& VAO, Shader& shader, glm::mat4 offset, glm::mat4 al
 bool torchOn = false;
 bool nightMode = false;
 int numOfPointLight = 1;
+bool ambientOn = true;
+bool diffuseOn = true;
+bool specularOn = true;
 
 int main()
 {
@@ -224,7 +227,7 @@ int main()
 		// light properties
 		
 		// directional light
-		shader.setVec3("dirLight.direction", 0.5f, -3.0f, -3.0f);
+		shader.setVec3("dirLight.direction", -2.5f, -3.0f, -3.0f);
 		shader.setVec3("dirLight.ambient", 0.2f, 0.2f, 0.2f);
 		shader.setVec3("dirLight.diffuse", 0.7f, 0.7f, 0.7f);
 		shader.setVec3("dirLight.specular", 1.0f, 1.0f, 1.0f);
@@ -243,6 +246,11 @@ int main()
 		shader.setFloat("spotLight.outerCutOff", glm::cos(glm::radians(15.0f)));
 		shader.setBool("flashlightOn", torchOn);
 
+		// light properties control
+		shader.setBool("ambientOn", ambientOn);
+		shader.setBool("diffuseOn", diffuseOn);
+		shader.setBool("specularOn", specularOn);
+
 		xoffset = 0.5f, yoffset = 0.5f;
 		offset = glm::translate(identity, glm::vec3(xoffset, yoffset, zoffset));
 		shader.setInt("numberofPointlights", 0);
@@ -251,8 +259,7 @@ int main()
 		classroom(VAO, shader, offset, glm::mat4(1.0f), lightCubeVAO, lightCubeShader);
 		shader.setInt("numberofPointlights", 0);
 		shader.setBool("exposedToSun", true);
-		box(VAO, shader, glm::translate(identity, glm::vec3(0.5f, yoffset+0.2f, -1.0f)));
-		box(VAO, shader, glm::translate(identity, glm::vec3(3.0f, yoffset+0.2f, -1.0f)));
+		
 		
 
 		glfwSwapBuffers(window);
@@ -308,11 +315,40 @@ void road(unsigned int& VAO, Shader& shader, glm::mat4 offset, glm::mat4 alToget
 
 	shader.setMat4("model", model);
 	drawCube(VAO, shader, model);
+
+	float xoffset = 0.5f, yoffset = 0.5f;
+	box(VAO, shader, glm::translate(identity, glm::vec3(0.5f, yoffset + 0.2f, -1.0f)));
+	box(VAO, shader, glm::translate(identity, glm::vec3(3.0f, yoffset + 0.2f, -1.0f)));
 }
 
 void table(unsigned int& VAO, Shader& shader, glm::mat4 offset, glm::mat4 alTogether)
 {
+	/*float baseWidth = 0.8f;
+	float baseHeight = 0.1f;
+	float gap = 0.2f;
 
+	glm::mat4 identity, model, scale, translate, rotate;
+	identity = glm::mat4(1.0f);
+
+	shader.setBool("withTexture", true);
+	unsigned int diffuseMap = loadTexture("woodenSurface.jpg");
+	unsigned int specularMap = loadTexture("woodenSurface.jpg");
+	shader.setInt("materialtex.diffuse", 0);
+	shader.setInt("materialtex.specular", 1);
+	shader.setFloat("materialtex.shininess", 32.0f);
+	glActiveTexture(GL_TEXTURE0); 
+	glBindTexture(GL_TEXTURE_2D, diffuseMap); 
+	glActiveTexture(GL_TEXTURE1); 
+	glBindTexture(GL_TEXTURE_2D, specularMap);
+
+	model = offset;
+	scale = glm::scale(identity, glm::vec3(baseWidth, baseHeight, baseWidth));
+	model = alTogether * scale * model;
+	drawCube(VAO, shader, model);
+
+	rotate = glm::rotate(identity, glm::radians(-90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+	model = alTogether * rotate * model;
+	drawCube(VAO, shader, model);*/
 }
 
 void box(unsigned int& VAO, Shader& shader, glm::mat4 offset, glm::mat4 alTogether)
@@ -415,10 +451,11 @@ void classroom(unsigned int& VAO, Shader& shader, glm::mat4 offset, glm::mat4 al
 	model = glm::translate(model, glm::vec3(-0.05f, 0.0f, 0.0f));
 
 	// opposite to road side of 1st classroom
+	shader.setBool("exposedToSun", true);
 	translate = glm::translate(identity, glm::vec3(-crWidth + 0.1f, 0.0f, 0.0f));
 	model = alTogether * translate * model;
 	drawCube(VAO, shader, model);
-	shader.setBool("exposedToSun", true);
+	shader.setBool("exposedToSun", false);
 	translate = glm::translate(identity, glm::vec3(0.05f, 0.0f, 0.0f));
 	model = alTogether * translate * model;
 	drawCube(VAO, shader, model);
@@ -504,6 +541,20 @@ void processInput(GLFWwindow* window)
 	if (glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS) {
 		numOfPointLight++;
 		numOfPointLight %= 2;
+	}
+	if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS) {
+		ambientOn = !ambientOn;
+	}
+	if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS) {
+		diffuseOn = !diffuseOn;
+	}
+	if (glfwGetKey(window, GLFW_KEY_3) == GLFW_PRESS) {
+		specularOn = !specularOn;
+	}
+	if (glfwGetKey(window, GLFW_KEY_4) == GLFW_PRESS) {
+		ambientOn = true;
+		diffuseOn = true;
+		specularOn = true;
 	}
 
 }

@@ -77,5 +77,11 @@
     <Image Include="floortiles.jpg">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="redPlastic.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="woodenSurface.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>

@@ -155,9 +155,11 @@
     <Image Include="floortiles.jpg" />
     <Image Include="grass.png" />
     <Image Include="metal.png" />
+    <Image Include="redPlastic.jpg" />
     <Image Include="roadConcrete.png" />
     <Image Include="roadCracked.jpg" />
     <Image Include="roadLined.jpg" />
+    <Image Include="woodenSurface.jpg" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
