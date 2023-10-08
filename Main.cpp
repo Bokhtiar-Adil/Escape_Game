@@ -14,7 +14,7 @@
 
 using namespace std;
 
-Camera camera(glm::vec3(0.5f, 0.5f, 4.0f));
+Camera camera(glm::vec3(0.5f, 1.0f, 4.0f));
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
 
@@ -47,7 +47,7 @@ Shader dummyShader;
 void road(unsigned int& VAO, Shader& shader, glm::mat4 offset, glm::mat4 alTogether = glm::mat4(1.0f));
 void table(unsigned int& VAO, Shader& shader, glm::mat4 offset, glm::mat4 alTogether = glm::mat4(1.0f));
 void box(unsigned int& VAO, Shader& shader, glm::mat4 offset, glm::mat4 alTogether = glm::mat4(1.0f));
-void classroom(unsigned int& VAO, Shader& shader, glm::mat4 offset, glm::mat4 alTogether = glm::mat4(1.0f), unsigned int& lightCubeVAO = dummyVAO, Shader& lightCubeShader = dummyShader);
+void simpleRoom(unsigned int& VAO, Shader& shader, glm::mat4 offset, glm::mat4 alTogether = glm::mat4(1.0f), unsigned int& lightCubeVAO = dummyVAO, Shader& lightCubeShader = dummyShader);
 
 
 bool torchOn = false;
@@ -256,7 +256,7 @@ int main()
 		shader.setInt("numberofPointlights", 0);
 		road(VAO, shader, offset);
 		shader.setInt("numberofPointlights", numOfPointLight);
-		classroom(VAO, shader, offset, glm::mat4(1.0f), lightCubeVAO, lightCubeShader);
+		simpleRoom(VAO, shader, offset, glm::mat4(1.0f), lightCubeVAO, lightCubeShader);
 		shader.setInt("numberofPointlights", 0);
 		shader.setBool("exposedToSun", true);
 		
@@ -323,11 +323,11 @@ void road(unsigned int& VAO, Shader& shader, glm::mat4 offset, glm::mat4 alToget
 
 void table(unsigned int& VAO, Shader& shader, glm::mat4 offset, glm::mat4 alTogether)
 {
-	/*float baseWidth = 0.8f;
+	float baseWidth = 1.5f;
 	float baseHeight = 0.1f;
 	float gap = 0.2f;
 
-	glm::mat4 identity, model, scale, translate, rotate;
+	glm::mat4 identity, model, modelTogether, scale, translate, rotate;
 	identity = glm::mat4(1.0f);
 
 	shader.setBool("withTexture", true);
@@ -343,12 +343,21 @@ void table(unsigned int& VAO, Shader& shader, glm::mat4 offset, glm::mat4 alToge
 
 	model = offset;
 	scale = glm::scale(identity, glm::vec3(baseWidth, baseHeight, baseWidth));
-	model = alTogether * scale * model;
-	drawCube(VAO, shader, model);
+	translate = glm::translate(identity, glm::vec3(3.5f, 0.0f, -2.0f));
+	model =  translate * scale * model;
+	modelTogether = alTogether * model;
+	drawCube(VAO, shader, modelTogether);
 
-	rotate = glm::rotate(identity, glm::radians(-90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-	model = alTogether * rotate * model;
-	drawCube(VAO, shader, model);*/
+	scale = glm::scale(identity, glm::vec3(baseWidth/3.0f, 4.0f, 0.2f));
+	translate = glm::translate(identity, glm::vec3(2.1f, -0.4f, -1.0f));
+	model = translate * scale * model;
+	modelTogether = alTogether * model;
+	drawCube(VAO, shader, modelTogether);
+
+	translate = glm::translate(identity, glm::vec3(0.0f, 0.0f, -1.2f));
+	model = translate * model;
+	modelTogether = alTogether * model;
+	drawCube(VAO, shader, modelTogether);
 }
 
 void box(unsigned int& VAO, Shader& shader, glm::mat4 offset, glm::mat4 alTogether)
@@ -376,11 +385,11 @@ void box(unsigned int& VAO, Shader& shader, glm::mat4 offset, glm::mat4 alTogeth
 	drawCube(VAO, shader, model);
 }
 
-void classroom(unsigned int& VAO, Shader& shader, glm::mat4 offset, glm::mat4 alTogether, unsigned int& lightCubeVAO, Shader& lightCubeShader)
+void simpleRoom(unsigned int& VAO, Shader& shader, glm::mat4 offset, glm::mat4 alTogether, unsigned int& lightCubeVAO, Shader& lightCubeShader)
 {
 	float crWidth = 5.0f;
 	float crLength = 5.0f;
-	float crHeight = 1.5f;
+	float crHeight = 2.0f;
 	float numTables = 16;
 
 	glm::mat4 identity, model, translate, scale, rotate;
@@ -389,25 +398,20 @@ void classroom(unsigned int& VAO, Shader& shader, glm::mat4 offset, glm::mat4 al
 	shader.setBool("withTexture", true);
 	shader.setInt("materialtex.diffuse", 0);
 	shader.setInt("materialtex.specular", 1);
-	shader.setFloat("materialtex.shininess", 32.0f);
+	shader.setFloat("materialtex.shininess", 32.0f);	
 
-	unsigned int diffuseMap = loadTexture("floortiles.jpg");
-	unsigned int specularMap = loadTexture("floortiles.jpg");
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, diffuseMap);
-	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, specularMap);
-
-	// pointlight src inside classroom
-	scale = glm::scale(identity, glm::vec3(0.1f, 0.1f, 0.1f));
-	translate = glm::translate(identity, glm::vec3(-2.5f, 1.1f, 0.0f));
+	// pointlight src inside simpleRoom
+	scale = glm::scale(identity, glm::vec3(0.5f, 0.05f, 0.05f));
+	translate = glm::translate(identity, glm::vec3(-2.7f, 1.8f, -0.1f));
 	glm::mat4 lightCube =  translate * scale * offset;
 	lightCubeShader.use();
+	if (numOfPointLight == 1) lightCubeShader.setVec3("color", glm::vec3(1.0f, 1.0f, 1.0f));
+	if (numOfPointLight == 0) lightCubeShader.setVec3("color", glm::vec3(0.1f, 0.1f, 0.1f));
 	drawCube(lightCubeVAO, lightCubeShader, lightCube); 
 
 	shader.use();
 	//shader.setInt("numberofPointlights", 1);
-	shader.setVec3("pointLights[0].position", glm::vec3(-2.5f, 1.0f, 0.0f));
+	shader.setVec3("pointLights[0].position", glm::vec3(-2.4f, 1.8f, 0.1f));
 	shader.setVec3("pointLights[0].ambient", 0.05f, 0.05f, 0.05f);
 	shader.setVec3("pointLights[0].diffuse", 0.8f, 0.8f, 0.8f);
 	shader.setVec3("pointLights[0].specular", 1.0f, 1.0f, 1.0f);
@@ -417,14 +421,21 @@ void classroom(unsigned int& VAO, Shader& shader, glm::mat4 offset, glm::mat4 al
 	shader.setBool("pointLightStatus[0]", true);
 
 	// floor
+
+	unsigned int diffuseMap = loadTexture("designedTiles.jpg");
+	unsigned int specularMap = loadTexture("designedTiles.jpg");
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, diffuseMap);
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, specularMap);
 	
 	shader.setBool("exposedToSun", false);
 	scale = glm::scale(identity, glm::vec3(-crWidth, 0.1f, crLength));	
 	model = alTogether * scale * offset;
 	drawCube(VAO, shader, model);
 
-	diffuseMap = loadTexture("concrete.png");
-	specularMap = loadTexture("concrete.png");
+	diffuseMap = loadTexture("whitewall2.jpg");
+	specularMap = loadTexture("whitewall2.jpg");
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, diffuseMap);
 	glActiveTexture(GL_TEXTURE1);
@@ -438,9 +449,10 @@ void classroom(unsigned int& VAO, Shader& shader, glm::mat4 offset, glm::mat4 al
 	drawCube(VAO, shader, model2);
 
 	// walls
-	// roadside wall of 1st classroom
+	// roadside wall of 1st simpleRoom
+	
 	rotate = glm::rotate(identity, glm::radians(-90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-	scale = glm::scale(identity, glm::vec3(1.0f, 0.3f, 1.0f));
+	scale = glm::scale(identity, glm::vec3(1.0f, 0.4f, 1.0f));
 	translate = glm::translate(identity, glm::vec3(-0.1f, 0.0f, 0.0f));
 	model = alTogether * translate * scale * rotate * model;
 	drawCube(VAO, shader, model);	
@@ -450,7 +462,7 @@ void classroom(unsigned int& VAO, Shader& shader, glm::mat4 offset, glm::mat4 al
 	drawCube(VAO, shader, model);
 	model = glm::translate(model, glm::vec3(-0.05f, 0.0f, 0.0f));
 
-	// opposite to road side of 1st classroom
+	// opposite to road side of 1st simpleRoom
 	shader.setBool("exposedToSun", true);
 	translate = glm::translate(identity, glm::vec3(-crWidth + 0.1f, 0.0f, 0.0f));
 	model = alTogether * translate * model;
@@ -461,7 +473,7 @@ void classroom(unsigned int& VAO, Shader& shader, glm::mat4 offset, glm::mat4 al
 	drawCube(VAO, shader, model);
 	model = glm::translate(model, glm::vec3(-0.05f, 0.0f, 0.0f));
 
-	 // farside wall of 1st classroom
+	 // farside wall of 1st simpleRoom
 	shader.setBool("exposedToSun", true);
 	rotate = glm::rotate(identity, glm::radians(-90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 	translate = glm::translate(identity, glm::vec3(-crWidth/2.0f, 0.1f, crWidth / 2.0f));
@@ -472,8 +484,9 @@ void classroom(unsigned int& VAO, Shader& shader, glm::mat4 offset, glm::mat4 al
 	model = alTogether * translate * model;
 	drawCube(VAO, shader, model);
 	model = glm::translate(model, glm::vec3(0.0f, 0.0f, -0.05f));
+	glm::mat4 frame = model;
 
-	// nearside wall of 1st classroom
+	// nearside wall of 1st simpleRoom
 	shader.setBool("exposedToSun", true);
 	translate = glm::translate(identity, glm::vec3(-0.25f, 0.0f, crWidth-0.14));
 	model = alTogether * translate * model;
@@ -483,13 +496,23 @@ void classroom(unsigned int& VAO, Shader& shader, glm::mat4 offset, glm::mat4 al
 	model = alTogether * translate * model;
 	drawCube(VAO, shader, model);
 
-	/*glm::mat4 offset = glm::translate(identity, glm::vec3(-crWidth+0.2f, 0.0f, 0.0f));
-	for (int row = 0; row < 4; row++) {
-		glm::mat4 offset = glm::translate(identity, glm::vec3(-crWidth + 0.2f, 0.0f, 0.0f));
-		for (int col = 0; col < 4; col++) {
-			table(VAO, shader, offset, alTogether);
-		}
-	}*/
+	diffuseMap = loadTexture("palestine.jpg");
+	specularMap = loadTexture("palestine.jpg");
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, diffuseMap);
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, specularMap);
+
+	rotate = glm::rotate(identity, glm::radians(-90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+	scale = glm::scale(identity, glm::vec3(0.5f, 0.2f, 0.5f));
+	translate = glm::translate(identity, glm::vec3(-1.5f, 0.9f, -1.1f));
+	frame = translate * scale * rotate * frame;
+	drawCube(VAO, shader, frame);
+
+	alTogether = glm::translate(identity, glm::vec3(-crWidth*2.0f + 2.5f, 0.4f, 1.0f)); 
+	table(VAO, shader, offset, alTogether);
+	alTogether = glm::translate(alTogether, glm::vec3(0.0f, 0.0f, 2.0f));
+	table(VAO, shader, offset, alTogether);
 }
 
 /*------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
@@ -522,6 +545,9 @@ void processInput(GLFWwindow* window)
 	}
 	if (glfwGetKey(window, GLFW_KEY_Y) == GLFW_PRESS) {
 		camera.RotateAroundAxis(2, 5.0f);
+	}
+	if (glfwGetKey(window, GLFW_KEY_U) == GLFW_PRESS) {
+		camera.RotateInverseAroundAxis(2, 5.0f);
 	}
 	if (glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS) {
 		camera.RotateAroundAxis(3, 3.0f);

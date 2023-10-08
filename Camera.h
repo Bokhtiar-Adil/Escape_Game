@@ -134,6 +134,37 @@ public:
         Up = glm::normalize(glm::cross(Right, Front));
     }
 
+    void RotateInverseAroundAxis(int axis, float angle)
+    {
+        glm::vec3 front;
+        // along x-axis - pitch
+        if (axis == 1) {
+            Pitch2 -= (angle * MouseSensitivity);
+            Yaw2 = YAW;
+            Roll2 = ROLL;
+        }
+        else if (axis == 2) {
+            Roll2 -= (angle * MouseSensitivity);
+            Pitch2 = PITCH;
+            Yaw2 = YAW;
+        }
+        else if (axis == 3) {
+            Roll2 -= (angle * MouseSensitivity);
+            Pitch2 -= (angle * MouseSensitivity);
+            Yaw2 -= (angle * MouseSensitivity);
+            if (Pitch > 89.0f)
+                Pitch = 89.0f;
+            if (Pitch < -89.0f)
+                Pitch = -89.0f;
+        }
+        front.x = -cos(glm::radians(Yaw2)) * sin(glm::radians(Pitch2)) * sin(glm::radians(Roll2)) - sin(glm::radians(Yaw2)) * cos(glm::radians(Roll2));
+        front.y = -sin(glm::radians(Yaw2)) * sin(glm::radians(Pitch2)) * sin(glm::radians(Roll2)) + cos(glm::radians(Yaw2)) * cos(glm::radians(Roll2));
+        front.z = cos(glm::radians(Pitch2)) * sin(glm::radians(Roll2));
+        Front = glm::normalize(front);
+        Right = glm::normalize(glm::cross(Front, WorldUp));
+        Up = glm::normalize(glm::cross(Right, Front));
+    }
+
     void Orbit()
     {
         // glm::vec3 center = glm::vec3(Front.x, Front.y - 0.1f, Front.z);

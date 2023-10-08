@@ -149,16 +149,19 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="brickwall.jpg" />
-    <Image Include="concrete.png" />
+    <Image Include="brickwall2.jpg" />
     <Image Include="container2.png" />
     <Image Include="container2_specular.png" />
+    <Image Include="designedTiles.jpg" />
     <Image Include="floortiles.jpg" />
     <Image Include="grass.png" />
     <Image Include="metal.png" />
+    <Image Include="palestine.jpg" />
     <Image Include="redPlastic.jpg" />
     <Image Include="roadConcrete.png" />
     <Image Include="roadCracked.jpg" />
     <Image Include="roadLined.jpg" />
+    <Image Include="whitewall2.jpg" />
     <Image Include="woodenSurface.jpg" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
