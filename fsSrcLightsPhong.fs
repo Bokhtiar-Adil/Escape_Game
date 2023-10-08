@@ -66,6 +66,7 @@ uniform Material material;
 uniform MaterialWithTexture materialtex;
 uniform bool withTexture;
 uniform bool nightMode;
+uniform bool exposedToSun;
 uniform bool flashlightOn;
 
 // function prototypes
@@ -78,9 +79,9 @@ void main()
     // properties
     vec3 norm = normalize(Normal);
     vec3 viewDir = normalize(viewPos - FragPos);
-    vec3 result = vec3(0.0f);
+    vec3 result = dirLight.ambient * vec3(texture(materialtex.diffuse, TexCoords));
     // phase 1: directional lighting
-    if (nightMode == false) {
+    if (nightMode == false && exposedToSun == true) {
         result = CalcDirectionalLight(dirLight, norm, viewDir);
     }
     // phase 2: point lights

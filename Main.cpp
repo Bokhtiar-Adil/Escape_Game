@@ -47,6 +47,9 @@ void box(unsigned int& VAO, Shader& shader, glm::mat4 offset, glm::mat4 alTogeth
 void classroom(unsigned int& VAO, Shader& shader, glm::mat4 offset, glm::mat4 alTogether = glm::mat4(1.0f));
 
 
+bool torchOn = false;
+bool nightMode = false;
+
 int main()
 {
 	glfwInit();
@@ -215,16 +218,35 @@ int main()
 		shader.setVec3("viewPos", camera.Position);
 
 		// light properties
-		shader.setVec3("dirLight.direction", 0.5f, -3.0f, 3.0f);
+		
+		// directional light
+		shader.setVec3("dirLight.direction", 0.5f, -3.0f, -3.0f);
 		shader.setVec3("dirLight.ambient", 0.2f, 0.2f, 0.2f);
 		shader.setVec3("dirLight.diffuse", 1.0f, 1.0f, 1.0f);
 		shader.setVec3("dirLight.specular", 1.0f, 1.0f, 1.0f);
+		shader.setBool("nightMode", nightMode);
+
+		// spotlight
+		shader.setVec3("spotLight.position", camera.Position);
+		shader.setVec3("spotLight.direction", camera.Front);
+		shader.setVec3("spotLight.ambient", 0.0f, 0.0f, 0.0f);
+		shader.setVec3("spotLight.diffuse", 1.0f, 1.0f, 1.0f);
+		shader.setVec3("spotLight.specular", 1.0f, 1.0f, 1.0f);
+		shader.setFloat("spotLight.constant", 1.0f);
+		shader.setFloat("spotLight.linear", 0.09f);
+		shader.setFloat("spotLight.quadratic", 0.032f);
+		shader.setFloat("spotLight.cutOff", glm::cos(glm::radians(12.5f)));
+		shader.setFloat("spotLight.outerCutOff", glm::cos(glm::radians(15.0f)));
+		shader.setBool("flashlightOn", torchOn);
 
 		xoffset = 0.5f, yoffset = 0.5f;
 		offset = glm::translate(identity, glm::vec3(xoffset, yoffset, zoffset));
 		road(VAO, shader, offset);
-		box(VAO, shader, offset);
 		classroom(VAO, shader, offset);
+		shader.setBool("exposedToSun", true);
+		box(VAO, shader, glm::translate(identity, glm::vec3(0.5f, yoffset+0.2f, -1.0f)));
+		box(VAO, shader, glm::translate(identity, glm::vec3(3.0f, yoffset+0.2f, -1.0f)));
+		
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
@@ -266,6 +288,7 @@ void road(unsigned int& VAO, Shader& shader, glm::mat4 offset, glm::mat4 alToget
 	glm::mat4 identity, model, translate, scale;
 	identity = glm::mat4(1.0f);
 
+	shader.setBool("exposedToSun", true);
 	shader.setBool("withTexture", true);
 	unsigned int diffuseMap = loadTexture("roadLined.jpg");
 	unsigned int specularMap = loadTexture("roadLined.jpg");	
@@ -339,6 +362,7 @@ void classroom(unsigned int& VAO, Shader& shader, glm::mat4 offset, glm::mat4 al
 	glBindTexture(GL_TEXTURE_2D, specularMap);
 
 	// floor
+	shader.setBool("exposedToSun", false);
 	scale = glm::scale(identity, glm::vec3(-crWidth, 0.1f, crLength));	
 	model = alTogether * scale * offset;
 	drawCube(VAO, shader, model);
@@ -351,28 +375,54 @@ void classroom(unsigned int& VAO, Shader& shader, glm::mat4 offset, glm::mat4 al
 	glBindTexture(GL_TEXTURE_2D, specularMap);
 
 	//ceilling
+	shader.setBool("exposedToSun", true);
 	glm::mat4 model2 = model;
 	translate = glm::translate(identity, glm::vec3(0.0f, crHeight-0.1f, 0.0f));
 	model2 = alTogether * translate * model2;
 	drawCube(VAO, shader, model2);
 
 	// walls
+	// roadside wall of 1st classroom
 	rotate = glm::rotate(identity, glm::radians(-90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 	scale = glm::scale(identity, glm::vec3(1.0f, 0.3f, 1.0f));
 	translate = glm::translate(identity, glm::vec3(-0.1f, 0.0f, 0.0f));
 	model = alTogether * translate * scale * rotate * model;
+	drawCube(VAO, shader, model);	
+	shader.setBool("exposedToSun", false);
+	translate = glm::translate(identity, glm::vec3(-0.05f, 0.0f, 0.0f));
+	model = alTogether * translate * model;
 	drawCube(VAO, shader, model);
+	model = glm::translate(model, glm::vec3(-0.05f, 0.0f, 0.0f));
 
+	// opposite to road side of 1st classroom
 	translate = glm::translate(identity, glm::vec3(-crWidth + 0.1f, 0.0f, 0.0f));
 	model = alTogether * translate * model;
 	drawCube(VAO, shader, model);
+	shader.setBool("exposedToSun", true);
+	translate = glm::translate(identity, glm::vec3(0.05f, 0.0f, 0.0f));
+	model = alTogether * translate * model;
+	drawCube(VAO, shader, model);
+	model = glm::translate(model, glm::vec3(-0.05f, 0.0f, 0.0f));
 
+	 // farside wall of 1st classroom
+	shader.setBool("exposedToSun", true);
 	rotate = glm::rotate(identity, glm::radians(-90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-	translate = glm::translate(identity, glm::vec3(-crWidth/2.0f, 0.0f, crWidth / 2.0f));
+	translate = glm::translate(identity, glm::vec3(-crWidth/2.0f, 0.1f, crWidth / 2.0f));
 	model = alTogether * translate * rotate * model;
 	drawCube(VAO, shader, model);
+	shader.setBool("exposedToSun", false);
+	translate = glm::translate(identity, glm::vec3(0.0f, 0.0f, 0.05f));
+	model = alTogether * translate * model;
+	drawCube(VAO, shader, model);
+	model = glm::translate(model, glm::vec3(0.0f, 0.0f, -0.05f));
 
-	translate = glm::translate(identity, glm::vec3(0.0f, 0.0f, crWidth));
+	// nearside wall of 1st classroom
+	shader.setBool("exposedToSun", true);
+	translate = glm::translate(identity, glm::vec3(-0.25f, 0.0f, crWidth-0.14));
+	model = alTogether * translate * model;
+	drawCube(VAO, shader, model);
+	shader.setBool("exposedToSun", false);
+	translate = glm::translate(identity, glm::vec3(0.0f, 0.0f, -0.05f));
 	model = alTogether * translate * model;
 	drawCube(VAO, shader, model);
 
@@ -424,6 +474,12 @@ void processInput(GLFWwindow* window)
 	}
 	if (glfwGetKey(window, GLFW_KEY_H) == GLFW_PRESS) {
 		camera.ResetPosition();
+	}
+	if (glfwGetKey(window, GLFW_KEY_T) == GLFW_PRESS) {
+		torchOn = !torchOn;
+	}
+	if (glfwGetKey(window, GLFW_KEY_N) == GLFW_PRESS) {
+		nightMode = !nightMode;
 	}
 
 }
