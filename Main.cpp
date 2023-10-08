@@ -40,15 +40,19 @@ void processInput(GLFWwindow* window);
 unsigned int loadTexture(char const* path);
 void drawCube(unsigned int& cubeVAO, Shader& shader, glm::mat4 model);
 
+unsigned int dummyVAO = NULL;
+Shader dummyShader;
+
 // components
 void road(unsigned int& VAO, Shader& shader, glm::mat4 offset, glm::mat4 alTogether = glm::mat4(1.0f));
 void table(unsigned int& VAO, Shader& shader, glm::mat4 offset, glm::mat4 alTogether = glm::mat4(1.0f));
 void box(unsigned int& VAO, Shader& shader, glm::mat4 offset, glm::mat4 alTogether = glm::mat4(1.0f));
-void classroom(unsigned int& VAO, Shader& shader, glm::mat4 offset, glm::mat4 alTogether = glm::mat4(1.0f));
+void classroom(unsigned int& VAO, Shader& shader, glm::mat4 offset, glm::mat4 alTogether = glm::mat4(1.0f), unsigned int& lightCubeVAO = dummyVAO, Shader& lightCubeShader = dummyShader);
 
 
 bool torchOn = false;
 bool nightMode = false;
+int numOfPointLight = 1;
 
 int main()
 {
@@ -78,7 +82,7 @@ int main()
 	// shader creation
 
 	Shader shader("vsSrc.vs", "fsSrcLightsPhong.fs");
-	//Shader lightCubeShader("light_cube.vs", "light_cube.fs");
+	Shader lightCubeShader("lightCube.vs", "lightCube.fs");
 
 	// vertices and buffers
 
@@ -201,19 +205,19 @@ int main()
 		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		shader.use();
-		projection = glm::perspective(glm::radians(camera.Zoom), (float)WIN_WIDTH / (float)WIN_HEIGHT, 0.1f, 100.0f); 
-		shader.setMat4("projection", projection);
+		
+		projection = glm::perspective(glm::radians(camera.Zoom), (float)WIN_WIDTH / (float)WIN_HEIGHT, 0.1f, 100.0f); 		
 		view = camera.GetViewMatrix(); 
-		shader.setMat4("view", view);		
-		
-		/*bed(VAO, shader, offset);*/
-		/*scale = glm::scale(identity, glm::vec3(0.5f, 0.5f, 0.5f));
-		glm::mat4 model = scale * offset;*/
-		//drawCube(VAO, shader, model);
+
+		lightCubeShader.use();
+		lightCubeShader.setMat4("projection", projection);
+		lightCubeShader.setMat4("view", view);
+
+		shader.use(); 
+		shader.setMat4("projection", projection); 
+		shader.setMat4("view", view); 
 		shader.setBool("nightMode", false);
-		shader.setBool("flashlightOn", false);
-		
+		shader.setBool("flashlightOn", false);		
 		shader.setInt("numberofPointlights", 0);		
 		shader.setVec3("viewPos", camera.Position);
 
@@ -222,7 +226,7 @@ int main()
 		// directional light
 		shader.setVec3("dirLight.direction", 0.5f, -3.0f, -3.0f);
 		shader.setVec3("dirLight.ambient", 0.2f, 0.2f, 0.2f);
-		shader.setVec3("dirLight.diffuse", 1.0f, 1.0f, 1.0f);
+		shader.setVec3("dirLight.diffuse", 0.7f, 0.7f, 0.7f);
 		shader.setVec3("dirLight.specular", 1.0f, 1.0f, 1.0f);
 		shader.setBool("nightMode", nightMode);
 
@@ -241,8 +245,11 @@ int main()
 
 		xoffset = 0.5f, yoffset = 0.5f;
 		offset = glm::translate(identity, glm::vec3(xoffset, yoffset, zoffset));
+		shader.setInt("numberofPointlights", 0);
 		road(VAO, shader, offset);
-		classroom(VAO, shader, offset);
+		shader.setInt("numberofPointlights", numOfPointLight);
+		classroom(VAO, shader, offset, glm::mat4(1.0f), lightCubeVAO, lightCubeShader);
+		shader.setInt("numberofPointlights", 0);
 		shader.setBool("exposedToSun", true);
 		box(VAO, shader, glm::translate(identity, glm::vec3(0.5f, yoffset+0.2f, -1.0f)));
 		box(VAO, shader, glm::translate(identity, glm::vec3(3.0f, yoffset+0.2f, -1.0f)));
@@ -266,12 +273,6 @@ int main()
 void drawCube(unsigned int& cubeVAO, Shader& shader, glm::mat4 model = glm::mat4(1.0f))
 {
 	shader.use();
-	//, float r = 1.0f, float g = 1.0f, float b = 1.0f
-	/*shader.setVec3("material.ambient", glm::vec3(r, g, b));
-	shader.setVec3("material.diffuse", glm::vec3(r, g, b));
-	shader.setVec3("material.specular", glm::vec3(0.5f, 0.5f, 0.5f));
-	shader.setFloat("material.shininess", 32.0f);*/
-
 	shader.setMat4("model", model);
 	glBindVertexArray(cubeVAO);
 	//glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
@@ -339,7 +340,7 @@ void box(unsigned int& VAO, Shader& shader, glm::mat4 offset, glm::mat4 alTogeth
 	drawCube(VAO, shader, model);
 }
 
-void classroom(unsigned int& VAO, Shader& shader, glm::mat4 offset, glm::mat4 alTogether)
+void classroom(unsigned int& VAO, Shader& shader, glm::mat4 offset, glm::mat4 alTogether, unsigned int& lightCubeVAO, Shader& lightCubeShader)
 {
 	float crWidth = 5.0f;
 	float crLength = 5.0f;
@@ -361,7 +362,26 @@ void classroom(unsigned int& VAO, Shader& shader, glm::mat4 offset, glm::mat4 al
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, specularMap);
 
+	// pointlight src inside classroom
+	scale = glm::scale(identity, glm::vec3(0.1f, 0.1f, 0.1f));
+	translate = glm::translate(identity, glm::vec3(-2.5f, 1.1f, 0.0f));
+	glm::mat4 lightCube =  translate * scale * offset;
+	lightCubeShader.use();
+	drawCube(lightCubeVAO, lightCubeShader, lightCube); 
+
+	shader.use();
+	//shader.setInt("numberofPointlights", 1);
+	shader.setVec3("pointLights[0].position", glm::vec3(-2.5f, 1.0f, 0.0f));
+	shader.setVec3("pointLights[0].ambient", 0.05f, 0.05f, 0.05f);
+	shader.setVec3("pointLights[0].diffuse", 0.8f, 0.8f, 0.8f);
+	shader.setVec3("pointLights[0].specular", 1.0f, 1.0f, 1.0f);
+	shader.setFloat("pointLights[0].constant", 1.0f);
+	shader.setFloat("pointLights[0].linear", 0.09f);
+	shader.setFloat("pointLights[0].quadratic", 0.032f);
+	shader.setBool("pointLightStatus[0]", true);
+
 	// floor
+	
 	shader.setBool("exposedToSun", false);
 	scale = glm::scale(identity, glm::vec3(-crWidth, 0.1f, crLength));	
 	model = alTogether * scale * offset;
@@ -480,6 +500,10 @@ void processInput(GLFWwindow* window)
 	}
 	if (glfwGetKey(window, GLFW_KEY_N) == GLFW_PRESS) {
 		nightMode = !nightMode;
+	}
+	if (glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS) {
+		numOfPointLight++;
+		numOfPointLight %= 2;
 	}
 
 }
