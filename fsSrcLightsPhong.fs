@@ -71,6 +71,7 @@ uniform bool flashlightOn;
 uniform bool ambientOn;
 uniform bool diffuseOn;
 uniform bool specularOn;
+uniform vec3 emission;
 
 // function prototypes
 vec3 CalcDirectionalLight(DirectionalLight light, vec3 normal, vec3 viewDir);
@@ -79,10 +80,13 @@ vec3 CalcSpotLight(SpotLight light, vec3 normal, vec3 fragPos, vec3 viewDir);
 
 void main()
 {    
+    //emission = vec3(0.05f, 0.05f, 0.05f);
     // properties
     vec3 norm = normalize(Normal);
     vec3 viewDir = normalize(viewPos - FragPos);
-    vec3 result = dirLight.ambient * vec3(texture(materialtex.diffuse, TexCoords));
+    vec3 result;
+    if (withTexture == true) result = dirLight.ambient * vec3(texture(materialtex.diffuse, TexCoords));
+    else result = emission;
     // phase 1: directional lighting
     if (nightMode == false && exposedToSun == true) {
         result = CalcDirectionalLight(dirLight, norm, viewDir);

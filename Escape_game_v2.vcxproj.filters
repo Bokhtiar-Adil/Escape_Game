@@ -92,5 +92,11 @@
     <Image Include="palestine.jpg">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="woodenDoor.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="woodCypress.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>

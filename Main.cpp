@@ -52,7 +52,8 @@ void simpleRoom(unsigned int& VAO, Shader& shader, glm::mat4 offset, glm::mat4 a
 
 bool torchOn = false;
 bool nightMode = false;
-int numOfPointLight = 1;
+int numOfPointLightRoad = 3;
+int numOfPointLightRoom = 1;
 bool ambientOn = true;
 bool diffuseOn = true;
 bool specularOn = true;
@@ -253,13 +254,14 @@ int main()
 
 		xoffset = 0.5f, yoffset = 0.5f;
 		offset = glm::translate(identity, glm::vec3(xoffset, yoffset, zoffset));
-		shader.setInt("numberofPointlights", 0);
-		road(VAO, shader, offset);
-		shader.setInt("numberofPointlights", numOfPointLight);
+		//shader.setInt("numberofPointlights", 0);
+		shader.setVec3("emission", glm::vec3(0.1f, 0.1f, 0.1f));
+		shader.setInt("numberofPointlights", numOfPointLightRoad);
+		road(VAO, shader, offset);	
+		shader.setInt("numberofPointlights", numOfPointLightRoom);
 		simpleRoom(VAO, shader, offset, glm::mat4(1.0f), lightCubeVAO, lightCubeShader);
-		shader.setInt("numberofPointlights", 0);
-		shader.setBool("exposedToSun", true);
-		
+		/*shader.setInt("numberofPointlights", 0);
+		shader.setBool("exposedToSun", true);		*/
 		
 
 		glfwSwapBuffers(window);
@@ -286,12 +288,29 @@ void drawCube(unsigned int& cubeVAO, Shader& shader, glm::mat4 model = glm::mat4
 	glDrawArrays(GL_TRIANGLES, 0, 36);
 }
 
-
+void roadsideBlocks(unsigned int& VAO, Shader& shader, glm::mat4 offset, glm::mat4 alTogether)
+{
+	float width = 5.0f;
+	float length = 7.0f;
+	glm::mat4 identity, model, translate, scale;
+	identity = glm::mat4(1.0f);
+	shader.setBool("exposedToSun", true);
+	shader.setBool("withTexture", false);
+	shader.setVec3("material.ambient", glm::vec3(0.2f, 0.2f, 0.2f));
+	shader.setVec3("material.diffuse", glm::vec3(0.0f, 1.0f, 0.0f));
+	shader.setVec3("material.specular", glm::vec3(1.0f, 1.0f, 1.0f));
+	shader.setFloat("material.shininess", 32.0f);
+	shader.setVec3("emission", glm::vec3(0.0f, 0.1f, 0.0f));
+	
+	scale = glm::scale(identity, glm::vec3(-width, 0.1f, length));
+	model = alTogether * scale * offset;
+	drawCube(VAO, shader, model);
+}
 
 void road(unsigned int& VAO, Shader& shader, glm::mat4 offset, glm::mat4 alTogether)
 {
 	float roadWidth = 2.0f;
-	float roadLength = 20.0f;
+	float roadLength = 7.0f;
 
 	glm::mat4 identity, model, translate, scale;
 	identity = glm::mat4(1.0f);
@@ -317,8 +336,78 @@ void road(unsigned int& VAO, Shader& shader, glm::mat4 offset, glm::mat4 alToget
 	drawCube(VAO, shader, model);
 
 	float xoffset = 0.5f, yoffset = 0.5f;
-	box(VAO, shader, glm::translate(identity, glm::vec3(0.5f, yoffset + 0.2f, -1.0f)));
-	box(VAO, shader, glm::translate(identity, glm::vec3(3.0f, yoffset + 0.2f, -1.0f)));
+	box(VAO, shader, glm::translate(identity, glm::vec3(5.0f, yoffset + 0.2f, -1.0f)));
+	box(VAO, shader, glm::translate(identity, glm::vec3(5.0f, yoffset + 1.2f, -1.0f)));
+	box(VAO, shader, glm::translate(identity, glm::vec3(5.0f, yoffset + 0.2f, 0.0f)));
+	roadsideBlocks(VAO, shader, glm::translate(identity, glm::vec3(xoffset, yoffset - 0.01f, 0.0f)), alTogether);
+	roadsideBlocks(VAO, shader, glm::translate(identity, glm::vec3(xoffset, yoffset - 0.01f, 0.0f)), glm::translate(identity, glm::vec3(5.01f, 0.0f, 0.0f)));
+	shader.setVec3("emission", glm::vec3(0.1f, 0.1f, 0.1f));
+
+	// lamp
+	shader.setBool("exposedToSun", true);
+	shader.setBool("withTexture", false);
+	shader.setVec3("material.ambient", glm::vec3(0.1f, 0.1f, 0.1f));
+	shader.setVec3("material.diffuse", glm::vec3(0.3f, 0.3f, 0.3f));
+	shader.setVec3("material.specular", glm::vec3(0.5f, 0.5f, 0.5f));
+	shader.setFloat("material.shininess", 32.0f);
+	shader.setVec3("emission", glm::vec3(0.1f, 0.1f, 0.1f));
+	scale = glm::scale(identity, glm::vec3(0.05f, 1.5f, 0.05f));
+	translate = glm::translate(identity, glm::vec3(2.0f, 0.0f, 0.0f));
+	model = translate * scale * offset;;
+	glm::mat4 modelTogether = alTogether * model;
+	drawCube(VAO, shader, modelTogether);
+	translate = glm::translate(identity, glm::vec3(0.0f, 0.0f, -2.0f));
+	model = translate * model;
+	modelTogether = alTogether * model;
+	drawCube(VAO, shader, modelTogether);
+	translate = glm::translate(identity, glm::vec3(0.0f, 0.0f, 4.0f));
+	model = translate * model;
+	modelTogether = alTogether * model;
+	drawCube(VAO, shader, modelTogether);
+
+	shader.setVec3("material.ambient", glm::vec3(0.1f, 0.1f, 0.1f));
+	shader.setVec3("material.diffuse", glm::vec3(1.0f, 1.0f, 1.0f));
+	shader.setVec3("material.specular", glm::vec3(1.0f, 1.0f, 1.0f));
+	scale = glm::scale(identity, glm::vec3(0.1f, 0.1f, 0.1f));
+	translate = glm::translate(identity, glm::vec3(1.9f, 1.4f, 0.0f));
+	model = translate * scale * offset;;
+	modelTogether = alTogether * model;
+	drawCube(VAO, shader, modelTogether);
+	translate = glm::translate(identity, glm::vec3(0.0f, 0.0f, -2.0f));
+	model = translate * model;
+	modelTogether = alTogether * model;
+	drawCube(VAO, shader, modelTogether);
+	translate = glm::translate(identity, glm::vec3(0.0f, 0.0f, 4.0f));
+	model = translate * model;
+	modelTogether = alTogether * model;
+	drawCube(VAO, shader, modelTogether);
+
+	shader.setVec3("pointLights[0].position", glm::vec3(1.9f, 1.5f, 2.1f));
+	shader.setVec3("pointLights[0].ambient", 0.05f, 0.05f, 0.05f);
+	shader.setVec3("pointLights[0].diffuse", 0.8f, 0.8f, 0.8f);
+	shader.setVec3("pointLights[0].specular", 1.0f, 1.0f, 1.0f);
+	shader.setFloat("pointLights[0].constant", 1.0f);
+	shader.setFloat("pointLights[0].linear", 0.09f);
+	shader.setFloat("pointLights[0].quadratic", 0.032f);
+	shader.setBool("pointLightStatus[0]", true);
+
+	shader.setVec3("pointLights[1].position", glm::vec3(2.0f, 1.5f, 0.15f));
+	shader.setVec3("pointLights[1].ambient", 0.05f, 0.05f, 0.05f);
+	shader.setVec3("pointLights[1].diffuse", 0.8f, 0.8f, 0.8f);
+	shader.setVec3("pointLights[1].specular", 1.0f, 1.0f, 1.0f);
+	shader.setFloat("pointLights[1].constant", 1.0f);
+	shader.setFloat("pointLights[1].linear", 0.09f);
+	shader.setFloat("pointLights[1].quadratic", 0.032f);
+	shader.setBool("pointLightStatus[1]", true);
+
+	shader.setVec3("pointLights[2].position", glm::vec3(2.0f, 1.5f, -1.95f));
+	shader.setVec3("pointLights[2].ambient", 0.05f, 0.05f, 0.05f);
+	shader.setVec3("pointLights[2].diffuse", 0.8f, 0.8f, 0.8f);
+	shader.setVec3("pointLights[2].specular", 1.0f, 1.0f, 1.0f);
+	shader.setFloat("pointLights[2].constant", 1.0f);
+	shader.setFloat("pointLights[2].linear", 0.09f);
+	shader.setFloat("pointLights[2].quadratic", 0.032f);
+	shader.setBool("pointLightStatus[2]", true);
 }
 
 void table(unsigned int& VAO, Shader& shader, glm::mat4 offset, glm::mat4 alTogether)
@@ -405,8 +494,8 @@ void simpleRoom(unsigned int& VAO, Shader& shader, glm::mat4 offset, glm::mat4 a
 	translate = glm::translate(identity, glm::vec3(-2.7f, 1.8f, -0.1f));
 	glm::mat4 lightCube =  translate * scale * offset;
 	lightCubeShader.use();
-	if (numOfPointLight == 1) lightCubeShader.setVec3("color", glm::vec3(1.0f, 1.0f, 1.0f));
-	if (numOfPointLight == 0) lightCubeShader.setVec3("color", glm::vec3(0.1f, 0.1f, 0.1f));
+	if (numOfPointLightRoom == 1) lightCubeShader.setVec3("color", glm::vec3(1.0f, 1.0f, 1.0f));
+	if (numOfPointLightRoom == 0) lightCubeShader.setVec3("color", glm::vec3(0.1f, 0.1f, 0.1f));
 	drawCube(lightCubeVAO, lightCubeShader, lightCube); 
 
 	shader.use();
@@ -443,6 +532,12 @@ void simpleRoom(unsigned int& VAO, Shader& shader, glm::mat4 offset, glm::mat4 a
 
 	//ceilling
 	shader.setBool("exposedToSun", true);
+	shader.setBool("withTexture", false);
+	shader.setVec3("material.ambient", glm::vec3(0.1f, 0.1f, 0.1f));
+	shader.setVec3("material.diffuse", glm::vec3(1.0f, 1.0f, 1.0f));
+	shader.setVec3("material.specular", glm::vec3(1.0f, 1.0f, 1.0f));
+	shader.setFloat("material.shininess", 32.0f);
+	shader.setVec3("emission", glm::vec3(0.1f, 0.1f, 0.1f));
 	glm::mat4 model2 = model;
 	translate = glm::translate(identity, glm::vec3(0.0f, crHeight-0.1f, 0.0f));
 	model2 = alTogether * translate * model2;
@@ -450,6 +545,34 @@ void simpleRoom(unsigned int& VAO, Shader& shader, glm::mat4 offset, glm::mat4 a
 
 	// walls
 	// roadside wall of 1st simpleRoom
+	shader.setBool("exposedToSun", true);
+	shader.setInt("numberofPointlights", numOfPointLightRoad);
+	shader.setVec3("pointLights[0].position", glm::vec3(1.9f, 1.5f, 2.1f));
+	shader.setVec3("pointLights[0].ambient", 0.05f, 0.05f, 0.05f);
+	shader.setVec3("pointLights[0].diffuse", 0.8f, 0.8f, 0.8f);
+	shader.setVec3("pointLights[0].specular", 1.0f, 1.0f, 1.0f);
+	shader.setFloat("pointLights[0].constant", 1.0f);
+	shader.setFloat("pointLights[0].linear", 0.09f);
+	shader.setFloat("pointLights[0].quadratic", 0.032f);
+	shader.setBool("pointLightStatus[0]", true);
+
+	shader.setVec3("pointLights[1].position", glm::vec3(2.0f, 1.5f, 0.15f));
+	shader.setVec3("pointLights[1].ambient", 0.05f, 0.05f, 0.05f);
+	shader.setVec3("pointLights[1].diffuse", 0.8f, 0.8f, 0.8f);
+	shader.setVec3("pointLights[1].specular", 1.0f, 1.0f, 1.0f);
+	shader.setFloat("pointLights[1].constant", 1.0f);
+	shader.setFloat("pointLights[1].linear", 0.09f);
+	shader.setFloat("pointLights[1].quadratic", 0.032f);
+	shader.setBool("pointLightStatus[1]", true);
+
+	shader.setVec3("pointLights[2].position", glm::vec3(2.0f, 1.5f, -1.95f));
+	shader.setVec3("pointLights[2].ambient", 0.05f, 0.05f, 0.05f);
+	shader.setVec3("pointLights[2].diffuse", 0.8f, 0.8f, 0.8f);
+	shader.setVec3("pointLights[2].specular", 1.0f, 1.0f, 1.0f);
+	shader.setFloat("pointLights[2].constant", 1.0f);
+	shader.setFloat("pointLights[2].linear", 0.09f);
+	shader.setFloat("pointLights[2].quadratic", 0.032f);
+	shader.setBool("pointLightStatus[2]", true);
 	
 	rotate = glm::rotate(identity, glm::radians(-90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 	scale = glm::scale(identity, glm::vec3(1.0f, 0.4f, 1.0f));
@@ -457,17 +580,36 @@ void simpleRoom(unsigned int& VAO, Shader& shader, glm::mat4 offset, glm::mat4 a
 	model = alTogether * translate * scale * rotate * model;
 	drawCube(VAO, shader, model);	
 	shader.setBool("exposedToSun", false);
+	shader.setInt("numberofPointlights", numOfPointLightRoom);
+	shader.setVec3("pointLights[0].position", glm::vec3(-2.4f, 1.8f, 0.1f));
+	shader.setVec3("pointLights[0].ambient", 0.05f, 0.05f, 0.05f);
+	shader.setVec3("pointLights[0].diffuse", 0.8f, 0.8f, 0.8f);
+	shader.setVec3("pointLights[0].specular", 1.0f, 1.0f, 1.0f);
+	shader.setFloat("pointLights[0].constant", 1.0f);
+	shader.setFloat("pointLights[0].linear", 0.09f);
+	shader.setFloat("pointLights[0].quadratic", 0.032f);
+	shader.setBool("pointLightStatus[0]", true);
+
 	translate = glm::translate(identity, glm::vec3(-0.05f, 0.0f, 0.0f));
 	model = alTogether * translate * model;
 	drawCube(VAO, shader, model);
 	model = glm::translate(model, glm::vec3(-0.05f, 0.0f, 0.0f));
+	glm::mat4 door = model;
+	
 
 	// opposite to road side of 1st simpleRoom
 	shader.setBool("exposedToSun", true);
+	shader.setBool("withTexture", false);
+	shader.setVec3("material.ambient", glm::vec3(0.1f, 0.1f, 0.1f));
+	shader.setVec3("material.diffuse", glm::vec3(0.9f, 0.9f, 0.9f));
+	shader.setVec3("material.specular", glm::vec3(0.5f, 0.5f, 0.5f));
+	shader.setFloat("material.shininess", 32.0f);
+	shader.setVec3("emission", glm::vec3(0.1f, 0.1f, 0.1f));
 	translate = glm::translate(identity, glm::vec3(-crWidth + 0.1f, 0.0f, 0.0f));
 	model = alTogether * translate * model;
 	drawCube(VAO, shader, model);
 	shader.setBool("exposedToSun", false);
+	shader.setBool("withTexture", true);
 	translate = glm::translate(identity, glm::vec3(0.05f, 0.0f, 0.0f));
 	model = alTogether * translate * model;
 	drawCube(VAO, shader, model);
@@ -475,11 +617,18 @@ void simpleRoom(unsigned int& VAO, Shader& shader, glm::mat4 offset, glm::mat4 a
 
 	 // farside wall of 1st simpleRoom
 	shader.setBool("exposedToSun", true);
+	shader.setBool("withTexture", false);
+	shader.setVec3("material.ambient", glm::vec3(0.1f, 0.1f, 0.1f));
+	shader.setVec3("material.diffuse", glm::vec3(0.9f, 0.9f, 0.9f));
+	shader.setVec3("material.specular", glm::vec3(0.5f, 0.5f, 0.5f));
+	shader.setFloat("material.shininess", 32.0f);
+	shader.setVec3("emission", glm::vec3(0.1f, 0.1f, 0.1f));
 	rotate = glm::rotate(identity, glm::radians(-90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 	translate = glm::translate(identity, glm::vec3(-crWidth/2.0f, 0.1f, crWidth / 2.0f));
 	model = alTogether * translate * rotate * model;
 	drawCube(VAO, shader, model);
 	shader.setBool("exposedToSun", false);
+	shader.setBool("withTexture", true);
 	translate = glm::translate(identity, glm::vec3(0.0f, 0.0f, 0.05f));
 	model = alTogether * translate * model;
 	drawCube(VAO, shader, model);
@@ -513,6 +662,54 @@ void simpleRoom(unsigned int& VAO, Shader& shader, glm::mat4 offset, glm::mat4 a
 	table(VAO, shader, offset, alTogether);
 	alTogether = glm::translate(alTogether, glm::vec3(0.0f, 0.0f, 2.0f));
 	table(VAO, shader, offset, alTogether);
+
+	shader.setBool("exposedToSun", true);
+	shader.setBool("withTexture", true);
+	/*shader.setVec3("material.ambient", glm::vec3(0.1f, 0.1f, 0.1f));
+	shader.setVec3("material.diffuse", glm::vec3(1.0f, 0.0f, 0.0f));
+	shader.setVec3("material.specular", glm::vec3(0.5f, 0.5f, 0.5f));
+	shader.setFloat("material.shininess", 32.0f);
+	shader.setVec3("emission", glm::vec3(0.1f, 0.0f, 0.0f));*/
+	diffuseMap = loadTexture("woodCypress.jpg");
+	specularMap = loadTexture("woodCypress.jpg");
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, diffuseMap);
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, specularMap);
+
+	shader.setBool("exposedToSun", true);
+	shader.setInt("numberofPointlights", numOfPointLightRoad);
+	shader.setVec3("pointLights[0].position", glm::vec3(1.9f, 1.5f, 2.1f));
+	shader.setVec3("pointLights[0].ambient", 0.05f, 0.05f, 0.05f);
+	shader.setVec3("pointLights[0].diffuse", 0.8f, 0.8f, 0.8f);
+	shader.setVec3("pointLights[0].specular", 1.0f, 1.0f, 1.0f);
+	shader.setFloat("pointLights[0].constant", 1.0f);
+	shader.setFloat("pointLights[0].linear", 0.09f);
+	shader.setFloat("pointLights[0].quadratic", 0.032f);
+	shader.setBool("pointLightStatus[0]", true);
+
+	shader.setVec3("pointLights[1].position", glm::vec3(2.0f, 1.5f, 0.15f));
+	shader.setVec3("pointLights[1].ambient", 0.05f, 0.05f, 0.05f);
+	shader.setVec3("pointLights[1].diffuse", 0.8f, 0.8f, 0.8f);
+	shader.setVec3("pointLights[1].specular", 1.0f, 1.0f, 1.0f);
+	shader.setFloat("pointLights[1].constant", 1.0f);
+	shader.setFloat("pointLights[1].linear", 0.09f);
+	shader.setFloat("pointLights[1].quadratic", 0.032f);
+	shader.setBool("pointLightStatus[1]", true);
+
+	shader.setVec3("pointLights[2].position", glm::vec3(2.0f, 1.5f, -1.95f));
+	shader.setVec3("pointLights[2].ambient", 0.05f, 0.05f, 0.05f);
+	shader.setVec3("pointLights[2].diffuse", 0.8f, 0.8f, 0.8f);
+	shader.setVec3("pointLights[2].specular", 1.0f, 1.0f, 1.0f);
+	shader.setFloat("pointLights[2].constant", 1.0f);
+	shader.setFloat("pointLights[2].linear", 0.09f);
+	shader.setFloat("pointLights[2].quadratic", 0.032f);
+	shader.setBool("pointLightStatus[2]", true);
+
+	scale = glm::scale(identity, glm::vec3(1.0f, 0.6f, 0.2f));
+	translate = glm::translate(identity, glm::vec3(crWidth+2.5f+0.06f, -0.2f, -1.2f));
+	door = alTogether * translate * scale * door;
+	drawCube(VAO, shader, door);
 }
 
 /*------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
@@ -565,8 +762,12 @@ void processInput(GLFWwindow* window)
 		nightMode = !nightMode;
 	}
 	if (glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS) {
-		numOfPointLight++;
-		numOfPointLight %= 2;
+		numOfPointLightRoom+=1;
+		numOfPointLightRoom %= 2;
+	}
+	if (glfwGetKey(window, GLFW_KEY_5) == GLFW_PRESS) {
+		numOfPointLightRoad += 3;
+		if (numOfPointLightRoad > 3) numOfPointLightRoad = 0;
 	}
 	if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS) {
 		ambientOn = !ambientOn;
