@@ -133,14 +133,19 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Opengl\glad.c" />
+    <ClCompile Include="Components.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="stb_image.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="Components.h" />
+    <ClInclude Include="Cube.h" />
     <ClInclude Include="Shader.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="fsSrcLightsPhong.fs" />
+    <None Include="fsSrcMatProp.fs" />
+    <None Include="fsSrcTex.fs" />
     <None Include="fsSrcPrimary.fs" />
     <None Include="lightCube.fs" />
     <None Include="lightCube.vs" />
@@ -148,22 +153,13 @@
     <None Include="vsSrcPrimary.vs" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="brickwall.jpg" />
-    <Image Include="brickwall2.jpg" />
     <Image Include="container2.png" />
     <Image Include="container2_specular.png" />
     <Image Include="designedTiles.jpg" />
-    <Image Include="floortiles.jpg" />
-    <Image Include="grass.png" />
-    <Image Include="metal.png" />
     <Image Include="palestine.jpg" />
-    <Image Include="redPlastic.jpg" />
-    <Image Include="roadConcrete.png" />
-    <Image Include="roadCracked.jpg" />
     <Image Include="roadLined.jpg" />
     <Image Include="whitewall2.jpg" />
     <Image Include="woodCypress.jpg" />
-    <Image Include="woodenDoor.jpg" />
     <Image Include="woodenSurface.jpg" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

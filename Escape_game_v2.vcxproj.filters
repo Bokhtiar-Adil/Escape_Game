@@ -21,6 +21,12 @@
     <ClCompile Include="Main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Components.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stb_image.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h">
@@ -29,11 +35,15 @@
     <ClInclude Include="Shader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Cube.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Components.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="vsSrcPrimary.vs" />
-    <None Include="fsSrcPrimary.fs" />
-    <None Include="fsSrcLightsPhong.fs">
+    <None Include="fsSrcTex.fs">
       <Filter>Source Files</Filter>
     </None>
     <None Include="lightCube.fs">
@@ -45,15 +55,21 @@
     <None Include="vsSrc.vs">
       <Filter>Source Files</Filter>
     </None>
+    <None Include="fsSrcMatProp.fs">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="fsSrcPrimary.fs">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="vsSrcPrimary.vs">
+      <Filter>Source Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="brickwall.jpg">
+    <Image Include="roadLined.jpg">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="grass.png">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="metal.png">
+    <Image Include="woodenSurface.jpg">
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="container2.png">
@@ -62,37 +78,13 @@
     <Image Include="container2_specular.png">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="roadConcrete.png">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="roadCracked.jpg">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="roadLined.jpg">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="floortiles.jpg">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="redPlastic.jpg">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="woodenSurface.jpg">
-      <Filter>Resource Files</Filter>
-    </Image>
     <Image Include="designedTiles.jpg">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="brickwall2.jpg">
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="whitewall2.jpg">
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="palestine.jpg">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="woodenDoor.jpg">
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="woodCypress.jpg">
