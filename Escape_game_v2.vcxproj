@@ -160,7 +160,11 @@
     <Image Include="roadLined.jpg" />
     <Image Include="whitewall2.jpg" />
     <Image Include="woodCypress.jpg" />
+    <Image Include="woodenDoor.jpg" />
     <Image Include="woodenSurface.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="commented_out_parts.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

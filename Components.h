@@ -65,8 +65,8 @@ public:
 
 	void table(Shader& shader, bool withTexture, glm::mat4 alTogether = glm::mat4(1.0f))
 	{
-		float baseWidth = 0.8f;
-		float baseWidthz = 0.5f;
+		float baseWidth = 0.6f;
+		float baseWidthz = 0.4f;
 		float baseHeight = 0.05f;
 		float legWidth = 0.1f;
 
@@ -104,21 +104,21 @@ public:
 		else cube.drawCubeWithMaterialisticProperty(shader, this->amb, this->diff, this->spec, this->shininess, modelTogether);
 
 		// front-left
-		translate = glm::translate(identity, glm::vec3(0.0f, 0.0f, baseWidthz-legWidth*0.8f));
+		translate = glm::translate(identity, glm::vec3(0.0f, 0.0f, baseWidthz - legWidth * 0.4f));
 		model = translate * model;
 		modelTogether = alTogether * model;
 		if (withTexture) cube.drawCubeWithTexture(shader, dMap, sMap, this->shininess, modelTogether);
 		else cube.drawCubeWithMaterialisticProperty(shader, this->amb, this->diff, this->spec, this->shininess, modelTogether);
 
 		// front-right
-		translate = glm::translate(identity, glm::vec3(baseWidth-legWidth*0.8f, 0.0f, 0.0f));
+		translate = glm::translate(identity, glm::vec3(baseWidth-legWidth*0.6f, 0.0f, 0.0f));
 		model = translate * model;
 		modelTogether = alTogether * model;
 		if (withTexture) cube.drawCubeWithTexture(shader, dMap, sMap, this->shininess, modelTogether);
 		else cube.drawCubeWithMaterialisticProperty(shader, this->amb, this->diff, this->spec, this->shininess, modelTogether);
 
 		// back-right
-		translate = glm::translate(identity, glm::vec3(0.0f, 0.0f, -1.0f * baseWidthz + legWidth * 0.8f));
+		translate = glm::translate(identity, glm::vec3(0.0f, 0.0f, -1.0f * baseWidthz + legWidth * 0.4f));
 		model = translate * model;
 		modelTogether = alTogether * model;
 		if (withTexture) cube.drawCubeWithTexture(shader, dMap, sMap, this->shininess, modelTogether);
@@ -137,8 +137,8 @@ public:
 			this->sMap = loadTexture("woodenSurface.jpg");
 		}
 		else {
-			this->amb = glm::vec3(1.0f, 0.0f, 0.0f);
-			this->diff = glm::vec3(1.0f, 0.0f, 0.0f);
+			this->amb = glm::vec3(0.0f, 1.0f, 1.0f);
+			this->diff = glm::vec3(0.0f, 1.0f, 1.0f);
 			this->spec = glm::vec3(0.3, 0.3, 0.3);
 		}
 
@@ -197,11 +197,166 @@ public:
 		modelTogether = alTogether * model;
 		if (withTexture) cube.drawCubeWithTexture(shader, dMap, sMap, this->shininess, modelTogether);
 		else cube.drawCubeWithMaterialisticProperty(shader, this->amb, this->diff, this->spec, this->shininess, modelTogether);
-
-
-
 	}
 
+	void building01(Shader& shader, bool withTexture, glm::mat4 alTogether = glm::mat4(1.0f))
+	{
+		float height = 2.0f;
+		float widthx = 3.0f;
+		float widthz = 2.0f;
+
+		if (withTexture) {
+			this->dMap = loadTexture("whitewall2.jpg");
+			this->sMap = loadTexture("whitewall2.jpg");
+		}
+		else {
+			this->amb = glm::vec3(0.88f, 0.88f, 0.88f);
+			this->diff = glm::vec3(0.88f, 0.88f, 0.88f);
+			this->spec = glm::vec3(0.3, 0.3, 0.3);
+		}
+
+		shader.setBool("exposedToSun", true);
+
+		// outer shape		
+		model = identity;
+		scale = glm::scale(identity, glm::vec3(widthx, height, widthz));
+		model = scale * model;
+		modelTogether = alTogether * model;
+		if (withTexture) cube.drawCubeWithTexture(shader, dMap, sMap, this->shininess, modelTogether);
+		else cube.drawCubeWithMaterialisticProperty(shader, this->amb, this->diff, this->spec, this->shininess, modelTogether);
+
+		// door
+		if (withTexture) {
+			this->dMap = loadTexture("woodenDoor.jpg");
+			this->sMap = loadTexture("woodenDoor.jpg");
+		}
+		else {
+			this->amb = glm::vec3(0.43f, 0.33f, 0.26f);
+			this->diff = glm::vec3(0.43f, 0.33f, 0.26f);
+			this->spec = glm::vec3(0.3, 0.3, 0.3);
+		}
+		model = identity;
+		scale = glm::scale(identity, glm::vec3(0.5f, 0.8f, 0.02f));
+		translate = glm::translate(identity, glm::vec3(1.3f, 0.0f, 1.99f));
+		model = translate * scale * model;
+		modelTogether = alTogether * model;
+		if (withTexture) cube.drawCubeWithTexture(shader, dMap, sMap, this->shininess, modelTogether);
+		else cube.drawCubeWithMaterialisticProperty(shader, this->amb, this->diff, this->spec, this->shininess, modelTogether);
+		glm::mat4 model2 = model;
+		translate = glm::translate(identity, glm::vec3(0.0f, 0.0f, -2.01f));
+		model = translate * model;
+		modelTogether = alTogether * model;
+		if (withTexture) cube.drawCubeWithTexture(shader, dMap, sMap, this->shininess, modelTogether);
+		else cube.drawCubeWithMaterialisticProperty(shader, this->amb, this->diff, this->spec, this->shininess, modelTogether);
+
+		// front side wall windows
+		model = identity;
+		scale = glm::scale(identity, glm::vec3(0.5f, 0.5f, 0.02f));
+		translate = glm::translate(identity, glm::vec3(0.5f, 0.3f, 1.99f));
+		model = translate * scale * model;
+		modelTogether = alTogether * model;
+		if (withTexture) cube.drawCubeWithTexture(shader, dMap, sMap, this->shininess, modelTogether);
+		else cube.drawCubeWithMaterialisticProperty(shader, this->amb, this->diff, this->spec, this->shininess, modelTogether);
+		model2 = model;
+
+		translate = glm::translate(identity, glm::vec3(0.0f, 0.9f, 0.0f));
+		model = translate * model;
+		modelTogether = alTogether * model;
+		if (withTexture) cube.drawCubeWithTexture(shader, dMap, sMap, this->shininess, modelTogether);
+		else cube.drawCubeWithMaterialisticProperty(shader, this->amb, this->diff, this->spec, this->shininess, modelTogether);
+
+		translate = glm::translate(identity, glm::vec3(1.6f, 0.0f, 0.0f));
+		model = translate * model;
+		modelTogether = alTogether * model;
+		if (withTexture) cube.drawCubeWithTexture(shader, dMap, sMap, this->shininess, modelTogether);
+		else cube.drawCubeWithMaterialisticProperty(shader, this->amb, this->diff, this->spec, this->shininess, modelTogether);
+
+		translate = glm::translate(identity, glm::vec3(0.0f, -0.9f, 0.0f));
+		model = translate * model;
+		modelTogether = alTogether * model;
+		if (withTexture) cube.drawCubeWithTexture(shader, dMap, sMap, this->shininess, modelTogether);
+		else cube.drawCubeWithMaterialisticProperty(shader, this->amb, this->diff, this->spec, this->shininess, modelTogether);
+
+		// back side wall windows
+		model = model2;		
+		translate = glm::translate(identity, glm::vec3(0.0f, 0.0f, -2.01f));
+		model = translate * model;
+		modelTogether = alTogether * model;
+		if (withTexture) cube.drawCubeWithTexture(shader, dMap, sMap, this->shininess, modelTogether);
+		else cube.drawCubeWithMaterialisticProperty(shader, this->amb, this->diff, this->spec, this->shininess, modelTogether);		
+
+		translate = glm::translate(identity, glm::vec3(0.0f, 0.9f, 0.0f));
+		model = translate * model;
+		modelTogether = alTogether * model;
+		if (withTexture) cube.drawCubeWithTexture(shader, dMap, sMap, this->shininess, modelTogether);
+		else cube.drawCubeWithMaterialisticProperty(shader, this->amb, this->diff, this->spec, this->shininess, modelTogether);
+
+		translate = glm::translate(identity, glm::vec3(1.6f, 0.0f, 0.0f));
+		model = translate * model;
+		modelTogether = alTogether * model;
+		if (withTexture) cube.drawCubeWithTexture(shader, dMap, sMap, this->shininess, modelTogether);
+		else cube.drawCubeWithMaterialisticProperty(shader, this->amb, this->diff, this->spec, this->shininess, modelTogether);
+
+		translate = glm::translate(identity, glm::vec3(0.0f, -0.9f, 0.0f));
+		model = translate * model;
+		modelTogether = alTogether * model;
+		if (withTexture) cube.drawCubeWithTexture(shader, dMap, sMap, this->shininess, modelTogether);
+		else cube.drawCubeWithMaterialisticProperty(shader, this->amb, this->diff, this->spec, this->shininess, modelTogether);
+
+		// nearside wall windows
+		model = identity;
+		scale = glm::scale(identity, glm::vec3(0.02f, 0.5f, 0.5f));
+		translate = glm::translate(identity, glm::vec3(3.0f, 0.3f, 0.2f));
+		model = translate * scale * model;
+		modelTogether = alTogether * model;
+		if (withTexture) cube.drawCubeWithTexture(shader, dMap, sMap, this->shininess, modelTogether);
+		else cube.drawCubeWithMaterialisticProperty(shader, this->amb, this->diff, this->spec, this->shininess, modelTogether);
+		model2 = model;
+
+		translate = glm::translate(identity, glm::vec3(0.0f, 0.9f, 0.0f));
+		model = translate * model;
+		modelTogether = alTogether * model;
+		if (withTexture) cube.drawCubeWithTexture(shader, dMap, sMap, this->shininess, modelTogether);
+		else cube.drawCubeWithMaterialisticProperty(shader, this->amb, this->diff, this->spec, this->shininess, modelTogether);
+
+		translate = glm::translate(identity, glm::vec3(0.0f, 0.0f, 1.1f));
+		model = translate * model;
+		modelTogether = alTogether * model;
+		if (withTexture) cube.drawCubeWithTexture(shader, dMap, sMap, this->shininess, modelTogether);
+		else cube.drawCubeWithMaterialisticProperty(shader, this->amb, this->diff, this->spec, this->shininess, modelTogether);
+
+		translate = glm::translate(identity, glm::vec3(0.0f, -0.9f, 0.0f));
+		model = translate * model;
+		modelTogether = alTogether * model;
+		if (withTexture) cube.drawCubeWithTexture(shader, dMap, sMap, this->shininess, modelTogether);
+		else cube.drawCubeWithMaterialisticProperty(shader, this->amb, this->diff, this->spec, this->shininess, modelTogether);
+
+		// farside wall windows		
+		translate = glm::translate(identity, glm::vec3(-3.01f, 0.0f, 0.0f));
+		model = translate * model2;
+		modelTogether = alTogether * model;
+		if (withTexture) cube.drawCubeWithTexture(shader, dMap, sMap, this->shininess, modelTogether);
+		else cube.drawCubeWithMaterialisticProperty(shader, this->amb, this->diff, this->spec, this->shininess, modelTogether);
+
+		translate = glm::translate(identity, glm::vec3(0.0f, 0.9f, 0.0f));
+		model = translate * model;
+		modelTogether = alTogether * model;
+		if (withTexture) cube.drawCubeWithTexture(shader, dMap, sMap, this->shininess, modelTogether);
+		else cube.drawCubeWithMaterialisticProperty(shader, this->amb, this->diff, this->spec, this->shininess, modelTogether);
+
+		translate = glm::translate(identity, glm::vec3(0.0f, 0.0f, 1.1f));
+		model = translate * model;
+		modelTogether = alTogether * model;
+		if (withTexture) cube.drawCubeWithTexture(shader, dMap, sMap, this->shininess, modelTogether);
+		else cube.drawCubeWithMaterialisticProperty(shader, this->amb, this->diff, this->spec, this->shininess, modelTogether);
+
+		translate = glm::translate(identity, glm::vec3(0.0f, -0.9f, 0.0f));
+		model = translate * model;
+		modelTogether = alTogether * model;
+		if (withTexture) cube.drawCubeWithTexture(shader, dMap, sMap, this->shininess, modelTogether);
+		else cube.drawCubeWithMaterialisticProperty(shader, this->amb, this->diff, this->spec, this->shininess, modelTogether);
+
+	}
 };
 
 

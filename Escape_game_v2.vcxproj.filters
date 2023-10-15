@@ -90,5 +90,13 @@
     <Image Include="woodCypress.jpg">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="woodenDoor.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="commented_out_parts.txt">
+      <Filter>Source Files</Filter>
+    </Text>
   </ItemGroup>
 </Project>
