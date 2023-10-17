@@ -64,6 +64,9 @@
     <None Include="vsSrcPrimary.vs">
       <Filter>Source Files</Filter>
     </None>
+    <None Include="fsSrcBoth.fs">
+      <Filter>Source Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Image Include="roadLined.jpg">

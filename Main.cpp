@@ -89,7 +89,7 @@ int main()
 
 	Shader shaderMP("vsSrc.vs", "fsSrcMatProp.fs");
 	Shader shaderTex("vsSrc.vs", "fsSrcTex.fs");
-	Shader shader("vsSrc.vs", "fsSrcTex.fs");
+	Shader shader("vsSrc.vs", "fsSrcBoth.fs");
 	Shader lightCubeShader("lightCube.vs", "lightCube.fs");
 
 	glEnable(GL_DEPTH_TEST);
@@ -202,10 +202,14 @@ int main()
 		/*component.table(shaderTex, true); 
 		component.chair(shaderTex, true, glm::translate(identity, glm::vec3(0.18f, 0.025f, -0.05f)) * revolve);*/
 		//component.building01(shaderTex, true, glm::translate(identity, glm::vec3(-2.0f, 0.0f, -3.0f)) * revolve);
+		//component.door_tex(shaderTex, glm::translate(identity, glm::vec3(2.5f, 0.0f, -3.0f))* revolve);
 		shaderMP.use();
 		/*component.table(shaderMP, false, glm::translate(identity, glm::vec3(2.0f, 0.0f, 0.0f)) * revolve);
 		component.chair(shaderMP, false, glm::translate(identity, glm::vec3(2.15f, 0.025f, -0.05f)) * revolve);*/
-		component.building01(shaderMP, false, glm::translate(identity, glm::vec3(-1.5f, 0.0f, -3.0f)) * revolve); 
+		// component.building_notex(shaderMP, false, glm::translate(identity, glm::vec3(-1.5f, 0.0f, -3.0f)) * revolve); 
+		component.bench(shaderMP, glm::translate(identity, glm::vec3(0.0f, 0.0f, 0.0f))* revolve);
+		/*shader.use();
+		component.building_texdoor(shader, glm::translate(identity, glm::vec3(-1.5f, 0.0f, -3.0f))* revolve);*/
 
 
 		glfwSwapBuffers(window);

@@ -71,6 +71,28 @@ public:
         glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
     }
 
+    void drawCubeWithTextureV2(Shader& lightingShaderWithTexture, unsigned int dMap, unsigned int sMap, float shin, glm::mat4 model = glm::mat4(1.0f))
+    {
+        lightingShaderWithTexture.use();
+        lightingShaderWithTexture.setBool("withTexture", true);
+
+        lightingShaderWithTexture.setInt("materialtex.diffuseTex", 0);
+        lightingShaderWithTexture.setInt("materialtex.specularTex", 1);
+        lightingShaderWithTexture.setFloat("materialtex.shininess", shin);
+
+        // bind diffuse map
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, dMap);
+        // bind specular map
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, sMap);
+
+        lightingShaderWithTexture.setMat4("model", model);
+
+        glBindVertexArray(lightTexCubeVAO);
+        glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+    }
+
     void drawCube(Shader& shader, glm::mat4 model = glm::mat4(1.0f), float r = 1.0f, float g = 1.0f, float b = 1.0f)
     {
         shader.use();
