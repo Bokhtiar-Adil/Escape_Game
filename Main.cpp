@@ -12,6 +12,7 @@
 #include "shader.h"
 #include "camera.h"
 #include "Components.h"
+#include "World.h"
 
 using namespace std;
 
