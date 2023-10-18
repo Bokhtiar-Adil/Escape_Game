@@ -21,12 +21,9 @@ private:
 
 	Cube cube = Cube();
 
-public:
-
-	Components()
-	{
-		identity = glm::mat4(1.0f);
-	}
+	unsigned int cylinderVAO;
+	unsigned int cylinderVBO;
+	unsigned int cylinderEBO;
 
 	unsigned int loadTexture(char const* path)
 	{
@@ -64,6 +61,87 @@ public:
 
 		return textureID;
 	}
+
+	void setupCylinder(Shader& shader, glm::vec3 amb, glm::vec3 diff, glm::vec3 spec, float shin, glm::mat4 model = glm::mat4(1.0f), bool withTexture = false)
+	{
+		float cylinder_vertices[] = {
+			// positions      // normals
+			0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f,
+			1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f,
+			1.0f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f,
+
+			0.0f, 0.0f, -1.0f, 0.0f, 0.0f, -1.0f,
+			1.0f, 0.0f, -1.0f, 0.0f, 0.0f, -1.0f,
+			1.0f, 0.5f, -1.0f, 0.0f, 0.0f, -1.0f,
+
+			0.0f, 0.0f, 0.0f, 0.0f, -1.0f, 0.0f,
+			1.0f, 0.0f, 0.0f, 0.0f, -1.0f, 0.0f,
+			1.0f, 0.0f, -1.0f, 0.0f, -1.0f, 0.0f,
+			0.0f, 0.0f, -1.0f, 0.0f, -1.0f, 0.0f,
+
+			1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
+			1.0f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f,
+			1.0f, 0.5f, -1.0f, 1.0f, 0.0f, 0.0f,
+			1.0f, 0.5f, -1.0f, 1.0f, 0.0f, 0.0f,
+
+		};
+		unsigned int cylinder_indices[] = {
+			0,1,2,
+
+			3,4,5,
+			
+			6,7,8,
+			6,8,9,
+
+			10,11,12,
+			10,12,13,
+		};
+
+		glGenVertexArrays(1, &cylinderVAO);
+		glGenBuffers(1, &cylinderVBO);
+		glGenBuffers(1, &cylinderEBO);
+
+
+		glBindVertexArray(cylinderVAO);
+
+		glBindBuffer(GL_ARRAY_BUFFER, cylinderVBO);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(cylinder_vertices), cylinder_vertices, GL_STATIC_DRAW);
+
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, cylinderEBO);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(cylinder_indices), cylinder_indices, GL_STATIC_DRAW);
+
+		// position attribute
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+		glEnableVertexAttribArray(0);
+
+		// vertex normal attribute
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)12);
+		glEnableVertexAttribArray(1);
+
+
+	}
+
+	void drawCylinder(Shader& shader, glm::vec3 amb, glm::vec3 diff, glm::vec3 spec, float shin, glm::mat4 model = glm::mat4(1.0f))
+	{
+		shader.use();
+
+		shader.setVec3("material.ambient", amb);
+		shader.setVec3("material.diffuse", diff);
+		shader.setVec3("material.specular", spec);
+		shader.setFloat("material.shininess", shin);
+
+		shader.setMat4("model", model);
+
+		glBindVertexArray(cylinderVAO);
+		glDrawElements(GL_TRIANGLES, 18, GL_UNSIGNED_INT, 0);
+	}
+
+public:
+
+	Components()
+	{
+		identity = glm::mat4(1.0f);
+	}	
 
 	void table(Shader& shader, bool withTexture, glm::mat4 alTogether = glm::mat4(1.0f))
 	{
@@ -576,37 +654,37 @@ public:
 
 	}
 
-	void box(Shader& shader, bool withTexture, glm::mat4 alTogether = glm::mat4(1.0f))
-	{
-		float boxWidth = 0.5f;
-		float boxHeight = 0.5f; 
-	
-		if (withTexture) {
-			this->dMap = loadTexture("container2.png");
-			this->sMap = loadTexture("container2_specular.png");
-		}
-		else {
-			this->amb = glm::vec3(0.88f, 0.88f, 0.88f);
-			this->diff = glm::vec3(0.88f, 0.88f, 0.88f);
-			this->spec = glm::vec3(0.3, 0.3, 0.3);
-		}
+	//void box(Shader& shader, bool withTexture, glm::mat4 alTogether = glm::mat4(1.0f))
+	//{
+	//	float boxWidth = 0.5f;
+	//	float boxHeight = 0.5f; 
+	//
+	//	if (withTexture) {
+	//		this->dMap = loadTexture("container2.png");
+	//		this->sMap = loadTexture("container2_specular.png");
+	//	}
+	//	else {
+	//		this->amb = glm::vec3(0.88f, 0.88f, 0.88f);
+	//		this->diff = glm::vec3(0.88f, 0.88f, 0.88f);
+	//		this->spec = glm::vec3(0.3, 0.3, 0.3);
+	//	}
 
-		shader.setBool("exposedToSun", true);
-		unsigned int diffuseMap = loadTexture("container2.png");
-		unsigned int specularMap = loadTexture("container2_specular.png");
-		shader.setInt("materialtex.diffuse", 0);
-		shader.setInt("materialtex.specular", 1);
-		shader.setFloat("materialtex.shininess", 32.0f);
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, diffuseMap);
-		glActiveTexture(GL_TEXTURE1);
-		glBindTexture(GL_TEXTURE_2D, specularMap);
-	
-		scale = glm::scale(identity, glm::vec3(boxWidth, boxHeight, boxWidth));
-		//translate = glm::translate(identity, glm::vec3(0.5f, 0.5f, 0.0f));
-		model = alTogether * scale * offset;
-		drawCube(VAO, shader, model);
-	}
+	//	shader.setBool("exposedToSun", true);
+	//	unsigned int diffuseMap = loadTexture("container2.png");
+	//	unsigned int specularMap = loadTexture("container2_specular.png");
+	//	shader.setInt("materialtex.diffuse", 0);
+	//	shader.setInt("materialtex.specular", 1);
+	//	shader.setFloat("materialtex.shininess", 32.0f);
+	//	glActiveTexture(GL_TEXTURE0);
+	//	glBindTexture(GL_TEXTURE_2D, diffuseMap);
+	//	glActiveTexture(GL_TEXTURE1);
+	//	glBindTexture(GL_TEXTURE_2D, specularMap);
+	//
+	//	scale = glm::scale(identity, glm::vec3(boxWidth, boxHeight, boxWidth));
+	//	//translate = glm::translate(identity, glm::vec3(0.5f, 0.5f, 0.0f));
+	//	model = alTogether * scale * offset;
+	//	drawCube(VAO, shader, model);
+	//}
 
 
 };
