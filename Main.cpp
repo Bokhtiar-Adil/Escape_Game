@@ -208,7 +208,8 @@ int main()
 		/*component.table(shaderMP, false, glm::translate(identity, glm::vec3(2.0f, 0.0f, 0.0f)) * revolve);
 		component.chair(shaderMP, false, glm::translate(identity, glm::vec3(2.15f, 0.025f, -0.05f)) * revolve);*/
 		// component.building_notex(shaderMP, false, glm::translate(identity, glm::vec3(-1.5f, 0.0f, -3.0f)) * revolve); 
-		component.bench(shaderMP, glm::translate(identity, glm::vec3(0.0f, 0.0f, 0.0f))* revolve);
+		//component.bench(shaderMP, glm::translate(identity, glm::vec3(0.0f, 0.0f, 0.0f))* revolve);
+		component.car(shaderMP, false, glm::translate(identity, glm::vec3(0.0f, 0.0f, 0.0f))* revolve);
 		/*shader.use();
 		component.building_texdoor(shader, glm::translate(identity, glm::vec3(-1.5f, 0.0f, -3.0f))* revolve);*/
 

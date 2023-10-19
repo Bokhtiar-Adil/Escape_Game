@@ -62,17 +62,20 @@ private:
 		return textureID;
 	}
 
-	void setupCylinder(Shader& shader, glm::vec3 amb, glm::vec3 diff, glm::vec3 spec, float shin, glm::mat4 model = glm::mat4(1.0f), bool withTexture = false)
+	void setupCylinder(float theta = 45.0f)
 	{
+		float yVal = glm::sin(glm::radians(theta));
+		float xVal = glm::cos(glm::radians(theta));
+
 		float cylinder_vertices[] = {
 			// positions      // normals
 			0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f,
 			1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f,
-			1.0f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f,
+			xVal, yVal, 0.0f, 0.0f, 0.0f, 1.0f, 
 
 			0.0f, 0.0f, -1.0f, 0.0f, 0.0f, -1.0f,
 			1.0f, 0.0f, -1.0f, 0.0f, 0.0f, -1.0f,
-			1.0f, 0.5f, -1.0f, 0.0f, 0.0f, -1.0f,
+			xVal, yVal, -1.0f, 0.0f, 0.0f, -1.0f, 
 
 			0.0f, 0.0f, 0.0f, 0.0f, -1.0f, 0.0f,
 			1.0f, 0.0f, 0.0f, 0.0f, -1.0f, 0.0f,
@@ -80,9 +83,9 @@ private:
 			0.0f, 0.0f, -1.0f, 0.0f, -1.0f, 0.0f,
 
 			1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
-			1.0f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f,
-			1.0f, 0.5f, -1.0f, 1.0f, 0.0f, 0.0f,
-			1.0f, 0.5f, -1.0f, 1.0f, 0.0f, 0.0f,
+			xVal, yVal, 0.0f, 1.0f, 0.0f, 0.0f, 
+			xVal, yVal, -1.0f, 1.0f, 0.0f, 0.0f, 
+			1.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f,
 
 		};
 		unsigned int cylinder_indices[] = {
@@ -121,19 +124,33 @@ private:
 
 	}
 
-	void drawCylinder(Shader& shader, glm::vec3 amb, glm::vec3 diff, glm::vec3 spec, float shin, glm::mat4 model = glm::mat4(1.0f))
+	void drawCylinder(Shader& shader, glm::mat4 alTogether = glm::mat4(1.0f), float theta = 45.0f)
 	{
 		shader.use();
 
-		shader.setVec3("material.ambient", amb);
-		shader.setVec3("material.diffuse", diff);
-		shader.setVec3("material.specular", spec);
-		shader.setFloat("material.shininess", shin);
+		this->amb = glm::vec3(1.0f, 0.0f, 0.0f);
+		this->diff = glm::vec3(1.0f, 0.0f, 0.0f);
+		this->spec = glm::vec3(0.3, 0.3, 0.3);
 
-		shader.setMat4("model", model);
+		shader.setVec3("material.ambient", this->amb);
+		shader.setVec3("material.diffuse", this->diff);
+		shader.setVec3("material.specular", this->spec);
+		shader.setFloat("material.shininess", this->shininess);
+		shader.setBool("exposedToSun", true);
 
-		glBindVertexArray(cylinderVAO);
-		glDrawElements(GL_TRIANGLES, 18, GL_UNSIGNED_INT, 0);
+		rotate = glm::rotate(identity, glm::radians(theta), glm::vec3(0.0f, 0.0f, 1.0f));
+		model = glm::mat4(1.0f);
+		int portions = (int)(360 / theta);
+		for (int i = 0; i < portions; i++) {		
+			modelTogether = alTogether * model;
+			shader.setMat4("model", modelTogether);
+
+			glBindVertexArray(cylinderVAO);
+			glDrawElements(GL_TRIANGLES, 18, GL_UNSIGNED_INT, 0);
+
+			model = rotate * model;
+		}
+		
 	}
 
 public:
@@ -651,7 +668,9 @@ public:
 
 	void car(Shader& shader, bool withTexture, glm::mat4 alTogether = glm::mat4(1.0f))
 	{
-
+		float theta = 11.25f;
+		setupCylinder(theta);
+		drawCylinder(shader, alTogether, theta);
 	}
 
 	//void box(Shader& shader, bool withTexture, glm::mat4 alTogether = glm::mat4(1.0f))
