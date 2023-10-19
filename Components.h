@@ -150,6 +150,9 @@ private:
 
 			model = rotate * model;
 		}
+		glDeleteVertexArrays(1, &cylinderVAO); 
+		glDeleteBuffers(1, &cylinderVBO); 
+		glDeleteBuffers(1, &cylinderEBO);
 		
 	}
 
@@ -668,42 +671,142 @@ public:
 
 	void car(Shader& shader, bool withTexture, glm::mat4 alTogether = glm::mat4(1.0f))
 	{
-		float theta = 11.25f;
+		float baseWidth = 1.2f; 
+		float baseLength = 2.0f; 
+		float baseHeight = 0.2f; 
+		float theta = 22.5f;
+
+		shader.setBool("exposedToSun", true);
+
+		this->amb = glm::vec3(0.0f, 1.0f, 0.0f);
+		this->diff = glm::vec3(0.0f, 1.0f, 0.0f);
+		this->spec = glm::vec3(0.3, 0.3, 0.3);
+
+		// base
+		
+		model = identity;
+		scale = glm::scale(identity, glm::vec3(baseLength, baseHeight, baseWidth));
+		model = scale * model;
+		modelTogether = alTogether * model;
+		cube.drawCubeWithMaterialisticProperty(shader, this->amb, this->diff, this->spec, this->shininess, modelTogether);		
+
+		// sides
+
+		this->amb = glm::vec3(1.0f, 1.0f, 1.0f);
+		this->diff = glm::vec3(1.0f, 1.0f, 1.0f);
+		this->spec = glm::vec3(0.3, 0.3, 0.3);
+
+		scale = glm::scale(identity, glm::vec3(0.05f, 1.2f, 1.0f));
+		translate = glm::translate(identity, glm::vec3(0.5f, 0.20f, 0.0f));
+		model = translate * scale * model;
+		modelTogether = alTogether * model;
+		cube.drawCubeWithMaterialisticProperty(shader, this->amb, this->diff, this->spec, this->shininess, modelTogether);
+
+		translate = glm::translate(identity, glm::vec3(1.4f, 0.0f, 0.0f));
+		model = translate * model;
+		modelTogether = alTogether * model;
+		cube.drawCubeWithMaterialisticProperty(shader, this->amb, this->diff, this->spec, this->shininess, modelTogether);
+
+		rotate = glm::rotate(identity, glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+		translate = glm::translate(identity, glm::vec3(0.5f, -0.01f, 2.0f));
+		scale = glm::scale(identity, glm::vec3(1.2f, 1.0f, 1.0f));
+		model = translate * scale * rotate * model;
+		modelTogether = alTogether * model;
+		cube.drawCubeWithMaterialisticProperty(shader, this->amb, this->diff, this->spec, this->shininess, modelTogether);
+
+		translate = glm::translate(identity, glm::vec3(0.0f, 0.0f, 1.1f));
+		model = translate * model;
+		modelTogether = alTogether * model;
+		cube.drawCubeWithMaterialisticProperty(shader, this->amb, this->diff, this->spec, this->shininess, modelTogether);
+
+		rotate = glm::rotate(identity, glm::radians(-90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+		translate = glm::translate(identity, glm::vec3(1.7f, 0.0f, -0.6f));
+		model = translate * rotate * model;
+		modelTogether = alTogether * model;
+		cube.drawCubeWithMaterialisticProperty(shader, this->amb, this->diff, this->spec, this->shininess, modelTogether);
+
+		// seats
+		scale = glm::scale(identity, glm::vec3(0.4f, 0.6f, 0.5f));
+		rotate = glm::rotate(identity, glm::radians(-90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+		translate = glm::translate(identity, glm::vec3(1.1f, 0.3f, 0.6f));
+		glm::mat4 seats = translate * rotate * scale;
+		glm::mat4 seatsTogether = alTogether * seats;
+		bench(shader, seatsTogether);
+
+		translate = glm::translate(identity, glm::vec3(0.0f, 0.0f, -0.4f));
+		seats = translate * seats;
+		seatsTogether = alTogether * seats;
+		bench(shader, seatsTogether);
+
+		translate = glm::translate(identity, glm::vec3(0.5f, 0.0f, 0.0f));
+		seats = translate * seats;
+		seatsTogether = alTogether * seats;
+		bench(shader, seatsTogether);
+
+		translate = glm::translate(identity, glm::vec3(0.0f, 0.0f, 0.4f));
+		seats = translate * seats;
+		seatsTogether = alTogether * seats;
+		bench(shader, seatsTogether);
+
+		// tires
+		glm::mat4 tires = glm::scale(identity, glm::vec3(0.3f, 0.3f, 0.2f));
+		translate = glm::translate(identity, glm::vec3(0.5f, 0.0f, 1.4f));
+		tires = translate * tires;
+		glm::mat4 tiresTogether = alTogether * tires;
 		setupCylinder(theta);
-		drawCylinder(shader, alTogether, theta);
+		drawCylinder(shader, tiresTogether, theta);
+
+		translate = glm::translate(identity, glm::vec3(1.4f, 0.0f, 0.0f));
+		tires = translate * tires;
+		tiresTogether = alTogether * tires;
+		setupCylinder(theta);
+		drawCylinder(shader, tiresTogether, theta);
+
+		translate = glm::translate(identity, glm::vec3(0.0f, 0.0f, -1.4f));
+		tires = translate * tires;
+		tiresTogether = alTogether * tires; 
+		setupCylinder(theta);
+		drawCylinder(shader, tiresTogether, theta);
+
+		translate = glm::translate(identity, glm::vec3(-1.4f, 0.0f, 0.0f));
+		tires = translate * tires;
+		tiresTogether = alTogether * tires; 
+		setupCylinder(theta);
+		drawCylinder(shader, tiresTogether, theta);
+		
 	}
 
-	//void box(Shader& shader, bool withTexture, glm::mat4 alTogether = glm::mat4(1.0f))
-	//{
-	//	float boxWidth = 0.5f;
-	//	float boxHeight = 0.5f; 
-	//
-	//	if (withTexture) {
-	//		this->dMap = loadTexture("container2.png");
-	//		this->sMap = loadTexture("container2_specular.png");
-	//	}
-	//	else {
-	//		this->amb = glm::vec3(0.88f, 0.88f, 0.88f);
-	//		this->diff = glm::vec3(0.88f, 0.88f, 0.88f);
-	//		this->spec = glm::vec3(0.3, 0.3, 0.3);
-	//	}
+	void box(Shader& shader, bool withTexture, glm::mat4 alTogether = glm::mat4(1.0f))
+	{
+			//	float boxWidth = 0.5f;
+		//	float boxHeight = 0.5f; 
+		//
+		//	if (withTexture) {
+		//		this->dMap = loadTexture("container2.png");
+		//		this->sMap = loadTexture("container2_specular.png");
+		//	}
+		//	else {
+		//		this->amb = glm::vec3(0.88f, 0.88f, 0.88f);
+		//		this->diff = glm::vec3(0.88f, 0.88f, 0.88f);
+		//		this->spec = glm::vec3(0.3, 0.3, 0.3);
+		//	}
 
-	//	shader.setBool("exposedToSun", true);
-	//	unsigned int diffuseMap = loadTexture("container2.png");
-	//	unsigned int specularMap = loadTexture("container2_specular.png");
-	//	shader.setInt("materialtex.diffuse", 0);
-	//	shader.setInt("materialtex.specular", 1);
-	//	shader.setFloat("materialtex.shininess", 32.0f);
-	//	glActiveTexture(GL_TEXTURE0);
-	//	glBindTexture(GL_TEXTURE_2D, diffuseMap);
-	//	glActiveTexture(GL_TEXTURE1);
-	//	glBindTexture(GL_TEXTURE_2D, specularMap);
-	//
-	//	scale = glm::scale(identity, glm::vec3(boxWidth, boxHeight, boxWidth));
-	//	//translate = glm::translate(identity, glm::vec3(0.5f, 0.5f, 0.0f));
-	//	model = alTogether * scale * offset;
-	//	drawCube(VAO, shader, model);
-	//}
+		//	shader.setBool("exposedToSun", true);
+		//	unsigned int diffuseMap = loadTexture("container2.png");
+		//	unsigned int specularMap = loadTexture("container2_specular.png");
+		//	shader.setInt("materialtex.diffuse", 0);
+		//	shader.setInt("materialtex.specular", 1);
+		//	shader.setFloat("materialtex.shininess", 32.0f);
+		//	glActiveTexture(GL_TEXTURE0);
+		//	glBindTexture(GL_TEXTURE_2D, diffuseMap);
+		//	glActiveTexture(GL_TEXTURE1);
+		//	glBindTexture(GL_TEXTURE_2D, specularMap);
+		//
+		//	scale = glm::scale(identity, glm::vec3(boxWidth, boxHeight, boxWidth));
+		//	//translate = glm::translate(identity, glm::vec3(0.5f, 0.5f, 0.0f));
+		//	model = alTogether * scale * offset;
+		//	drawCube(VAO, shader, model);
+	}
 
 
 };
