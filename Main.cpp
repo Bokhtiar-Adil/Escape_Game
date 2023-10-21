@@ -199,17 +199,20 @@ int main()
 		glm::mat4 rotateYMatrix = glm::rotate(identity, glm::radians(rotate_obj_y), glm::vec3(0.0f, 1.0f, 0.0f));
 		glm::mat4 rotateZMatrix = glm::rotate(identity, glm::radians(rotate_obj_z), glm::vec3(0.0f, 0.0f, 1.0f));
 		glm::mat4 revolve = rotateZMatrix * rotateYMatrix * rotateXMatrix; 
-		shaderTex.use();
+		//shaderTex.use();
 		/*component.table(shaderTex, true); 
 		component.chair(shaderTex, true, glm::translate(identity, glm::vec3(0.18f, 0.025f, -0.05f)) * revolve);*/
 		//component.building01(shaderTex, true, glm::translate(identity, glm::vec3(-2.0f, 0.0f, -3.0f)) * revolve);
 		//component.door_tex(shaderTex, glm::translate(identity, glm::vec3(2.5f, 0.0f, -3.0f))* revolve);
+		//component.box(shaderTex, true, glm::translate(identity, glm::vec3(0.0f, 0.0f, -1.0f))* revolve); 
 		shaderMP.use();
+		//component.box(shaderMP, false, glm::translate(identity, glm::vec3(1.0f, 0.0f, -1.0f))* revolve);
+		component.truck(shaderMP, glm::translate(identity, glm::vec3(0.0f, 0.0f, -3.0f))* revolve);
 		/*component.table(shaderMP, false, glm::translate(identity, glm::vec3(2.0f, 0.0f, 0.0f)) * revolve);
 		component.chair(shaderMP, false, glm::translate(identity, glm::vec3(2.15f, 0.025f, -0.05f)) * revolve);*/
 		// component.building_notex(shaderMP, false, glm::translate(identity, glm::vec3(-1.5f, 0.0f, -3.0f)) * revolve); 
 		//component.bench(shaderMP, glm::translate(identity, glm::vec3(0.0f, 0.0f, 0.0f))* revolve);
-		component.car(shaderMP, false, glm::translate(identity, glm::vec3(0.0f, 0.0f, 0.0f))* revolve);
+		component.car(shaderMP, glm::translate(identity, glm::vec3(3.0f, 0.0f, -3.0f)) * glm::scale(identity, glm::vec3(0.5f, 0.5f, 0.5f)) * revolve);
 		/*shader.use();
 		component.building_texdoor(shader, glm::translate(identity, glm::vec3(-1.5f, 0.0f, -3.0f))* revolve);*/
 
