@@ -25,16 +25,20 @@ private:
 	unsigned int cylinderVBO;
 	unsigned int cylinderEBO;
 
+	float xVal, yVal, baseWidth, baseWidthz, baseHeight, legWidth, height, widthx, widthz, boxWidth, boxHeight, baseLength, theta;
+	int widthtex, heighttex, nrComponents;
+	unsigned int textureID;
+	unsigned char* data;
+	GLenum format;
+
 	unsigned int loadTexture(char const* path)
 	{
-		unsigned int textureID;
 		glGenTextures(1, &textureID);
 
-		int width, height, nrComponents;
-		unsigned char* data = stbi_load(path, &width, &height, &nrComponents, 0);
+		data = stbi_load(path, &widthtex, &heighttex, &nrComponents, 0);
 		if (data)
 		{
-			GLenum format;
+			
 			if (nrComponents == 1)
 				format = GL_RED;
 			else if (nrComponents == 3)
@@ -43,7 +47,7 @@ private:
 				format = GL_RGBA;
 
 			glBindTexture(GL_TEXTURE_2D, textureID);
-			glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+			glTexImage2D(GL_TEXTURE_2D, 0, format, widthtex, heighttex, 0, format, GL_UNSIGNED_BYTE, data);
 			glGenerateMipmap(GL_TEXTURE_2D);
 
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -64,8 +68,8 @@ private:
 
 	void setupCylinder(float theta = 45.0f)
 	{
-		float yVal = glm::sin(glm::radians(theta));
-		float xVal = glm::cos(glm::radians(theta));
+		yVal = glm::sin(glm::radians(theta));
+		xVal = glm::cos(glm::radians(theta));
 
 		float cylinder_vertices[] = {
 			// positions      // normals
@@ -166,10 +170,10 @@ public:
 
 	void table(Shader& shader, bool withTexture, glm::mat4 alTogether = glm::mat4(1.0f))
 	{
-		float baseWidth = 0.6f;
-		float baseWidthz = 0.4f;
-		float baseHeight = 0.05f;
-		float legWidth = 0.1f;
+		baseWidth = 0.6f;
+		baseWidthz = 0.4f;
+		baseHeight = 0.05f;
+		legWidth = 0.1f;
 
 		if (withTexture) {
 			this->dMap = loadTexture("woodenSurface.jpg");
@@ -229,9 +233,9 @@ public:
 
 	void chair(Shader& shader, bool withTexture, glm::mat4 alTogether = glm::mat4(1.0f))
 	{
-		float baseWidth = 0.25f;
-		float baseHeight = 0.05f;
-		float legWidth = 0.05f;
+		baseWidth = 0.25f;
+		baseHeight = 0.05f;
+		legWidth = 0.05f;
 		
 		if (withTexture) {
 			this->dMap = loadTexture("woodenSurface.jpg");
@@ -302,9 +306,9 @@ public:
 
 	void building_notex(Shader& shader, bool withTexture, glm::mat4 alTogether = glm::mat4(1.0f))
 	{
-		float height = 2.0f;
-		float widthx = 3.0f;
-		float widthz = 2.0f;
+		height = 2.0f;
+		widthx = 3.0f;
+		widthz = 2.0f;
 
 		if (withTexture) {
 			this->dMap = loadTexture("whitewall2.jpg");
@@ -461,9 +465,9 @@ public:
 
 	void building_texdoor(Shader& shader, glm::mat4 alTogether = glm::mat4(1.0f))
 	{
-		float height = 2.0f;
-		float widthx = 3.0f;
-		float widthz = 2.0f;
+		height = 2.0f;
+		widthx = 3.0f;
+		widthz = 2.0f;
 
 		shader.setBool("withTexture", false);
 		this->amb = glm::vec3(0.88f, 0.88f, 0.88f);
@@ -609,10 +613,10 @@ public:
 
 	void bench(Shader& shader, glm::mat4 alTogether = glm::mat4(1.0f))
 	{
-		float baseWidth = 1.0f;
-		float baseWidthz = 0.4f;
-		float baseHeight = 0.05f;
-		float legWidth = 0.1f;
+		baseWidth = 1.0f;
+		baseWidthz = 0.4f;
+		baseHeight = 0.05f;
+		legWidth = 0.1f;
 
 		this->amb = glm::vec3(1.0f, 0.0f, 0.0f);
 		this->diff = glm::vec3(1.0f, 0.0f, 0.0f);
@@ -672,8 +676,8 @@ public:
 
 	void box(Shader& shader, bool withTexture, glm::mat4 alTogether = glm::mat4(1.0f))
 	{
-		float boxWidth = 0.5f;
-		float boxHeight = 0.5f;
+		boxWidth = 0.5f;
+		boxHeight = 0.5f;
 
 		if (withTexture) {
 			this->dMap = loadTexture("container2.png");
@@ -696,10 +700,10 @@ public:
 
 	void car(Shader& shader, glm::mat4 alTogether = glm::mat4(1.0f))
 	{
-		float baseWidth = 1.2f; 
-		float baseLength = 2.0f; 
-		float baseHeight = 0.2f; 
-		float theta = 22.5f;
+		baseWidth = 1.2f; 
+		baseLength = 2.0f; 
+		baseHeight = 0.2f; 
+		theta = 22.5f;
 
 		shader.setBool("exposedToSun", true);
 
@@ -818,10 +822,10 @@ public:
 
 	void truck(Shader& shader, glm::mat4 alTogether = glm::mat4(1.0f))
 	{
-		float baseWidth = 1.2f;
-		float baseLength = 2.5f;
-		float baseHeight = 0.3f;
-		float theta = 22.5f;
+		baseWidth = 1.2f;
+		baseLength = 2.5f;
+		baseHeight = 0.3f;
+		theta = 22.5f;
 
 		shader.setBool("exposedToSun", true);
 
@@ -932,8 +936,6 @@ public:
 		drawCylinder(shader, tiresTogether, theta);
 
 	}
-
-
 
 
 };

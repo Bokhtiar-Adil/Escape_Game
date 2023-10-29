@@ -101,6 +101,7 @@ int main()
 	float xoffset = 0.0f, yoffset = 0.0f, zoffset = 0.0f;
 
 	Components component;
+	World world;
 
 	while (!glfwWindowShouldClose(window)) {
 
@@ -110,7 +111,7 @@ int main()
 
 		processInput(window);
 
-		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+		glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		
@@ -206,13 +207,25 @@ int main()
 		//component.door_tex(shaderTex, glm::translate(identity, glm::vec3(2.5f, 0.0f, -3.0f))* revolve);
 		//component.box(shaderTex, true, glm::translate(identity, glm::vec3(0.0f, 0.0f, -1.0f))* revolve); 
 		shaderMP.use();
+		world.road(shaderMP, glm::translate(identity, glm::vec3(-1.0f, -0.5f, -6.0f)) * revolve);
+		world.garage(shaderMP, glm::translate(identity, glm::vec3(3.0f, -0.5f, -1.0f)) * revolve);
+		world.residential(shaderMP, glm::translate(identity, glm::vec3(-5.0f, -0.5f, -6.0f)) * revolve);
+		scale = glm::scale(identity, glm::vec3(1.0f, 1.0f, 0.5f));
+		world.residential(shaderMP, glm::translate(identity, glm::vec3(-5.0f, -0.5f, -6.0f)) * scale * revolve);
 		//component.box(shaderMP, false, glm::translate(identity, glm::vec3(1.0f, 0.0f, -1.0f))* revolve);
-		component.truck(shaderMP, glm::translate(identity, glm::vec3(0.0f, 0.0f, -3.0f))* revolve);
+		 component.truck(shaderMP, glm::translate(identity, glm::vec3(3.3f, -0.11f, -0.5f))* revolve);
+		 component.truck(shaderMP, glm::translate(identity, glm::vec3(3.3f, -0.11f, 1.5f))* revolve);
+		 scale = glm::scale(identity, glm::vec3(1.0f, 1.5f, 1.0f));
+		 rotate = glm::rotate(identity, glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+		 component.building_notex(shaderMP, false, glm::translate(identity, glm::vec3(-3.5f, -0.5f, 3.0f)) * rotate * scale * revolve);
+		 component.building_notex(shaderMP, false, glm::translate(identity, glm::vec3(-3.5f, -0.5f, -0.5f))* rotate* scale* revolve);
+		 component.bench(shaderMP, glm::translate(identity, glm::vec3(-2.0f, -0.15f, -4.5f)) * rotate * revolve); 
+		 
 		/*component.table(shaderMP, false, glm::translate(identity, glm::vec3(2.0f, 0.0f, 0.0f)) * revolve);
 		component.chair(shaderMP, false, glm::translate(identity, glm::vec3(2.15f, 0.025f, -0.05f)) * revolve);*/
 		// component.building_notex(shaderMP, false, glm::translate(identity, glm::vec3(-1.5f, 0.0f, -3.0f)) * revolve); 
 		//component.bench(shaderMP, glm::translate(identity, glm::vec3(0.0f, 0.0f, 0.0f))* revolve);
-		component.car(shaderMP, glm::translate(identity, glm::vec3(3.0f, 0.0f, -3.0f)) * glm::scale(identity, glm::vec3(0.5f, 0.5f, 0.5f)) * revolve);
+		// component.car(shaderMP, glm::translate(identity, glm::vec3(3.0f, 0.0f, -3.0f)) * glm::scale(identity, glm::vec3(0.5f, 0.5f, 0.5f)) * revolve);
 		/*shader.use();
 		component.building_texdoor(shader, glm::translate(identity, glm::vec3(-1.5f, 0.0f, -3.0f))* revolve);*/
 
