@@ -105,6 +105,9 @@
     <Image Include="woodenDoor.jpg">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="brickwall.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <Text Include="commented_out_parts.txt">

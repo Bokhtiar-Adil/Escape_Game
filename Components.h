@@ -937,6 +937,30 @@ public:
 
 	}
 
+	void wall(Shader& shader, bool withTexture, glm::mat4 alTogether = glm::mat4(1.0f))
+	{
+		if (withTexture) {
+			this->dMap = loadTexture("brickwall.jpg");
+			this->sMap = loadTexture("brickwall.jpg");
+		}
+		else {
+			this->amb = glm::vec3(0.1f, 0.1f, 0.1f);
+			this->diff = glm::vec3(1.0f, 1.0f, 1.0f);
+			this->spec = glm::vec3(0.3, 0.3, 0.3);
+		}
+		
+
+		// base
+		shader.setBool("exposedToSun", true);
+		model = identity;
+		scale = glm::scale(identity, glm::vec3(1.0f, 1.0f, 0.02f));
+		model = scale * model;
+		modelTogether = alTogether * model;
+		if (withTexture) cube.drawCubeWithTexture(shader, dMap, sMap, this->shininess, modelTogether);
+		else cube.drawCubeWithMaterialisticProperty(shader, this->amb, this->diff, this->spec, this->shininess, modelTogether);
+	}
+
+	
 
 };
 

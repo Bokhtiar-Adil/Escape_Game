@@ -111,7 +111,8 @@ int main()
 
 		processInput(window);
 
-		glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+		if (!nightMode) glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+		else glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		
@@ -125,7 +126,8 @@ int main()
 		shaderTex.use(); 
 		shaderTex.setMat4("projection", projection);
 		shaderTex.setMat4("view", view);
-		shaderTex.setBool("nightMode", false);
+		if (nightMode) shaderTex.setBool("nightMode", true);
+		else shaderTex.setBool("nightMode", false);
 		shaderTex.setBool("flashlightOn", false);
 		shaderTex.setInt("numberofPointlights", 0);
 		shaderTex.setVec3("viewPos", camera.Position);
@@ -133,7 +135,7 @@ int main()
 		// light properties
 		
 		// directional light
-		shaderTex.setVec3("dirLight.direction", -2.5f, -3.0f, -3.0f);
+		shaderTex.setVec3("dirLight.direction", 1.0f, -3.0f, -3.0f);
 		shaderTex.setVec3("dirLight.ambient", 0.2f, 0.2f, 0.2f);
 		shaderTex.setVec3("dirLight.diffuse", 0.7f, 0.7f, 0.7f);
 		shaderTex.setVec3("dirLight.specular", 1.0f, 1.0f, 1.0f);
@@ -157,7 +159,8 @@ int main()
 		shaderMP.use(); 
 		shaderMP.setMat4("projection", projection); 
 		shaderMP.setMat4("view", view); 
-		shaderMP.setBool("nightMode", false); 
+		if (nightMode) shaderMP.setBool("nightMode", true); 
+		else shaderMP.setBool("nightMode", false);
 		shaderMP.setBool("flashlightOn", false); 
 		shaderMP.setInt("numberofPointlights", 0); 
 		shaderMP.setVec3("viewPos", camera.Position); 
@@ -165,7 +168,7 @@ int main()
 		// light properties
 
 		// directional light 
-		shaderMP.setVec3("dirLight.direction", -5.5f, -3.0f, -3.0f); 
+		shaderMP.setVec3("dirLight.direction", 1.0f, -3.0f, -3.0f); 
 		shaderMP.setVec3("dirLight.ambient", 0.2f, 0.2f, 0.2f); 
 		shaderMP.setVec3("dirLight.diffuse", 0.7f, 0.7f, 0.7f);
 		shaderMP.setVec3("dirLight.specular", 1.0f, 1.0f, 1.0f);
@@ -200,18 +203,34 @@ int main()
 		glm::mat4 rotateYMatrix = glm::rotate(identity, glm::radians(rotate_obj_y), glm::vec3(0.0f, 1.0f, 0.0f));
 		glm::mat4 rotateZMatrix = glm::rotate(identity, glm::radians(rotate_obj_z), glm::vec3(0.0f, 0.0f, 1.0f));
 		glm::mat4 revolve = rotateZMatrix * rotateYMatrix * rotateXMatrix; 
-		//shaderTex.use();
+		shaderTex.use();
+		///*rotate = glm::rotate(identity, glm::radians(-90.0f), glm::vec3(0.0f, 1.0f, 0.0f));*/
+		for (int i = 0; i < 4; i++) {
+			component.wall(shaderTex, true, glm::translate(identity, glm::vec3(3.05f+i, -0.5f, 4.0f)) * revolve);
+			component.wall(shaderTex, true, glm::translate(identity, glm::vec3(-2.05f-i, -0.5f, 4.0f)) * revolve);
+		}
+		/*component.wall(shaderTex, true, glm::translate(identity, glm::vec3(3.0f, -0.5f, -6.0f)) * revolve);
+		component.wall(shaderTex, true, glm::translate(identity, glm::vec3(4.0f, -0.5f, -6.0f)) * revolve);
+		component.wall(shaderTex, true, glm::translate(identity, glm::vec3(5.0f, -0.5f, -6.0f))* revolve);
+		component.wall(shaderTex, true, glm::translate(identity, glm::vec3(6.0f, -0.5f, -6.0f))* revolve);
+		rotate = glm::rotate(identity, glm::radians(-90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+		component.wall(shaderTex, true, glm::translate(identity, glm::vec3(7.0f, -0.5f, -6.0f)) * rotate * revolve);
+		component.wall(shaderTex, true, glm::translate(identity, glm::vec3(7.0f, -0.5f, -5.0f))* rotate* revolve);
+		component.wall(shaderTex, true, glm::translate(identity, glm::vec3(7.0f, -0.5f, -4.0f))* rotate* revolve);
+		component.wall(shaderTex, true, glm::translate(identity, glm::vec3(7.0f, -0.5f, -3.0f))* rotate* revolve);
+		component.wall(shaderTex, true, glm::translate(identity, glm::vec3(7.0f, -0.5f, -2.0f))* rotate* revolve);*/
 		/*component.table(shaderTex, true); 
 		component.chair(shaderTex, true, glm::translate(identity, glm::vec3(0.18f, 0.025f, -0.05f)) * revolve);*/
 		//component.building01(shaderTex, true, glm::translate(identity, glm::vec3(-2.0f, 0.0f, -3.0f)) * revolve);
 		//component.door_tex(shaderTex, glm::translate(identity, glm::vec3(2.5f, 0.0f, -3.0f))* revolve);
-		//component.box(shaderTex, true, glm::translate(identity, glm::vec3(0.0f, 0.0f, -1.0f))* revolve); 
+		component.box(shaderTex, true, glm::translate(identity, glm::vec3(3.2f, -0.4f, -3.0f))* revolve); 
+		component.box(shaderTex, true, glm::translate(identity, glm::vec3(4.2f, -0.4f, -3.0f))* revolve);
 		shaderMP.use();
 		world.road(shaderMP, glm::translate(identity, glm::vec3(-1.0f, -0.5f, -6.0f)) * revolve);
 		world.garage(shaderMP, glm::translate(identity, glm::vec3(3.0f, -0.5f, -1.0f)) * revolve);
 		world.residential(shaderMP, glm::translate(identity, glm::vec3(-5.0f, -0.5f, -6.0f)) * revolve);
 		scale = glm::scale(identity, glm::vec3(1.0f, 1.0f, 0.5f));
-		world.residential(shaderMP, glm::translate(identity, glm::vec3(-5.0f, -0.5f, -6.0f)) * scale * revolve);
+		world.residential(shaderMP, glm::translate(identity, glm::vec3(3.0f, -0.5f, -6.0f)) * scale * revolve);
 		//component.box(shaderMP, false, glm::translate(identity, glm::vec3(1.0f, 0.0f, -1.0f))* revolve);
 		 component.truck(shaderMP, glm::translate(identity, glm::vec3(3.3f, -0.11f, -0.5f))* revolve);
 		 component.truck(shaderMP, glm::translate(identity, glm::vec3(3.3f, -0.11f, 1.5f))* revolve);
@@ -220,6 +239,15 @@ int main()
 		 component.building_notex(shaderMP, false, glm::translate(identity, glm::vec3(-3.5f, -0.5f, 3.0f)) * rotate * scale * revolve);
 		 component.building_notex(shaderMP, false, glm::translate(identity, glm::vec3(-3.5f, -0.5f, -0.5f))* rotate* scale* revolve);
 		 component.bench(shaderMP, glm::translate(identity, glm::vec3(-2.0f, -0.15f, -4.5f)) * rotate * revolve); 
+		 for (int i = 0; i < 4; i++) {
+			 component.wall(shaderMP, false, glm::translate(identity, glm::vec3(3.0f+i, -0.5f, -6.0f)) * revolve);
+			 component.wall(shaderMP, false, glm::translate(identity, glm::vec3(-2.0f - i, -0.5f, -6.0f)) * revolve);
+		 }
+		 rotate = glm::rotate(identity, glm::radians(-90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+		 for (int i = 0; i < 10; i++) {
+			 component.wall(shaderMP, false, glm::translate(identity, glm::vec3(7.0f, -0.5f, -6.0f+i)) * rotate * revolve);
+			 component.wall(shaderMP, false, glm::translate(identity, glm::vec3(-5.0f, -0.5f, -6.0f+i)) * rotate * revolve);
+		 }
 		 
 		/*component.table(shaderMP, false, glm::translate(identity, glm::vec3(2.0f, 0.0f, 0.0f)) * revolve);
 		component.chair(shaderMP, false, glm::translate(identity, glm::vec3(2.15f, 0.025f, -0.05f)) * revolve);*/

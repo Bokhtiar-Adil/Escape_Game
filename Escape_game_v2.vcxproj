@@ -157,6 +157,7 @@
     <None Include="vsSrcPrimary.vs" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="brickwall.jpg" />
     <Image Include="container2.png" />
     <Image Include="container2_specular.png" />
     <Image Include="designedTiles.jpg" />
