@@ -161,11 +161,26 @@ private:
 		
 	}
 
+	unsigned int boxtex, walldmp, wallsmp, tabledmp, doordmp, walldmp2, windowsdmp;
+
+	void loadAllTextures()
+	{
+		boxtex = loadTexture("container2.png");
+		walldmp = loadTexture("brickwall.jpg");
+		wallsmp = loadTexture("brickwall.jpg");
+		tabledmp = loadTexture("woodenSurface.jpg");
+		doordmp = loadTexture("woodenDoor.jpg");
+		walldmp2 = loadTexture("whitewall2.jpg");
+		windowsdmp = loadTexture("windows.jpg");
+	}
+
 public:
 
 	Components()
 	{
 		identity = glm::mat4(1.0f);
+
+		loadAllTextures();
 	}	
 
 	void table(Shader& shader, bool withTexture, glm::mat4 alTogether = glm::mat4(1.0f))
@@ -176,8 +191,8 @@ public:
 		legWidth = 0.1f;
 
 		if (withTexture) {
-			this->dMap = loadTexture("woodenSurface.jpg");
-			this->sMap = loadTexture("woodenSurface.jpg");
+			this->dMap = tabledmp;
+			this->sMap = tabledmp;
 		}
 		else {
 			this->amb = glm::vec3(1.0f, 0.0f, 0.0f);
@@ -238,8 +253,8 @@ public:
 		legWidth = 0.05f;
 		
 		if (withTexture) {
-			this->dMap = loadTexture("woodenSurface.jpg");
-			this->sMap = loadTexture("woodenSurface.jpg");
+			this->dMap = tabledmp;
+			this->sMap = tabledmp;
 		}
 		else {
 			this->amb = glm::vec3(0.0f, 1.0f, 1.0f);
@@ -304,15 +319,15 @@ public:
 		else cube.drawCubeWithMaterialisticProperty(shader, this->amb, this->diff, this->spec, this->shininess, modelTogether);
 	}
 
-	void building_notex(Shader& shader, bool withTexture, glm::mat4 alTogether = glm::mat4(1.0f))
+	void building(Shader& shader, bool withTexture, glm::mat4 alTogether = glm::mat4(1.0f))
 	{
 		height = 2.0f;
 		widthx = 3.0f;
 		widthz = 2.0f;
 
 		if (withTexture) {
-			this->dMap = loadTexture("whitewall2.jpg");
-			this->sMap = loadTexture("whitewall2.jpg");
+			this->dMap = walldmp2;
+			this->sMap = walldmp2;
 		}
 		else {
 			this->amb = glm::vec3(0.88f, 0.88f, 0.88f);
@@ -332,8 +347,8 @@ public:
 
 		// door
 		if (withTexture) {
-			this->dMap = loadTexture("woodenDoor.jpg");
-			this->sMap = loadTexture("woodenDoor.jpg");
+			this->dMap = doordmp;
+			this->sMap = doordmp;
 		}
 		else {
 			this->amb = glm::vec3(0.43f, 0.33f, 0.26f);
@@ -354,6 +369,16 @@ public:
 		if (withTexture) cube.drawCubeWithTexture(shader, dMap, sMap, this->shininess, modelTogether);
 		else cube.drawCubeWithMaterialisticProperty(shader, this->amb, this->diff, this->spec, this->shininess, modelTogether);
 
+		if (withTexture) {
+			this->dMap = windowsdmp;
+			this->sMap = windowsdmp;
+		}
+		else {
+			this->amb = glm::vec3(0.43f, 0.33f, 0.26f);
+			this->diff = glm::vec3(0.43f, 0.33f, 0.26f);
+			this->spec = glm::vec3(0.3, 0.3, 0.3);
+		}
+		
 		// front side wall windows
 		model = identity;
 		scale = glm::scale(identity, glm::vec3(0.5f, 0.5f, 0.02f));
@@ -485,8 +510,8 @@ public:
 
 		// door
 		shader.setBool("withTexture", true);
-		this->dMap = loadTexture("woodenDoor.jpg");
-		this->sMap = loadTexture("woodenDoor.jpg");
+		this->dMap = doordmp;
+		this->sMap = doordmp;
 		model = identity;
 		scale = glm::scale(identity, glm::vec3(0.5f, 0.8f, 0.02f));
 		translate = glm::translate(identity, glm::vec3(1.3f, 0.0f, 1.99f));
@@ -599,8 +624,8 @@ public:
 
 	void door_tex(Shader& shader, glm::mat4 alTogether = glm::mat4(1.0f))
 	{
-		this->dMap = loadTexture("woodenDoor.jpg");
-		this->sMap = loadTexture("woodenDoor.jpg");
+		this->dMap = doordmp;
+		this->sMap = doordmp;
 
 		// base
 		shader.setBool("exposedToSun", true);
@@ -680,7 +705,7 @@ public:
 		boxHeight = 0.5f;
 
 		if (withTexture) {
-			this->dMap = loadTexture("container2.png");
+			this->dMap = boxtex;
 			//this->sMap = loadTexture("container2_specular.png");
 		}
 		else {
@@ -940,8 +965,8 @@ public:
 	void wall(Shader& shader, bool withTexture, glm::mat4 alTogether = glm::mat4(1.0f))
 	{
 		if (withTexture) {
-			this->dMap = loadTexture("brickwall.jpg");
-			this->sMap = loadTexture("brickwall.jpg");
+			this->dMap = walldmp;
+			this->sMap = wallsmp;
 		}
 		else {
 			this->amb = glm::vec3(0.1f, 0.1f, 0.1f);
@@ -958,6 +983,44 @@ public:
 		modelTogether = alTogether * model;
 		if (withTexture) cube.drawCubeWithTexture(shader, dMap, sMap, this->shininess, modelTogether);
 		else cube.drawCubeWithMaterialisticProperty(shader, this->amb, this->diff, this->spec, this->shininess, modelTogether);
+	}
+
+	void streetlight(Shader& shader, glm::mat4 alTogether = glm::mat4(1.0f))
+	{
+		baseHeight = 2.0f;
+		baseWidth = 0.05f;
+
+		this->amb = glm::vec3(0.05f, 0.05f, 0.05f);
+		this->diff = glm::vec3(0.7f, 0.7f, 0.7f);
+		this->spec = glm::vec3(0.5, 0.5, 0.5);
+		
+		// base
+		shader.setBool("exposedToSun", true);
+		model = identity;
+		scale = glm::scale(identity, glm::vec3(baseWidth, baseHeight, baseWidth));
+		model = scale * model;
+		modelTogether = alTogether * model;
+		cube.drawCubeWithMaterialisticProperty(shader, this->amb, this->diff, this->spec, this->shininess, modelTogether);
+
+		rotate = glm::rotate(identity, glm::radians(-90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+		model = identity;
+		scale = glm::scale(identity, glm::vec3(baseWidth, baseHeight*0.1f, baseWidth));
+		translate = glm::translate(identity, glm::vec3(0.0f, 2.0f, 0.0f));
+		model = translate * rotate * scale * model;
+		modelTogether = alTogether * model;
+		cube.drawCubeWithMaterialisticProperty(shader, this->amb, this->diff, this->spec, this->shininess, modelTogether);
+
+		this->amb = glm::vec3(1.0f, 1.0f, 1.0f);
+		this->diff = glm::vec3(1.0f, 1.0f, 1.0f);
+		this->spec = glm::vec3(1.0f, 1.0f, 1.0f);
+
+		scale = glm::scale(identity, glm::vec3(0.5f, 1.0f, 1.0f));
+		translate = glm::translate(identity, glm::vec3(0.1f, -0.05f, 0.0f));
+		model = translate * scale * model;
+		modelTogether = alTogether * model;
+		cube.drawCubeWithMaterialisticProperty(shader, this->amb, this->diff, this->spec, this->shininess, modelTogether);
+		
+		
 	}
 
 	

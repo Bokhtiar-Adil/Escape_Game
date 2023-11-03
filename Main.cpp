@@ -33,8 +33,8 @@ int WIN_HEIGHT = 700;
 void frame_buffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void processInput(GLFWwindow* window);
-unsigned int loadTexture(char const* path);
-void drawCube(unsigned int& cubeVAO, Shader& shader, glm::mat4 model);
+//unsigned int loadTexture(char const* path);
+//void drawCube(unsigned int& cubeVAO, Shader& shader, glm::mat4 model);
 
 unsigned int dummyVAO = NULL;
 Shader dummyShader;
@@ -203,43 +203,40 @@ int main()
 		glm::mat4 rotateYMatrix = glm::rotate(identity, glm::radians(rotate_obj_y), glm::vec3(0.0f, 1.0f, 0.0f));
 		glm::mat4 rotateZMatrix = glm::rotate(identity, glm::radians(rotate_obj_z), glm::vec3(0.0f, 0.0f, 1.0f));
 		glm::mat4 revolve = rotateZMatrix * rotateYMatrix * rotateXMatrix; 
+
 		shaderTex.use();
+
+		world.residential(shaderTex, true, glm::translate(identity, glm::vec3(-4.0f, -0.5f, -6.0f)) * revolve); 
+		world.residential(shaderTex, true, glm::translate(identity, glm::vec3(3.0f, -0.5f, -6.0f)) * revolve); 
+
+		scale = glm::scale(identity, glm::vec3(1.0f, 1.5f, 1.0f));
+		rotate = glm::rotate(identity, glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+		component.building(shaderTex, true, glm::translate(identity, glm::vec3(-3.5f, -0.5f, 3.0f)) * rotate * scale * revolve);
+		component.building(shaderTex, true, glm::translate(identity, glm::vec3(-3.5f, -0.5f, -0.5f)) * rotate * scale * revolve);
+		component.building(shaderTex, true, glm::translate(identity, glm::vec3(3.5f, -0.5f, 3.0f)) * rotate * scale * revolve);
+		component.building(shaderTex, true, glm::translate(identity, glm::vec3(3.5f, -0.5f, -0.5f)) * rotate * scale * revolve);
+
+		//world.residential(shaderTex, true, glm::translate(identity, glm::vec3(-4.0f, -0.5f, -6.0f)) * revolve);
 		///*rotate = glm::rotate(identity, glm::radians(-90.0f), glm::vec3(0.0f, 1.0f, 0.0f));*/
-		for (int i = 0; i < 4; i++) {
+		/*for (int i = 0; i < 4; i++) {
 			component.wall(shaderTex, true, glm::translate(identity, glm::vec3(3.05f+i, -0.5f, 4.0f)) * revolve);
 			component.wall(shaderTex, true, glm::translate(identity, glm::vec3(-2.05f-i, -0.5f, 4.0f)) * revolve);
-		}
-		/*component.wall(shaderTex, true, glm::translate(identity, glm::vec3(3.0f, -0.5f, -6.0f)) * revolve);
-		component.wall(shaderTex, true, glm::translate(identity, glm::vec3(4.0f, -0.5f, -6.0f)) * revolve);
-		component.wall(shaderTex, true, glm::translate(identity, glm::vec3(5.0f, -0.5f, -6.0f))* revolve);
-		component.wall(shaderTex, true, glm::translate(identity, glm::vec3(6.0f, -0.5f, -6.0f))* revolve);
-		rotate = glm::rotate(identity, glm::radians(-90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-		component.wall(shaderTex, true, glm::translate(identity, glm::vec3(7.0f, -0.5f, -6.0f)) * rotate * revolve);
-		component.wall(shaderTex, true, glm::translate(identity, glm::vec3(7.0f, -0.5f, -5.0f))* rotate* revolve);
-		component.wall(shaderTex, true, glm::translate(identity, glm::vec3(7.0f, -0.5f, -4.0f))* rotate* revolve);
-		component.wall(shaderTex, true, glm::translate(identity, glm::vec3(7.0f, -0.5f, -3.0f))* rotate* revolve);
-		component.wall(shaderTex, true, glm::translate(identity, glm::vec3(7.0f, -0.5f, -2.0f))* rotate* revolve);*/
-		/*component.table(shaderTex, true); 
-		component.chair(shaderTex, true, glm::translate(identity, glm::vec3(0.18f, 0.025f, -0.05f)) * revolve);*/
-		//component.building01(shaderTex, true, glm::translate(identity, glm::vec3(-2.0f, 0.0f, -3.0f)) * revolve);
-		//component.door_tex(shaderTex, glm::translate(identity, glm::vec3(2.5f, 0.0f, -3.0f))* revolve);
-		component.box(shaderTex, true, glm::translate(identity, glm::vec3(3.2f, -0.4f, -3.0f))* revolve); 
-		component.box(shaderTex, true, glm::translate(identity, glm::vec3(4.2f, -0.4f, -3.0f))* revolve);
+		}*/
+		/*component.box(shaderTex, true, glm::translate(identity, glm::vec3(3.2f, -0.4f, -3.0f))* revolve); 
+		component.box(shaderTex, true, glm::translate(identity, glm::vec3(4.2f, -0.4f, -3.0f))* revolve);*/
 		shaderMP.use();
 		world.road(shaderMP, glm::translate(identity, glm::vec3(-1.0f, -0.5f, -6.0f)) * revolve);
-		world.garage(shaderMP, glm::translate(identity, glm::vec3(3.0f, -0.5f, -1.0f)) * revolve);
-		world.residential(shaderMP, glm::translate(identity, glm::vec3(-5.0f, -0.5f, -6.0f)) * revolve);
-		scale = glm::scale(identity, glm::vec3(1.0f, 1.0f, 0.5f));
-		world.residential(shaderMP, glm::translate(identity, glm::vec3(3.0f, -0.5f, -6.0f)) * scale * revolve);
-		//component.box(shaderMP, false, glm::translate(identity, glm::vec3(1.0f, 0.0f, -1.0f))* revolve);
-		 component.truck(shaderMP, glm::translate(identity, glm::vec3(3.3f, -0.11f, -0.5f))* revolve);
-		 component.truck(shaderMP, glm::translate(identity, glm::vec3(3.3f, -0.11f, 1.5f))* revolve);
-		 scale = glm::scale(identity, glm::vec3(1.0f, 1.5f, 1.0f));
-		 rotate = glm::rotate(identity, glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-		 component.building_notex(shaderMP, false, glm::translate(identity, glm::vec3(-3.5f, -0.5f, 3.0f)) * rotate * scale * revolve);
-		 component.building_notex(shaderMP, false, glm::translate(identity, glm::vec3(-3.5f, -0.5f, -0.5f))* rotate* scale* revolve);
-		 component.bench(shaderMP, glm::translate(identity, glm::vec3(-2.0f, -0.15f, -4.5f)) * rotate * revolve); 
-		 for (int i = 0; i < 4; i++) {
+		
+		rotate = glm::rotate(identity, glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+		for (int i = 0; i < 4; i++) {
+			component.streetlight(shaderMP, glm::translate(identity, glm::vec3(-1.0f, -0.5f, -6.0f+ i * 3.0f)) * revolve);
+			component.streetlight(shaderMP, glm::translate(identity, glm::vec3(3.0f, -0.5f, -6.0f + i * 3.0f)) * rotate * revolve);
+			
+		}
+		
+		//component.door_tex(shaderTex, glm::translate(identity, glm::vec3(2.5f, 0.0f, -3.0f)) * revolve);
+		component.bench(shaderMP, glm::translate(identity, glm::vec3(-2.0f, -0.15f, -4.5f)) * rotate * revolve); 
+		 /*for (int i = 0; i < 4; i++) {
 			 component.wall(shaderMP, false, glm::translate(identity, glm::vec3(3.0f+i, -0.5f, -6.0f)) * revolve);
 			 component.wall(shaderMP, false, glm::translate(identity, glm::vec3(-2.0f - i, -0.5f, -6.0f)) * revolve);
 		 }
@@ -247,15 +244,9 @@ int main()
 		 for (int i = 0; i < 10; i++) {
 			 component.wall(shaderMP, false, glm::translate(identity, glm::vec3(7.0f, -0.5f, -6.0f+i)) * rotate * revolve);
 			 component.wall(shaderMP, false, glm::translate(identity, glm::vec3(-5.0f, -0.5f, -6.0f+i)) * rotate * revolve);
-		 }
+		 }*/
 		 
-		/*component.table(shaderMP, false, glm::translate(identity, glm::vec3(2.0f, 0.0f, 0.0f)) * revolve);
-		component.chair(shaderMP, false, glm::translate(identity, glm::vec3(2.15f, 0.025f, -0.05f)) * revolve);*/
-		// component.building_notex(shaderMP, false, glm::translate(identity, glm::vec3(-1.5f, 0.0f, -3.0f)) * revolve); 
-		//component.bench(shaderMP, glm::translate(identity, glm::vec3(0.0f, 0.0f, 0.0f))* revolve);
-		// component.car(shaderMP, glm::translate(identity, glm::vec3(3.0f, 0.0f, -3.0f)) * glm::scale(identity, glm::vec3(0.5f, 0.5f, 0.5f)) * revolve);
-		/*shader.use();
-		component.building_texdoor(shader, glm::translate(identity, glm::vec3(-1.5f, 0.0f, -3.0f))* revolve);*/
+		
 
 
 		glfwSwapBuffers(window);

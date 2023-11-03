@@ -29,22 +29,15 @@ private:
 	unsigned char* data;
 	GLenum format;
 
-public:
-
-	World()
-	{
-		identity = glm::mat4(1.0f);
-	}
-
 	unsigned int loadTexture(char const* path)
 	{
-		
+
 		glGenTextures(1, &textureID);
 
 		data = stbi_load(path, &widthtex, &heighttex, &nrComponents, 0);
 		if (data)
 		{
-			
+
 			if (nrComponents == 1)
 				format = GL_RED;
 			else if (nrComponents == 3)
@@ -71,6 +64,24 @@ public:
 
 		return textureID;
 	}
+
+	unsigned int grass;
+
+	void loadAllTextures()
+	{
+		grass = loadTexture("grass.jpg");
+	}
+
+public:
+
+	World()
+	{
+		identity = glm::mat4(1.0f);
+
+		loadAllTextures();
+	}
+
+	
 
 	void road(Shader& shader, glm::mat4 alTogether = glm::mat4(1.0f))
 	{
@@ -140,10 +151,13 @@ public:
 		cube.drawCubeWithMaterialisticProperty(shader, this->amb, this->diff, this->spec, this->shininess, modelTogether);
 	}
 
-	void residential(Shader& shader, glm::mat4 alTogether = glm::mat4(1.0f))
+	void residential(Shader& shader, bool withTexture, glm::mat4 alTogether = glm::mat4(1.0f))
 	{
-		blockWidth = 4.0f;
+		blockWidth = 3.0f;
 		blockLength = 10.0f;
+
+		this->dMap = grass;
+		this->sMap = grass;
 
 		this->amb = glm::vec3(0.0f, 0.1f, 0.0f);
 		this->diff = glm::vec3(0.0f, 0.7f, 0.0f);
@@ -154,7 +168,8 @@ public:
 		scale = glm::scale(identity, glm::vec3(blockWidth, 0.1f, blockLength));
 		model = scale * model;
 		modelTogether = alTogether * model;
-		cube.drawCubeWithMaterialisticProperty(shader, this->amb, this->diff, this->spec, this->shininess, modelTogether);
+		if (withTexture) cube.drawCubeWithTexture(shader, dMap, sMap, shininess, modelTogether);
+		else cube.drawCubeWithMaterialisticProperty(shader, this->amb, this->diff, this->spec, this->shininess, modelTogether);
 	}
 };
 

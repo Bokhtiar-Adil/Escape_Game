@@ -108,6 +108,12 @@
     <Image Include="brickwall.jpg">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="grass.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="windows.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <Text Include="commented_out_parts.txt">

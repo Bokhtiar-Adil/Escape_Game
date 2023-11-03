@@ -161,9 +161,11 @@
     <Image Include="container2.png" />
     <Image Include="container2_specular.png" />
     <Image Include="designedTiles.jpg" />
+    <Image Include="grass.jpg" />
     <Image Include="palestine.jpg" />
     <Image Include="roadLined.jpg" />
     <Image Include="whitewall2.jpg" />
+    <Image Include="windows.jpg" />
     <Image Include="woodCypress.jpg" />
     <Image Include="woodenDoor.jpg" />
     <Image Include="woodenSurface.jpg" />
