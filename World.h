@@ -85,7 +85,7 @@ public:
 
 	void road(Shader& shader, glm::mat4 alTogether = glm::mat4(1.0f))
 	{
-		roadLength = 10.0f;
+		roadLength = 15.0f;
 		roadWidth = 4.0f;
 
 		this->amb = glm::vec3(0.1f, 0.1f, 0.1f);
@@ -104,7 +104,7 @@ public:
 		this->spec = glm::vec3(0.0, 0.0, 0.0);
 
 		model = identity;
-		scale = glm::scale(identity, glm::vec3(0.1f, 0.01f, 10.0f));
+		scale = glm::scale(identity, glm::vec3(0.1f, 0.01f, roadLength));
 		translate = glm::translate(identity, glm::vec3(0.2f, 0.1f, 0.0f));
 		model = translate * scale * model;
 		modelTogether = alTogether * model;
@@ -125,7 +125,7 @@ public:
 		modelTogether = alTogether * model;
 		cube.drawCubeWithMaterialisticProperty(shader, this->amb, this->diff, this->spec, this->shininess, modelTogether);
 
-		for (int i = 0; i < 4; i++) {
+		for (int i = 0; i < 6; i++) {
 			translate = glm::translate(identity, glm::vec3(0.0f, 0.0f, 2.0f));
 			model = translate * model;
 			modelTogether = alTogether * model;
@@ -154,7 +154,7 @@ public:
 	void residential(Shader& shader, bool withTexture, glm::mat4 alTogether = glm::mat4(1.0f))
 	{
 		blockWidth = 3.0f;
-		blockLength = 10.0f;
+		blockLength = 15.0f;
 
 		this->dMap = grass;
 		this->sMap = grass;

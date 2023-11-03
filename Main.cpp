@@ -16,7 +16,7 @@
 
 using namespace std;
 
-Camera camera(glm::vec3(0.5f, 0.2f, 4.0f));
+Camera camera(glm::vec3(1.0f, 0.2f, 8.0f));
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
 
@@ -211,10 +211,13 @@ int main()
 
 		scale = glm::scale(identity, glm::vec3(1.0f, 1.5f, 1.0f));
 		rotate = glm::rotate(identity, glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+		component.building(shaderTex, true, glm::translate(identity, glm::vec3(-3.5f, -0.5f, 7.0f)) * rotate * scale * revolve);
 		component.building(shaderTex, true, glm::translate(identity, glm::vec3(-3.5f, -0.5f, 3.0f)) * rotate * scale * revolve);
-		component.building(shaderTex, true, glm::translate(identity, glm::vec3(-3.5f, -0.5f, -0.5f)) * rotate * scale * revolve);
+		component.building(shaderTex, true, glm::translate(identity, glm::vec3(-3.5f, -0.5f, -1.0f)) * rotate * scale * revolve);
+
+		component.building(shaderTex, true, glm::translate(identity, glm::vec3(3.5f, -0.5f, 7.0f)) * rotate * scale * revolve);
 		component.building(shaderTex, true, glm::translate(identity, glm::vec3(3.5f, -0.5f, 3.0f)) * rotate * scale * revolve);
-		component.building(shaderTex, true, glm::translate(identity, glm::vec3(3.5f, -0.5f, -0.5f)) * rotate * scale * revolve);
+		component.building(shaderTex, true, glm::translate(identity, glm::vec3(3.5f, -0.5f, -1.0f)) * rotate * scale * revolve);
 
 		//world.residential(shaderTex, true, glm::translate(identity, glm::vec3(-4.0f, -0.5f, -6.0f)) * revolve);
 		///*rotate = glm::rotate(identity, glm::radians(-90.0f), glm::vec3(0.0f, 1.0f, 0.0f));*/
@@ -229,8 +232,8 @@ int main()
 		
 		rotate = glm::rotate(identity, glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 		for (int i = 0; i < 4; i++) {
-			component.streetlight(shaderMP, glm::translate(identity, glm::vec3(-1.0f, -0.5f, -6.0f+ i * 3.0f)) * revolve);
-			component.streetlight(shaderMP, glm::translate(identity, glm::vec3(3.0f, -0.5f, -6.0f + i * 3.0f)) * rotate * revolve);
+			component.streetlight(shaderMP, glm::translate(identity, glm::vec3(-1.0f, -0.5f, -6.0f+ i * 4.0f)) * revolve);
+			component.streetlight(shaderMP, glm::translate(identity, glm::vec3(3.0f, -0.5f, -6.0f + i * 4.0f)) * rotate * revolve);
 			
 		}
 		
