@@ -13,10 +13,12 @@
 #include "camera.h"
 #include "Components.h"
 #include "World.h"
+#include "Character.h"
 
 using namespace std;
 
-Camera camera(glm::vec3(1.0f, 0.2f, 8.0f));
+float initialCameraZ = 8.0f;
+Camera camera(glm::vec3(1.0f, 0.2f, initialCameraZ));
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
 
@@ -65,8 +67,9 @@ float rotate_obj_axis_x = 0.0f;
 float rotate_obj_axis_y = 0.0f;
 float rotate_obj_axis_z = 0.0f;
 
-int currentBlockBase = 0;
-float currentCharacterPos = 0.0f;
+float currentBlockBase = 0.0f;
+float currentCharacterPos = initialCameraZ;
+int currentBlockNumber = 0;
 
 int main()
 {
@@ -109,6 +112,7 @@ int main()
 
 	Components component;
 	World world;
+	Character protagonist;
 
 	while (!glfwWindowShouldClose(window)) {
 
@@ -145,18 +149,25 @@ int main()
 		glm::mat4 rotateZMatrix = glm::rotate(identity, glm::radians(rotate_obj_z), glm::vec3(0.0f, 0.0f, 1.0f));
 		glm::mat4 revolve = rotateZMatrix * rotateYMatrix * rotateXMatrix;
 
-		/*currentBlockBase = currentCharacterPos / 10.0f;
-		currentBlockBase *= 10.0f;
-
-		cout << "CBB: " << currentBlockBase << " \tCCP: " << currentCharacterPos << "\n";*/
-
+		/*currentBlockBase = currentCharacterPos / 30.0f;
+		currentBlockBase *= 30.0f;*/
+		currentBlockBase = 0.0f;
+		//cout << camera.Position.z << "\n";
+		//cout << (-1 * camera.Position.z + initialCameraZ) - currentBlockNumber * 30.0f << "\n";
+		if ((-1 * camera.Position.z + initialCameraZ) - currentBlockNumber * 30.0f > 30.0f) {
+			currentBlockNumber += 1;
+		}
+		currentBlockBase = -1 * (currentBlockNumber * 30.0f);
 		translate = glm::translate(identity, glm::vec3(0.0f, 0.0f, currentBlockBase + 0.0f)); 
 		worldCreation(shaderTex, shaderMP, world, component, translate);
-		/*translate = glm::translate(identity, glm::vec3(0.0f, 0.0f, currentBlockBase - 12.0f));
-		worldCreation(shaderTex, shaderMP, world, component, translate);*/
+		if (( - 1 * camera.Position.z + initialCameraZ) - currentBlockNumber * 30.0f > 10.0f) {
+			translate = glm::translate(identity, glm::vec3(0.0f, 0.0f, currentBlockBase - 30.0f));
+			worldCreation(shaderTex, shaderMP, world, component, translate);
+		}
+		/**/
 
 
-
+		protagonist.drawProtagonist(shaderMP, glm::translate(identity, glm::vec3(0.0f, 1.2f, 5.0f)) * revolve);
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
@@ -187,11 +198,14 @@ void processInput(GLFWwindow* window)
 	float cameraSpeed = static_cast<float>(2.5 * deltaTime);
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
 		camera.ProcessKeyboard(FORWARD, deltaTime);
-		currentCharacterPos = camera.Position.z;
+		currentCharacterPos += 0.05f;
 	}
 		
-	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
 		camera.ProcessKeyboard(BACKWARD, deltaTime);
+		currentCharacterPos -= 0.05f;
+	}
+		
 	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
 		camera.ProcessKeyboard(LEFT, deltaTime);
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)

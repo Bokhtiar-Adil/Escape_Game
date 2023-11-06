@@ -7,8 +7,8 @@
 
 #include <stb_image.h>
 
-#include "Cube.h"
 #include "Shader.h"
+#include "Cube.h"
 #include "Components.h"
 
 class World
