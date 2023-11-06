@@ -46,6 +46,10 @@ void box(unsigned int& VAO, Shader& shader, glm::mat4 offset, glm::mat4 alTogeth
 void simpleRoom(unsigned int& VAO, Shader& shader, glm::mat4 offset, glm::mat4 alTogether = glm::mat4(1.0f), unsigned int& lightCubeVAO = dummyVAO, Shader& lightCubeShader = dummyShader);
 
 
+// helper functions
+void shaderSetup(Shader& lightCubeShader, Shader& shaderTex, Shader& shaderMP, glm::mat4& projection, glm::mat4& view);
+void worldCreation(Shader& shaderTex, Shader& shaderMP, World& world, Components& component, glm::mat4 revolve);
+
 bool torchOn = false;
 bool nightMode = false;
 int numOfPointLightRoad = 3;
@@ -60,6 +64,9 @@ float rotate_obj_z = 0.0f;
 float rotate_obj_axis_x = 0.0f;
 float rotate_obj_axis_y = 0.0f;
 float rotate_obj_axis_z = 0.0f;
+
+int currentBlockBase = 0;
+float currentCharacterPos = 0.0f;
 
 int main()
 {
@@ -115,141 +122,39 @@ int main()
 		else glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		
-		projection = glm::perspective(glm::radians(camera.Zoom), (float)WIN_WIDTH / (float)WIN_HEIGHT, 0.1f, 100.0f); 		
-		view = camera.GetViewMatrix(); 
 
-		lightCubeShader.use();
-		lightCubeShader.setMat4("projection", projection);
-		lightCubeShader.setMat4("view", view);
+		projection = glm::perspective(glm::radians(camera.Zoom), (float)WIN_WIDTH / (float)WIN_HEIGHT, 0.1f, 100.0f);
+		view = camera.GetViewMatrix();
 
-		shaderTex.use(); 
-		shaderTex.setMat4("projection", projection);
-		shaderTex.setMat4("view", view);
-		if (nightMode) shaderTex.setBool("nightMode", true);
-		else shaderTex.setBool("nightMode", false);
-		shaderTex.setBool("flashlightOn", false);
-		shaderTex.setInt("numberofPointlights", 0);
-		shaderTex.setVec3("viewPos", camera.Position);
-
-		// light properties
-		
-		// directional light
-		shaderTex.setVec3("dirLight.direction", 1.0f, -3.0f, -3.0f);
-		shaderTex.setVec3("dirLight.ambient", 0.2f, 0.2f, 0.2f);
-		shaderTex.setVec3("dirLight.diffuse", 0.7f, 0.7f, 0.7f);
-		shaderTex.setVec3("dirLight.specular", 1.0f, 1.0f, 1.0f);
-		shaderTex.setBool("nightMode", nightMode);
-
-		// spotlight
-		shaderTex.setVec3("spotLight.position", camera.Position);
-		shaderTex.setVec3("spotLight.direction", camera.Front);
-		shaderTex.setVec3("spotLight.ambient", 0.0f, 0.0f, 0.0f);
-		shaderTex.setVec3("spotLight.diffuse", 1.0f, 1.0f, 1.0f);
-		shaderTex.setVec3("spotLight.specular", 1.0f, 1.0f, 1.0f);
-		shaderTex.setFloat("spotLight.constant", 1.0f);
-		shaderTex.setFloat("spotLight.linear", 0.09f);
-		shaderTex.setFloat("spotLight.quadratic", 0.032f);
-		shaderTex.setFloat("spotLight.cutOff", glm::cos(glm::radians(12.5f)));
-		shaderTex.setFloat("spotLight.outerCutOff", glm::cos(glm::radians(15.0f)));
-		shaderTex.setBool("flashlightOn", torchOn);
-
-		
-
-		shaderMP.use(); 
-		shaderMP.setMat4("projection", projection); 
-		shaderMP.setMat4("view", view); 
-		if (nightMode) shaderMP.setBool("nightMode", true); 
-		else shaderMP.setBool("nightMode", false);
-		shaderMP.setBool("flashlightOn", false); 
-		shaderMP.setInt("numberofPointlights", 0); 
-		shaderMP.setVec3("viewPos", camera.Position); 
-
-		// light properties
-
-		// directional light 
-		shaderMP.setVec3("dirLight.direction", 1.0f, -3.0f, -3.0f); 
-		shaderMP.setVec3("dirLight.ambient", 0.2f, 0.2f, 0.2f); 
-		shaderMP.setVec3("dirLight.diffuse", 0.7f, 0.7f, 0.7f);
-		shaderMP.setVec3("dirLight.specular", 1.0f, 1.0f, 1.0f);
-		shaderMP.setBool("nightMode", nightMode);
-
-		// spotlight
-		shaderMP.setVec3("spotLight.position", camera.Position);
-		shaderMP.setVec3("spotLight.direction", camera.Front);
-		shaderMP.setVec3("spotLight.ambient", 0.0f, 0.0f, 0.0f);
-		shaderMP.setVec3("spotLight.diffuse", 1.0f, 1.0f, 1.0f);
-		shaderMP.setVec3("spotLight.specular", 1.0f, 1.0f, 1.0f);
-		shaderMP.setFloat("spotLight.constant", 1.0f);
-		shaderMP.setFloat("spotLight.linear", 0.09f);
-		shaderMP.setFloat("spotLight.quadratic", 0.032f);
-		shaderMP.setFloat("spotLight.cutOff", glm::cos(glm::radians(12.5f)));
-		shaderMP.setFloat("spotLight.outerCutOff", glm::cos(glm::radians(15.0f)));
-		shaderMP.setBool("flashlightOn", torchOn);
+		shaderSetup(lightCubeShader, shaderTex, shaderMP, projection, view);
 
 		xoffset = 0.5f, yoffset = 0.5f;
 		offset = glm::translate(identity, glm::vec3(xoffset, yoffset, zoffset));
 		//shader.setInt("numberofPointlights", 0);
 		/*shader.setVec3("emission", glm::vec3(0.1f, 0.1f, 0.1f));
 		shader.setInt("numberofPointlights", numOfPointLightRoad);
-		road(VAO, shader, offset);	
+		road(VAO, shader, offset);
 		shader.setInt("numberofPointlights", numOfPointLightRoom);
 		simpleRoom(VAO, shader, offset, glm::mat4(1.0f), lightCubeVAO, lightCubeShader);*/
 		/*shader.setInt("numberofPointlights", 0);
 		shader.setBool("exposedToSun", true);		*/
-		
+
 		//table(VAO, shader, offset, glm::rotate(identity, glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
 		glm::mat4 rotateXMatrix = glm::rotate(identity, glm::radians(rotate_obj_x), glm::vec3(1.0f, 0.0f, 0.0f));
 		glm::mat4 rotateYMatrix = glm::rotate(identity, glm::radians(rotate_obj_y), glm::vec3(0.0f, 1.0f, 0.0f));
 		glm::mat4 rotateZMatrix = glm::rotate(identity, glm::radians(rotate_obj_z), glm::vec3(0.0f, 0.0f, 1.0f));
-		glm::mat4 revolve = rotateZMatrix * rotateYMatrix * rotateXMatrix; 
+		glm::mat4 revolve = rotateZMatrix * rotateYMatrix * rotateXMatrix;
 
-		shaderTex.use();
+		//if ((int) currentCharacterPos % 15 > 10) {
+		//	currentBlockBase = 
+		//}
 
-		world.residential(shaderTex, true, glm::translate(identity, glm::vec3(-4.0f, -0.5f, -6.0f)) * revolve); 
-		world.residential(shaderTex, true, glm::translate(identity, glm::vec3(3.0f, -0.5f, -6.0f)) * revolve); 
+		translate = glm::translate(identity, glm::vec3(0.0f, 0.0f, currentBlockBase + 0.0f)); 
+		worldCreation(shaderTex, shaderMP, world, component, translate);
+		translate = glm::translate(identity, glm::vec3(0.0f, 0.0f, currentBlockBase - 12.0f));
+		worldCreation(shaderTex, shaderMP, world, component, translate);
 
-		scale = glm::scale(identity, glm::vec3(1.0f, 1.5f, 1.0f));
-		rotate = glm::rotate(identity, glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-		component.building(shaderTex, true, glm::translate(identity, glm::vec3(-3.5f, -0.5f, 7.0f)) * rotate * scale * revolve);
-		component.building(shaderTex, true, glm::translate(identity, glm::vec3(-3.5f, -0.5f, 3.0f)) * rotate * scale * revolve);
-		component.building(shaderTex, true, glm::translate(identity, glm::vec3(-3.5f, -0.5f, -1.0f)) * rotate * scale * revolve);
 
-		component.building(shaderTex, true, glm::translate(identity, glm::vec3(3.5f, -0.5f, 7.0f)) * rotate * scale * revolve);
-		component.building(shaderTex, true, glm::translate(identity, glm::vec3(3.5f, -0.5f, 3.0f)) * rotate * scale * revolve);
-		component.building(shaderTex, true, glm::translate(identity, glm::vec3(3.5f, -0.5f, -1.0f)) * rotate * scale * revolve);
-
-		//world.residential(shaderTex, true, glm::translate(identity, glm::vec3(-4.0f, -0.5f, -6.0f)) * revolve);
-		///*rotate = glm::rotate(identity, glm::radians(-90.0f), glm::vec3(0.0f, 1.0f, 0.0f));*/
-		/*for (int i = 0; i < 4; i++) {
-			component.wall(shaderTex, true, glm::translate(identity, glm::vec3(3.05f+i, -0.5f, 4.0f)) * revolve);
-			component.wall(shaderTex, true, glm::translate(identity, glm::vec3(-2.05f-i, -0.5f, 4.0f)) * revolve);
-		}*/
-		/*component.box(shaderTex, true, glm::translate(identity, glm::vec3(3.2f, -0.4f, -3.0f))* revolve); 
-		component.box(shaderTex, true, glm::translate(identity, glm::vec3(4.2f, -0.4f, -3.0f))* revolve);*/
-		shaderMP.use();
-		world.road(shaderMP, glm::translate(identity, glm::vec3(-1.0f, -0.5f, -6.0f)) * revolve);
-		
-		rotate = glm::rotate(identity, glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-		for (int i = 0; i < 4; i++) {
-			component.streetlight(shaderMP, glm::translate(identity, glm::vec3(-1.0f, -0.5f, -6.0f+ i * 4.0f)) * revolve);
-			component.streetlight(shaderMP, glm::translate(identity, glm::vec3(3.0f, -0.5f, -6.0f + i * 4.0f)) * rotate * revolve);
-			
-		}
-		
-		//component.door_tex(shaderTex, glm::translate(identity, glm::vec3(2.5f, 0.0f, -3.0f)) * revolve);
-		component.bench(shaderMP, glm::translate(identity, glm::vec3(-2.0f, -0.15f, -4.5f)) * rotate * revolve); 
-		 /*for (int i = 0; i < 4; i++) {
-			 component.wall(shaderMP, false, glm::translate(identity, glm::vec3(3.0f+i, -0.5f, -6.0f)) * revolve);
-			 component.wall(shaderMP, false, glm::translate(identity, glm::vec3(-2.0f - i, -0.5f, -6.0f)) * revolve);
-		 }
-		 rotate = glm::rotate(identity, glm::radians(-90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-		 for (int i = 0; i < 10; i++) {
-			 component.wall(shaderMP, false, glm::translate(identity, glm::vec3(7.0f, -0.5f, -6.0f+i)) * rotate * revolve);
-			 component.wall(shaderMP, false, glm::translate(identity, glm::vec3(-5.0f, -0.5f, -6.0f+i)) * rotate * revolve);
-		 }*/
-		 
-		
 
 
 		glfwSwapBuffers(window);
@@ -279,8 +184,11 @@ void processInput(GLFWwindow* window)
 		glfwSetWindowShouldClose(window, true);
 
 	float cameraSpeed = static_cast<float>(2.5 * deltaTime);
-	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
 		camera.ProcessKeyboard(FORWARD, deltaTime);
+		currentCharacterPos = camera.Position.z;
+	}
+		
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
 		camera.ProcessKeyboard(BACKWARD, deltaTime);
 	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
@@ -316,7 +224,7 @@ void processInput(GLFWwindow* window)
 		nightMode = !nightMode;
 	}
 	if (glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS) {
-		numOfPointLightRoom+=1;
+		numOfPointLightRoom += 1;
 		numOfPointLightRoom %= 2;
 	}
 	if (glfwGetKey(window, GLFW_KEY_5) == GLFW_PRESS) {
@@ -375,39 +283,106 @@ void mouse_callback(GLFWwindow* window, double xposIn, double yposIn)
 	lastY = ypos;
 }
 
-//unsigned int loadTexture(char const* path)
-//{
-//	unsigned int textureID;
-//	glGenTextures(1, &textureID);
-//
-//	int width, height, nrComponents;
-//	unsigned char* data = stbi_load(path, &width, &height, &nrComponents, 0);
-//	if (data)
-//	{
-//		GLenum format;
-//		if (nrComponents == 1)
-//			format = GL_RED;
-//		else if (nrComponents == 3)
-//			format = GL_RGB;
-//		else if (nrComponents == 4)
-//			format = GL_RGBA;
-//
-//		glBindTexture(GL_TEXTURE_2D, textureID);
-//		glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
-//		glGenerateMipmap(GL_TEXTURE_2D);
-//
-//		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-//		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-//		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-//		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-//
-//		stbi_image_free(data);
-//	}
-//	else
-//	{
-//		std::cout << "Texture failed to load at path: " << path << std::endl;
-//		stbi_image_free(data);
-//	}
-//
-//	return textureID;
-//}
+/*------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+/*------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+void shaderSetup(Shader& lightCubeShader, Shader& shaderTex, Shader& shaderMP, glm::mat4& projection, glm::mat4& view)
+{
+	lightCubeShader.use();
+	lightCubeShader.setMat4("projection", projection);
+	lightCubeShader.setMat4("view", view);
+	
+	shaderTex.use();
+	shaderTex.setMat4("projection", projection);
+	shaderTex.setMat4("view", view);
+	if (nightMode) shaderTex.setBool("nightMode", true);
+	else shaderTex.setBool("nightMode", false);
+	shaderTex.setBool("flashlightOn", false);
+	shaderTex.setInt("numberofPointlights", 0);
+	shaderTex.setVec3("viewPos", camera.Position);
+
+	// light properties
+
+	// directional light
+	shaderTex.setVec3("dirLight.direction", 1.0f, -3.0f, -3.0f);
+	shaderTex.setVec3("dirLight.ambient", 0.2f, 0.2f, 0.2f);
+	shaderTex.setVec3("dirLight.diffuse", 0.7f, 0.7f, 0.7f);
+	shaderTex.setVec3("dirLight.specular", 1.0f, 1.0f, 1.0f);
+	shaderTex.setBool("nightMode", nightMode);
+
+	// spotlight
+	shaderTex.setVec3("spotLight.position", camera.Position);
+	shaderTex.setVec3("spotLight.direction", camera.Front);
+	shaderTex.setVec3("spotLight.ambient", 0.0f, 0.0f, 0.0f);
+	shaderTex.setVec3("spotLight.diffuse", 1.0f, 1.0f, 1.0f);
+	shaderTex.setVec3("spotLight.specular", 1.0f, 1.0f, 1.0f);
+	shaderTex.setFloat("spotLight.constant", 1.0f);
+	shaderTex.setFloat("spotLight.linear", 0.09f);
+	shaderTex.setFloat("spotLight.quadratic", 0.032f);
+	shaderTex.setFloat("spotLight.cutOff", glm::cos(glm::radians(12.5f)));
+	shaderTex.setFloat("spotLight.outerCutOff", glm::cos(glm::radians(15.0f)));
+	shaderTex.setBool("flashlightOn", torchOn);
+
+
+
+	shaderMP.use();
+	shaderMP.setMat4("projection", projection);
+	shaderMP.setMat4("view", view);
+	if (nightMode) shaderMP.setBool("nightMode", true);
+	else shaderMP.setBool("nightMode", false);
+	shaderMP.setBool("flashlightOn", false);
+	shaderMP.setInt("numberofPointlights", 0);
+	shaderMP.setVec3("viewPos", camera.Position);
+
+	// light properties
+
+	// directional light 
+	shaderMP.setVec3("dirLight.direction", 1.0f, -3.0f, -3.0f);
+	shaderMP.setVec3("dirLight.ambient", 0.2f, 0.2f, 0.2f);
+	shaderMP.setVec3("dirLight.diffuse", 0.7f, 0.7f, 0.7f);
+	shaderMP.setVec3("dirLight.specular", 1.0f, 1.0f, 1.0f);
+	shaderMP.setBool("nightMode", nightMode);
+
+	// spotlight
+	shaderMP.setVec3("spotLight.position", camera.Position);
+	shaderMP.setVec3("spotLight.direction", camera.Front);
+	shaderMP.setVec3("spotLight.ambient", 0.0f, 0.0f, 0.0f);
+	shaderMP.setVec3("spotLight.diffuse", 1.0f, 1.0f, 1.0f);
+	shaderMP.setVec3("spotLight.specular", 1.0f, 1.0f, 1.0f);
+	shaderMP.setFloat("spotLight.constant", 1.0f);
+	shaderMP.setFloat("spotLight.linear", 0.09f);
+	shaderMP.setFloat("spotLight.quadratic", 0.032f);
+	shaderMP.setFloat("spotLight.cutOff", glm::cos(glm::radians(12.5f)));
+	shaderMP.setFloat("spotLight.outerCutOff", glm::cos(glm::radians(15.0f)));
+	shaderMP.setBool("flashlightOn", torchOn);
+}
+
+void worldCreation(Shader& shaderTex, Shader& shaderMP, World& world, Components& component, glm::mat4 alTogether)
+{
+	glm::mat4 rotate, scale, translate, identity = glm::mat4(1.0f);
+
+	shaderTex.use();
+
+	world.residential(shaderTex, true, alTogether * glm::translate(identity, glm::vec3(-4.0f, -0.5f, -6.0f)));
+	world.residential(shaderTex, true, alTogether * glm::translate(identity, glm::vec3(3.0f, -0.5f, -6.0f)));
+
+	scale = glm::scale(identity, glm::vec3(1.0f, 1.5f, 1.0f));
+	rotate = glm::rotate(identity, glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+	component.building(shaderTex, true, alTogether * glm::translate(identity, glm::vec3(-3.5f, -0.5f, 7.0f)) * rotate * scale);
+	component.building(shaderTex, true, alTogether * glm::translate(identity, glm::vec3(-3.5f, -0.5f, 3.0f)) * rotate * scale);
+	component.building(shaderTex, true, alTogether * glm::translate(identity, glm::vec3(-3.5f, -0.5f, -1.0f)) * rotate * scale);
+
+	component.building(shaderTex, true, alTogether * glm::translate(identity, glm::vec3(3.5f, -0.5f, 7.0f)) * rotate * scale);
+	component.building(shaderTex, true, alTogether * glm::translate(identity, glm::vec3(3.5f, -0.5f, 3.0f)) * rotate * scale);
+	component.building(shaderTex, true, alTogether * glm::translate(identity, glm::vec3(3.5f, -0.5f, -1.0f)) * rotate * scale);
+
+	shaderMP.use();
+	world.road(shaderMP, alTogether * glm::translate(identity, glm::vec3(-1.0f, -0.5f, -6.0f)));
+
+	rotate = glm::rotate(identity, glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+	for (int i = 0; i < 4; i++) {
+		component.streetlight(shaderMP, alTogether * glm::translate(identity, glm::vec3(-1.0f, -0.5f, -6.0f + i * 4.0f)));
+		component.streetlight(shaderMP, alTogether * glm::translate(identity, glm::vec3(3.0f, -0.5f, -6.0f + i * 4.0f)) * rotate);
+
+	}
+}

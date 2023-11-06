@@ -1,7 +1,9 @@
 ﻿  Main.cpp
-D:\CMake\Projects\Escape_game_v2\Main.cpp(100,50): warning C4101: 'translate': unreferenced local variable
-D:\CMake\Projects\Escape_game_v2\Main.cpp(100,20): warning C4101: 'altogether': unreferenced local variable
-D:\CMake\Projects\Escape_game_v2\Main.cpp(328,22): warning C4305: '+=': truncation from 'double' to 'float'
-D:\CMake\Projects\Escape_game_v2\Main.cpp(335,22): warning C4305: '+=': truncation from 'double' to 'float'
-D:\CMake\Projects\Escape_game_v2\Main.cpp(342,22): warning C4305: '+=': truncation from 'double' to 'float'
+D:\CMake\Projects\Escape_game_v2\Main.cpp(107,61): warning C4101: 'rotate': unreferenced local variable
+D:\CMake\Projects\Escape_game_v2\Main.cpp(107,69): warning C4101: 'scale': unreferenced local variable
+D:\CMake\Projects\Escape_game_v2\Main.cpp(107,20): warning C4101: 'altogether': unreferenced local variable
+D:\CMake\Projects\Escape_game_v2\Main.cpp(236,22): warning C4305: '+=': truncation from 'double' to 'float'
+D:\CMake\Projects\Escape_game_v2\Main.cpp(243,22): warning C4305: '+=': truncation from 'double' to 'float'
+D:\CMake\Projects\Escape_game_v2\Main.cpp(250,22): warning C4305: '+=': truncation from 'double' to 'float'
+D:\CMake\Projects\Escape_game_v2\Main.cpp(362,27): warning C4101: 'translate': unreferenced local variable
   Escape_game_v2.vcxproj -> D:\CMake\Projects\Escape_game_v2\x64\Debug\Escape_game_v2.exe
