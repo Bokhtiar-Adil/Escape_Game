@@ -85,7 +85,7 @@ public:
 
 	void road(Shader& shader, glm::mat4 alTogether = glm::mat4(1.0f))
 	{
-		roadLength = 15.0f;
+		roadLength = 30.0f;
 		roadWidth = 4.0f;
 
 		this->amb = glm::vec3(0.1f, 0.1f, 0.1f);
@@ -119,13 +119,13 @@ public:
 		this->diff = glm::vec3(1.0f, 1.0f, 1.0f);
 		this->spec = glm::vec3(0.0, 0.0, 0.0); 
 
-		scale = glm::scale(identity, glm::vec3(1.0f, 1.0f, 0.1f));
+		scale = glm::scale(identity, glm::vec3(1.0f, 1.0f, 0.03f));
 		translate = glm::translate(identity, glm::vec3(-1.7f, 0.0f, 0.5f));
 		model = translate * scale * model;
 		modelTogether = alTogether * model;
 		cube.drawCubeWithMaterialisticProperty(shader, this->amb, this->diff, this->spec, this->shininess, modelTogether);
 
-		for (int i = 0; i < 6; i++) {
+		for (int i = 0; i < 14; i++) {
 			translate = glm::translate(identity, glm::vec3(0.0f, 0.0f, 2.0f));
 			model = translate * model;
 			modelTogether = alTogether * model;

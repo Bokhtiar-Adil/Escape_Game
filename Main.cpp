@@ -145,14 +145,15 @@ int main()
 		glm::mat4 rotateZMatrix = glm::rotate(identity, glm::radians(rotate_obj_z), glm::vec3(0.0f, 0.0f, 1.0f));
 		glm::mat4 revolve = rotateZMatrix * rotateYMatrix * rotateXMatrix;
 
-		//if ((int) currentCharacterPos % 15 > 10) {
-		//	currentBlockBase = 
-		//}
+		/*currentBlockBase = currentCharacterPos / 10.0f;
+		currentBlockBase *= 10.0f;
+
+		cout << "CBB: " << currentBlockBase << " \tCCP: " << currentCharacterPos << "\n";*/
 
 		translate = glm::translate(identity, glm::vec3(0.0f, 0.0f, currentBlockBase + 0.0f)); 
 		worldCreation(shaderTex, shaderMP, world, component, translate);
-		translate = glm::translate(identity, glm::vec3(0.0f, 0.0f, currentBlockBase - 12.0f));
-		worldCreation(shaderTex, shaderMP, world, component, translate);
+		/*translate = glm::translate(identity, glm::vec3(0.0f, 0.0f, currentBlockBase - 12.0f));
+		worldCreation(shaderTex, shaderMP, world, component, translate);*/
 
 
 
@@ -360,29 +361,31 @@ void shaderSetup(Shader& lightCubeShader, Shader& shaderTex, Shader& shaderMP, g
 void worldCreation(Shader& shaderTex, Shader& shaderMP, World& world, Components& component, glm::mat4 alTogether)
 {
 	glm::mat4 rotate, scale, translate, identity = glm::mat4(1.0f);
+	int numOfBuilding = 7, numOfStreetLight = 7, numOfResidential = 2;
 
 	shaderTex.use();
 
-	world.residential(shaderTex, true, alTogether * glm::translate(identity, glm::vec3(-4.0f, -0.5f, -6.0f)));
-	world.residential(shaderTex, true, alTogether * glm::translate(identity, glm::vec3(3.0f, -0.5f, -6.0f)));
+	for (int i = 0; i < numOfResidential; i++) {
+		world.residential(shaderTex, true, alTogether * glm::translate(identity, glm::vec3(-4.0f, -0.5f, -6.0f - i*15.0f)));
+		world.residential(shaderTex, true, alTogether * glm::translate(identity, glm::vec3(3.0f, -0.5f, -6.0f - i*15.0f)));
+	}	
 
 	scale = glm::scale(identity, glm::vec3(1.0f, 1.5f, 1.0f));
 	rotate = glm::rotate(identity, glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-	component.building(shaderTex, true, alTogether * glm::translate(identity, glm::vec3(-3.5f, -0.5f, 7.0f)) * rotate * scale);
-	component.building(shaderTex, true, alTogether * glm::translate(identity, glm::vec3(-3.5f, -0.5f, 3.0f)) * rotate * scale);
-	component.building(shaderTex, true, alTogether * glm::translate(identity, glm::vec3(-3.5f, -0.5f, -1.0f)) * rotate * scale);
 
-	component.building(shaderTex, true, alTogether * glm::translate(identity, glm::vec3(3.5f, -0.5f, 7.0f)) * rotate * scale);
-	component.building(shaderTex, true, alTogether * glm::translate(identity, glm::vec3(3.5f, -0.5f, 3.0f)) * rotate * scale);
-	component.building(shaderTex, true, alTogether * glm::translate(identity, glm::vec3(3.5f, -0.5f, -1.0f)) * rotate * scale);
+	for (int i = 0; i < numOfBuilding; i++) {
+		component.building(shaderTex, true, alTogether * glm::translate(identity, glm::vec3(-3.5f, -0.5f, 7.0f - 4.0f*i)) * rotate * scale);
+		component.building(shaderTex, true, alTogether * glm::translate(identity, glm::vec3(3.5f, -0.5f, 7.0f - 4.0f*i)) * rotate * scale);		
+	}
+	
 
 	shaderMP.use();
-	world.road(shaderMP, alTogether * glm::translate(identity, glm::vec3(-1.0f, -0.5f, -6.0f)));
+	world.road(shaderMP, alTogether * glm::translate(identity, glm::vec3(-1.0f, -0.5f, -21.0f)));
 
 	rotate = glm::rotate(identity, glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-	for (int i = 0; i < 4; i++) {
-		component.streetlight(shaderMP, alTogether * glm::translate(identity, glm::vec3(-1.0f, -0.5f, -6.0f + i * 4.0f)));
-		component.streetlight(shaderMP, alTogether * glm::translate(identity, glm::vec3(3.0f, -0.5f, -6.0f + i * 4.0f)) * rotate);
+	for (int i = 0; i < numOfStreetLight; i++) {
+		component.streetlight(shaderMP, alTogether * glm::translate(identity, glm::vec3(-1.0f, -0.5f, 5.0f - i * 4.0f)));
+		component.streetlight(shaderMP, alTogether * glm::translate(identity, glm::vec3(3.0f, -0.5f, 5.0f - i * 4.0f)) * rotate);
 
 	}
 }
