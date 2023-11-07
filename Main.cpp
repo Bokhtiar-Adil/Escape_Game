@@ -51,6 +51,7 @@ void simpleRoom(unsigned int& VAO, Shader& shader, glm::mat4 offset, glm::mat4 a
 // helper functions
 void shaderSetup(Shader& lightCubeShader, Shader& shaderTex, Shader& shaderMP, glm::mat4& projection, glm::mat4& view);
 void worldCreation(Shader& shaderTex, Shader& shaderMP, World& world, Components& component, glm::mat4 revolve);
+void protagonistMoveHandler(Character& protagonist, Shader& shaderMP, glm::mat4 revolve);
 
 bool torchOn = false;
 bool nightMode = false;
@@ -70,6 +71,9 @@ float rotate_obj_axis_z = 0.0f;
 float currentBlockBase = 0.0f;
 float currentCharacterPos = initialCameraZ;
 int currentBlockNumber = 0;
+float protagonistZmove = 0.0f, protagonistXmove = 0.0f, protagonistYmove = 0.0f;
+float protagonistXinitial = 1.05f, protagonistYinitial = 0.4f, protagonistZinitial = 5.0f;
+
 
 int main()
 {
@@ -113,6 +117,8 @@ int main()
 	Components component;
 	World world;
 	Character protagonist;
+
+	
 
 	while (!glfwWindowShouldClose(window)) {
 
@@ -166,8 +172,7 @@ int main()
 		}
 		/**/
 
-
-		protagonist.drawProtagonist(shaderMP, glm::translate(identity, glm::vec3(0.0f, 1.2f, 5.0f)) * revolve);
+		protagonistMoveHandler(protagonist, shaderMP, revolve);
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
@@ -199,17 +204,31 @@ void processInput(GLFWwindow* window)
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
 		camera.ProcessKeyboard(FORWARD, deltaTime);
 		currentCharacterPos += 0.05f;
+		protagonistZmove -= (camera.MovementSpeed * deltaTime);
 	}
 		
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
 		camera.ProcessKeyboard(BACKWARD, deltaTime);
 		currentCharacterPos -= 0.05f;
+		protagonistZmove += (camera.MovementSpeed * deltaTime);
 	}
 		
-	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
 		camera.ProcessKeyboard(LEFT, deltaTime);
-	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+		protagonistXmove -= (camera.MovementSpeed * deltaTime);
+	}
+		
+	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
 		camera.ProcessKeyboard(RIGHT, deltaTime);
+		protagonistXmove += (camera.MovementSpeed * deltaTime);
+	}
+	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
+		camera.ProcessKeyboard(FORWARD, deltaTime);
+		currentCharacterPos += 0.05f;
+		protagonistZmove -= (camera.MovementSpeed * deltaTime);
+		protagonistYmove += (25.0f * camera.MovementSpeed * deltaTime);
+	}
+		
 	if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
 		camera.ProcessKeyboard(UP, deltaTime);
 	if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS)
@@ -255,7 +274,7 @@ void processInput(GLFWwindow* window)
 	}
 	if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS)
 	{
-		rotate_obj_y += 0.1;
+		rotate_obj_y += 0.5;
 		rotate_obj_axis_x = 0.0;
 		rotate_obj_axis_y = 1.0;
 		rotate_obj_axis_z = 0.0;
@@ -402,4 +421,17 @@ void worldCreation(Shader& shaderTex, Shader& shaderMP, World& world, Components
 		component.streetlight(shaderMP, alTogether * glm::translate(identity, glm::vec3(3.0f, -0.5f, 5.0f - i * 4.0f)) * rotate);
 
 	}
+}
+
+void protagonistMoveHandler(Character& protagonist, Shader& shaderMP, glm::mat4 revolve)
+{
+	glm::mat4 rotate, scale, translate, identity = glm::mat4(1.0f), protagonistInitial, protagonistMove, protagonistAlTogether;
+
+	rotate = glm::rotate(identity, glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+	scale = glm::scale(identity, glm::vec3(0.5f, 0.5f, 0.5f));
+	protagonistInitial = glm::translate(identity, glm::vec3(protagonistXinitial, protagonistYinitial, protagonistZinitial));
+	protagonistMove = glm::translate(identity, glm::vec3(protagonistXmove, protagonistYmove, protagonistZmove));
+	protagonistAlTogether = protagonistMove * protagonistInitial * rotate * scale * revolve;
+	protagonist.drawProtagonist(shaderMP, protagonistAlTogether);
+	protagonistYmove = 0.0f;
 }

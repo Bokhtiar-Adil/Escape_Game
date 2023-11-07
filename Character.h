@@ -102,8 +102,8 @@ public:
 		this->diff = glm::vec3(0.07f, 0.11f, 0.56f);
 		this->spec = glm::vec3(0.0, 0.0, 0.0);
 
-		scale = glm::scale(identity, glm::vec3(0.1f, 0.1f, 0.1f));
-		translate = glm::translate(identity, glm::vec3(-0.05f, -0.3f, -0.05f));
+		scale = glm::scale(identity, glm::vec3(0.1f, 0.1f, 0.08f));
+		translate = glm::translate(identity, glm::vec3(-0.05f, -0.3f, -0.04f));
 		cubemodel = translate * scale * identity;
 		modelTogether = alTogether * cubemodel;
 		cube.drawCubeWithMaterialisticProperty(shader, this->amb, this->diff, this->spec, this->shininess, modelTogether);
@@ -196,7 +196,53 @@ public:
 		modelTogether = alTogether * cubemodel;
 		cube.drawCubeWithMaterialisticProperty(shader, this->amb, this->diff, this->spec, this->shininess, modelTogether);
 
+		// eyes
+		this->amb = glm::vec3(0.07f, 0.11f, 0.56f);
+		this->diff = glm::vec3(0.07f, 0.11f, 0.56f);
+		this->spec = glm::vec3(0.0, 0.0, 0.0);
+		
+		scale = glm::scale(identity, glm::vec3(0.1f, 0.05f, 0.08f));
+		translate = glm::translate(identity, glm::vec3(-0.1f, -0.1f, 0.07f));
+		cubemodel = translate * scale * identity;
+		modelTogether = alTogether * cubemodel;
+		cube.drawCubeWithMaterialisticProperty(shader, this->amb, this->diff, this->spec, this->shininess, modelTogether);
 
+		translate = glm::translate(identity, glm::vec3(0.12f, 0.0f, 0.00f));
+		cubemodel = translate * cubemodel;
+		modelTogether = alTogether * cubemodel;
+		cube.drawCubeWithMaterialisticProperty(shader, this->amb, this->diff, this->spec, this->shininess, modelTogether);
+
+		// ears
+		this->amb = glm::vec3(0.07f, 0.11f, 0.56f);
+		this->diff = glm::vec3(0.07f, 0.11f, 0.56f);
+		this->spec = glm::vec3(0.0, 0.0, 0.0);
+
+		scale = glm::scale(identity, glm::vec3(0.02f, 0.2f, 0.02f));
+		translate = glm::translate(identity, glm::vec3(-0.16f, -0.1f, 0.0f));
+		cubemodel = translate * scale * identity;
+		modelTogether = alTogether * cubemodel;
+		cube.drawCubeWithMaterialisticProperty(shader, this->amb, this->diff, this->spec, this->shininess, modelTogether);
+
+		translate = glm::translate(identity, glm::vec3(0.3f, 0.0f, 0.00f));
+		cubemodel = translate * cubemodel;
+		modelTogether = alTogether * cubemodel;
+		cube.drawCubeWithMaterialisticProperty(shader, this->amb, this->diff, this->spec, this->shininess, modelTogether);
+
+		// hat
+		this->amb = glm::vec3(0.07f, 0.11f, 0.56f);
+		this->diff = glm::vec3(0.07f, 0.11f, 0.56f);
+		this->spec = glm::vec3(0.0, 0.0, 0.0);
+
+		scale = glm::scale(identity, glm::vec3(0.1f, 0.05f, 0.08f));
+		translate = glm::translate(identity, glm::vec3(-0.05f, 0.05f, -0.02f));
+		cubemodel = translate * scale * identity;
+		modelTogether = alTogether * cubemodel;
+		cube.drawCubeWithMaterialisticProperty(shader, this->amb, this->diff, this->spec, this->shininess, modelTogether);
+	}
+
+	void move(Shader& shader, glm::mat4 alTogether)
+	{
+		drawProtagonist(shader, alTogether);
 	}
 };
 
