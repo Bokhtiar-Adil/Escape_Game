@@ -50,7 +50,7 @@ void simpleRoom(unsigned int& VAO, Shader& shader, glm::mat4 offset, glm::mat4 a
 
 // helper functions
 void shaderSetup(Shader& lightCubeShader, Shader& shaderTex, Shader& shaderMP, glm::mat4& projection, glm::mat4& view);
-void worldCreation(Shader& shaderTex, Shader& shaderMP, World& world, Components& component, glm::mat4 revolve);
+void worldExpansion(Shader& shaderTex, Shader& shaderMP, World& world, Components& component, glm::mat4 revolve);
 void protagonistMoveHandler(Character& protagonist, Shader& shaderMP, glm::mat4 revolve);
 
 bool torchOn = false;
@@ -73,6 +73,7 @@ float currentCharacterPos = initialCameraZ;
 int currentBlockNumber = 0;
 float protagonistZmove = 0.0f, protagonistXmove = 0.0f, protagonistYmove = 0.0f;
 float protagonistXinitial = 1.05f, protagonistYinitial = 0.4f, protagonistZinitial = 5.0f;
+int jumpCoolDown = 0;
 
 
 int main()
@@ -126,6 +127,8 @@ int main()
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
 
+		jumpCoolDown++;
+
 		processInput(window);
 
 		if (!nightMode) glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
@@ -165,11 +168,9 @@ int main()
 		}
 		currentBlockBase = -1 * (currentBlockNumber * 30.0f);
 		translate = glm::translate(identity, glm::vec3(0.0f, 0.0f, currentBlockBase + 0.0f)); 
-		worldCreation(shaderTex, shaderMP, world, component, translate);
-		if (( - 1 * camera.Position.z + initialCameraZ) - currentBlockNumber * 30.0f > 10.0f) {
-			translate = glm::translate(identity, glm::vec3(0.0f, 0.0f, currentBlockBase - 30.0f));
-			worldCreation(shaderTex, shaderMP, world, component, translate);
-		}
+		worldExpansion(shaderTex, shaderMP, world, component, translate);
+		translate = glm::translate(identity, glm::vec3(0.0f, 0.0f, currentBlockBase - 30.0f));
+		worldExpansion(shaderTex, shaderMP, world, component, translate);
 		/**/
 
 		protagonistMoveHandler(protagonist, shaderMP, revolve);
@@ -226,7 +227,10 @@ void processInput(GLFWwindow* window)
 		camera.ProcessKeyboard(FORWARD, deltaTime);
 		currentCharacterPos += 0.05f;
 		protagonistZmove -= (camera.MovementSpeed * deltaTime);
-		protagonistYmove += (25.0f * camera.MovementSpeed * deltaTime);
+		if (jumpCoolDown >= 20) {
+			protagonistYmove = (25.0f * camera.MovementSpeed * deltaTime);
+			jumpCoolDown = 0;
+		}
 	}
 		
 	if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
@@ -391,7 +395,7 @@ void shaderSetup(Shader& lightCubeShader, Shader& shaderTex, Shader& shaderMP, g
 	shaderMP.setBool("flashlightOn", torchOn);
 }
 
-void worldCreation(Shader& shaderTex, Shader& shaderMP, World& world, Components& component, glm::mat4 alTogether)
+void worldExpansion(Shader& shaderTex, Shader& shaderMP, World& world, Components& component, glm::mat4 alTogether)
 {
 	glm::mat4 rotate, scale, translate, identity = glm::mat4(1.0f);
 	int numOfBuilding = 7, numOfStreetLight = 7, numOfResidential = 2;
@@ -433,5 +437,5 @@ void protagonistMoveHandler(Character& protagonist, Shader& shaderMP, glm::mat4 
 	protagonistMove = glm::translate(identity, glm::vec3(protagonistXmove, protagonistYmove, protagonistZmove));
 	protagonistAlTogether = protagonistMove * protagonistInitial * rotate * scale * revolve;
 	protagonist.drawProtagonist(shaderMP, protagonistAlTogether);
-	protagonistYmove = 0.0f;
+	if (jumpCoolDown==15) protagonistYmove = 0.0f;
 }
