@@ -110,7 +110,7 @@ public:
 
 		// torso
 		this->amb = glm::vec3(1.0f, 1.0f, 1.0f);
-		this->diff = glm::vec3(1.0f, 1.0f, 1.0f);
+		this->diff = glm::vec3(0.8f, 0.8f, 0.8f);
 		this->spec = glm::vec3(0.7f, 0.7f, 0.7f);
 
 		scale = glm::scale(identity, glm::vec3(0.3f, 0.5f, 0.1f));
@@ -136,13 +136,13 @@ public:
 		spheremodel = translate * spheremodel;
 		modelTogether = alTogether * spheremodel;
 		sphere.drawSphere(shader, modelTogether);
-		
+
 		//  torso-leg joint
 		translate = glm::translate(identity, glm::vec3(0.14f, -0.57f, 0.0f));
 		spheremodel = translate * spheremodel;
 		modelTogether = alTogether * spheremodel;
 		sphere.drawSphere(shader, modelTogether);
-		
+
 		translate = glm::translate(identity, glm::vec3(0.17f, 0.0f, 0.0f));
 		spheremodel = translate * spheremodel;
 		modelTogether = alTogether * spheremodel;
@@ -150,7 +150,7 @@ public:
 
 		// hands
 		this->amb = glm::vec3(1.0f, 1.0f, 1.0f);
-		this->diff = glm::vec3(1.0f, 1.0f, 1.0f);
+		this->diff = glm::vec3(0.8f, 0.8f, 0.8f);
 		this->spec = glm::vec3(0.7, 0.7, 0.7);
 
 		scale = glm::scale(identity, glm::vec3(0.1f, 0.4f, 0.1f));
@@ -166,7 +166,7 @@ public:
 
 		// legs
 		this->amb = glm::vec3(1.0f, 1.0f, 1.0f);
-		this->diff = glm::vec3(1.0f, 1.0f, 1.0f);
+		this->diff = glm::vec3(0.8f, 0.8f, 0.8f);
 		this->spec = glm::vec3(0.7f, 0.7f, 0.7f);
 
 		scale = glm::scale(identity, glm::vec3(0.1f, 0.6f, 0.1f));
@@ -200,7 +200,7 @@ public:
 		this->amb = glm::vec3(0.07f, 0.11f, 0.56f);
 		this->diff = glm::vec3(0.07f, 0.11f, 0.56f);
 		this->spec = glm::vec3(0.0, 0.0, 0.0);
-		
+
 		scale = glm::scale(identity, glm::vec3(0.1f, 0.05f, 0.08f));
 		translate = glm::translate(identity, glm::vec3(-0.1f, -0.1f, 0.07f));
 		cubemodel = translate * scale * identity;

@@ -9,17 +9,19 @@
 
 #include "Cube.h"
 #include "Shader.h"
+#include "Sphere.h"
 
 class Components
 {
 private:
 
-	glm::mat4 identity, model, modelTogether, scale, translate, rotate;
+	glm::mat4 identity, model, modelTogether, scale, translate, rotate, spheremodel;
 	unsigned int dMap, sMap;
 	float shininess = 32.0f;
 	glm::vec3 amb, diff, spec;
 
 	Cube cube = Cube();
+	Sphere sphere = Sphere();
 
 	unsigned int cylinderVAO;
 	unsigned int cylinderVBO;
@@ -1023,7 +1025,62 @@ public:
 		
 	}
 
-	
+	void tree(Shader& shader, bool withTexture, glm::mat4 alTogether = glm::mat4(1.0f))
+	{
+		baseHeight = 1.0f;
+		baseWidth = 0.1f;
+
+		if (withTexture) {
+			/*this->dMap = walldmp;
+			this->sMap = wallsmp;*/
+		}
+		else {
+			this->amb = glm::vec3(0.45f, 0.36f, 0.26f);
+			this->diff = glm::vec3(0.45f, 0.36f, 0.26f);
+			this->spec = glm::vec3(0.0f, 0.0f, 0.0f);
+		}
+
+		shader.setBool("exposedToSun", true);
+		model = identity;
+		scale = glm::scale(identity, glm::vec3(baseWidth, baseHeight, baseWidth));
+		model = scale * model;
+		modelTogether = alTogether * model;
+		if (withTexture) cube.drawCubeWithTexture(shader, dMap, sMap, this->shininess, modelTogether);
+		else cube.drawCubeWithMaterialisticProperty(shader, this->amb, this->diff, this->spec, this->shininess, modelTogether);
+
+		scale = glm::scale(identity, glm::vec3(baseWidth * 0.5f, baseHeight * 0.4f, baseWidth * 0.5f));
+		rotate = glm::rotate(identity, glm::radians(-30.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+		translate = glm::translate(identity, glm::vec3(0.02f, baseHeight*0.8f, 0.02f));
+		model = translate * rotate * scale * identity;
+		modelTogether = alTogether * model;
+		if (withTexture) cube.drawCubeWithTexture(shader, dMap, sMap, this->shininess, modelTogether);
+		else cube.drawCubeWithMaterialisticProperty(shader, this->amb, this->diff, this->spec, this->shininess, modelTogether);
+
+		scale = glm::scale(identity, glm::vec3(baseWidth * 0.5f, baseHeight * 0.4f, baseWidth * 0.5f));
+		rotate = glm::rotate(identity, glm::radians(30.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+		translate = glm::translate(identity, glm::vec3(0.02f, baseHeight * 0.8f, 0.05f));
+		model = translate * rotate * scale * identity;
+		modelTogether = alTogether * model;
+		if (withTexture) cube.drawCubeWithTexture(shader, dMap, sMap, this->shininess, modelTogether);
+		else cube.drawCubeWithMaterialisticProperty(shader, this->amb, this->diff, this->spec, this->shininess, modelTogether);
+
+		scale = glm::scale(identity, glm::vec3(0.3f, 0.3f, 0.3f));
+		translate = glm::translate(identity, glm::vec3(0.0f, baseHeight, -0.1f));
+		spheremodel = translate * scale * identity;
+		modelTogether = alTogether * spheremodel;
+		sphere.drawSphere(shader, modelTogether);
+
+		translate = glm::translate(identity, glm::vec3(-0.1f, 0.2f, 0.0f));
+		spheremodel = translate * spheremodel;
+		modelTogether = alTogether * spheremodel;
+		sphere.drawSphere(shader, modelTogether);
+
+		translate = glm::translate(identity, glm::vec3(0.0f, 0.2f, 0.1f));
+		spheremodel = translate * spheremodel;
+		modelTogether = alTogether * spheremodel;
+		sphere.drawSphere(shader, modelTogether);
+
+	}
 
 };
 

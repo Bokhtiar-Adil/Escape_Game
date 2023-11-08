@@ -74,7 +74,12 @@ int currentBlockNumber = 0;
 float protagonistZmove = 0.0f, protagonistXmove = 0.0f, protagonistYmove = 0.0f;
 float protagonistXinitial = 1.05f, protagonistYinitial = 0.4f, protagonistZinitial = 5.0f;
 int jumpCoolDown = 0;
-
+float sunX = 1.05f;
+float sunY = 3.0f;
+float sunZ = 5.0f;
+int nightDuration = 0;
+float sunAmb = 0.3f, sunDiff = 0.8f, sunSpec = 1.0f;
+bool dayNightCycleMode = true;
 
 int main()
 {
@@ -131,12 +136,12 @@ int main()
 
 		processInput(window);
 
-		if (!nightMode) glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+		if (!nightMode) glClearColor(sunDiff+0.2f, sunDiff + 0.2f, sunDiff + 0.2f, sunDiff + 0.2f);
 		else glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 
-		projection = glm::perspective(glm::radians(camera.Zoom), (float)WIN_WIDTH / (float)WIN_HEIGHT, 0.1f, 100.0f);
+		projection = glm::perspective(glm::radians(camera.Zoom), (float)WIN_WIDTH / (float)WIN_HEIGHT, 0.1f, 30.0f);
 		view = camera.GetViewMatrix();
 
 		shaderSetup(lightCubeShader, shaderTex, shaderMP, projection, view);
@@ -174,6 +179,8 @@ int main()
 		/**/
 
 		protagonistMoveHandler(protagonist, shaderMP, revolve);
+
+		//component.tree(shaderMP, false, glm::translate(identity, glm::vec3(0.0f, 0.0f, 3.0f)) * revolve);
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
@@ -299,6 +306,9 @@ void processInput(GLFWwindow* window)
 		rotate_obj_axis_y = 0.0;
 		rotate_obj_axis_z = 1.0;
 	}
+	if (glfwGetKey(window, GLFW_KEY_0) == GLFW_PRESS) {
+		dayNightCycleMode = !dayNightCycleMode;
+	}
 
 
 }
@@ -340,12 +350,50 @@ void shaderSetup(Shader& lightCubeShader, Shader& shaderTex, Shader& shaderMP, g
 	shaderTex.setVec3("viewPos", camera.Position);
 
 	// light properties
+	if (dayNightCycleMode) {
+		float gradualLightChange = 0.001f;
+		if (sunX > -6.0f) {
+			if (sunAmb < 0.3f) sunAmb += gradualLightChange;
+			if (sunDiff < 0.8f) sunDiff += gradualLightChange;
+			if (sunSpec < 1.0f) sunSpec += gradualLightChange;
+			if (sunAmb >= 0.3f && sunDiff >= 0.8f && sunSpec >= 1.0f) sunX -= 0.001f;
+		}
+		else {
+			if (sunAmb > 0.0f) sunAmb -= gradualLightChange;
+			if (sunDiff > 0.0f) sunDiff -= gradualLightChange;
+			if (sunSpec > 0.0f) sunSpec -= gradualLightChange;
+			//sunX = 6.0f;
+			if (sunDiff <= 0.0f) nightMode = true;
+			if (nightMode) nightDuration++;
+			if (nightDuration == 1000) {
+				nightMode = false;
+				nightDuration = 0;
+				sunX = 6.0f;
+			}
+		}
+	}
+	else {
+		sunX = 1.05f;
+		sunY = 3.0f;
+		sunZ = 5.0f; 
+		nightDuration = 0; 
+		sunAmb = 0.3f;
+		sunDiff = 0.8f;
+		sunSpec = 1.0f;
+		nightMode = false;
+	}
 
 	// directional light
-	shaderTex.setVec3("dirLight.direction", 1.0f, -3.0f, -3.0f);
-	shaderTex.setVec3("dirLight.ambient", 0.2f, 0.2f, 0.2f);
-	shaderTex.setVec3("dirLight.diffuse", 0.7f, 0.7f, 0.7f);
+	/*shaderTex.setVec3("dirLight.direction", 1.0f, -3.0f, -3.0f);
+	shaderTex.setVec3("dirLight.ambient", 0.3f, 0.3f, 0.3f);
+	shaderTex.setVec3("dirLight.diffuse", 0.8f, 0.8f, 0.8f);
 	shaderTex.setVec3("dirLight.specular", 1.0f, 1.0f, 1.0f);
+	shaderTex.setBool("nightMode", nightMode);*/
+
+	shaderTex.setVec3("dirLight.direction", -sunX, -sunY, -sunZ);
+	shaderTex.setVec3("dirLight.ambient", sunAmb, sunAmb, sunAmb);
+	shaderTex.setVec3("dirLight.diffuse", sunDiff, sunDiff, sunDiff);
+	shaderTex.setVec3("dirLight.specular", sunSpec, sunSpec, sunSpec);
 	shaderTex.setBool("nightMode", nightMode);
 
 	// spotlight
@@ -375,10 +423,10 @@ void shaderSetup(Shader& lightCubeShader, Shader& shaderTex, Shader& shaderMP, g
 	// light properties
 
 	// directional light 
-	shaderMP.setVec3("dirLight.direction", 1.0f, -3.0f, -3.0f);
-	shaderMP.setVec3("dirLight.ambient", 0.2f, 0.2f, 0.2f);
-	shaderMP.setVec3("dirLight.diffuse", 0.7f, 0.7f, 0.7f);
-	shaderMP.setVec3("dirLight.specular", 1.0f, 1.0f, 1.0f);
+	shaderMP.setVec3("dirLight.direction", -sunX, -sunY, -sunZ);
+	shaderMP.setVec3("dirLight.ambient", sunAmb, sunAmb, sunAmb);
+	shaderMP.setVec3("dirLight.diffuse", sunDiff, sunDiff, sunDiff);
+	shaderMP.setVec3("dirLight.specular", sunSpec, sunSpec, sunSpec);
 	shaderMP.setBool("nightMode", nightMode);
 
 	// spotlight
@@ -393,6 +441,8 @@ void shaderSetup(Shader& lightCubeShader, Shader& shaderTex, Shader& shaderMP, g
 	shaderMP.setFloat("spotLight.cutOff", glm::cos(glm::radians(12.5f)));
 	shaderMP.setFloat("spotLight.outerCutOff", glm::cos(glm::radians(15.0f)));
 	shaderMP.setBool("flashlightOn", torchOn);
+
+	
 }
 
 void worldExpansion(Shader& shaderTex, Shader& shaderMP, World& world, Components& component, glm::mat4 alTogether)
