@@ -45,6 +45,7 @@ struct SpotLight {
 };
 
 #define MAX_NR_POINT_LIGHTS 4
+#define MAX_NR_STREET_LIGHTS 16
 
 in vec3 FragPos;
 in vec3 Normal;
@@ -61,6 +62,9 @@ uniform bool nightMode;
 uniform bool exposedToSun;
 uniform bool flashlightOn;
 uniform vec3 emission;
+uniform PointLight streetLights[MAX_NR_STREET_LIGHTS];
+uniform bool streetLightStatus[MAX_NR_STREET_LIGHTS];
+uniform int numberofStreetlights;
 
 // function prototypes
 vec3 CalcDirectionalLight(DirectionalLight light, vec3 normal, vec3 viewDir);
@@ -87,7 +91,12 @@ void main()
     if (flashlightOn == true) {
         result += CalcSpotLight(spotLight, norm, FragPos, viewDir);
     }
-    
+    // streetLights calculation - a variant of pointlights
+    for(int i = 0; i < numberofStreetlights; i++) {
+        if (streetLightStatus[i] == true) {
+            result += CalcPointLight(streetLights[i], norm, FragPos, viewDir);
+        }
+    }
     FragColor = vec4(result, 1.0);
 }
 
