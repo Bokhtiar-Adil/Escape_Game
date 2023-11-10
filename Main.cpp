@@ -52,11 +52,12 @@ void simpleRoom(unsigned int& VAO, Shader& shader, glm::mat4 offset, glm::mat4 a
 void shaderSetup(Shader& lightCubeShader, Shader& shaderTex, Shader& shaderMP, glm::mat4& projection, glm::mat4& view);
 void worldExpansion(Shader& shaderTex, Shader& shaderMP, World& world, Components& component, glm::mat4 revolve);
 void protagonistMoveHandler(Character& protagonist, Shader& shaderMP, glm::mat4 revolve);
-void streetlightSetup(Shader& shader, int index, float slX, float slY, float slZ);
+void streetlightSetup(Shader& shader, float moveZ, float slAmb = 0.1f, float slDiff = 0.5f, float slSpec = 0.5f, float slConst = 1.0f, float slLin = 0.09f, float slQuad = 0.032f);
 void dayNightControl();
 
 bool torchOn = false;
 bool nightMode = false;
+bool streetLightOn = false;
 int numOfPointLightRoad = 3;
 int numOfPointLightRoom = 1;
 bool ambientOn = true;
@@ -129,6 +130,7 @@ int main()
 
 	float px = 1.0f, py = 0.2f, pz = initialCameraZ;
 
+
 	while (!glfwWindowShouldClose(window)) {
 
 		float currentFrame = static_cast<float>(glfwGetTime());
@@ -143,34 +145,24 @@ int main()
 		else glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-
 		projection = glm::perspective(glm::radians(camera.Zoom), (float)WIN_WIDTH / (float)WIN_HEIGHT, 0.1f, 30.0f);
 		view = camera.GetViewMatrix();
 
 		shaderSetup(lightCubeShader, shaderTex, shaderMP, projection, view);
-
+		shaderTex.use();
+		streetlightSetup(shaderTex, protagonistZmove);
+		shaderMP.use();
+		streetlightSetup(shaderMP, protagonistZmove);
+		
 		xoffset = 0.5f, yoffset = 0.5f;
 		offset = glm::translate(identity, glm::vec3(xoffset, yoffset, zoffset));
-		//shader.setInt("numberofPointlights", 0);
-		/*shader.setVec3("emission", glm::vec3(0.1f, 0.1f, 0.1f));
-		shader.setInt("numberofPointlights", numOfPointLightRoad);
-		road(VAO, shader, offset);
-		shader.setInt("numberofPointlights", numOfPointLightRoom);
-		simpleRoom(VAO, shader, offset, glm::mat4(1.0f), lightCubeVAO, lightCubeShader);*/
-		/*shader.setInt("numberofPointlights", 0);
-		shader.setBool("exposedToSun", true);		*/
-
-		//table(VAO, shader, offset, glm::rotate(identity, glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
+		
 		glm::mat4 rotateXMatrix = glm::rotate(identity, glm::radians(rotate_obj_x), glm::vec3(1.0f, 0.0f, 0.0f));
 		glm::mat4 rotateYMatrix = glm::rotate(identity, glm::radians(rotate_obj_y), glm::vec3(0.0f, 1.0f, 0.0f));
 		glm::mat4 rotateZMatrix = glm::rotate(identity, glm::radians(rotate_obj_z), glm::vec3(0.0f, 0.0f, 1.0f));
 		glm::mat4 revolve = rotateZMatrix * rotateYMatrix * rotateXMatrix;
 
-		/*currentBlockBase = currentCharacterPos / 30.0f;
-		currentBlockBase *= 30.0f;*/
 		currentBlockBase = 0.0f;
-		//cout << camera.Position.z << "\n";
-		//cout << (-1 * camera.Position.z + initialCameraZ) - currentBlockNumber * 30.0f << "\n";
 		if ((-1 * camera.Position.z + initialCameraZ) - currentBlockNumber * 30.0f > 30.0f) {
 			currentBlockNumber += 1;
 		}
@@ -196,9 +188,6 @@ int main()
 		glfwPollEvents();
 	}
 
-	//glDeleteVertexArrays(1, &VAO);
-	//glDeleteBuffers(1, &VBO);
-	//glDeleteBuffers(1, &EBO);
 	shader.deleteProgram();
 
 	glfwTerminate();
@@ -388,6 +377,8 @@ void dayNightControl()
 				sunX = 6.0f;
 			}
 		}
+		if (sunDiff <= 0.3f) streetLightOn = true;
+		else streetLightOn = false;
 	}
 	else {
 		if (!dayNightDirectMode) {
@@ -400,18 +391,21 @@ void dayNightControl()
 			sunSpec = 1.0f;
 			nightMode = false;
 			dayNightCycleMode = true;
+			streetLightOn = false;
 		}
 		else {
 			if (nightMode) {
 				sunAmb = 0.0f;
 				sunDiff = 0.0f;
 				sunSpec = 1.0f;
+				streetLightOn = true;
 			}
 			else {
 				sunAmb = 0.3f;
 				sunDiff = 0.8f;
 				sunSpec = 1.0f;
 				dayNightCycleMode = true;
+				streetLightOn = false;
 			}
 		}
 		
@@ -498,7 +492,16 @@ void shaderSetup(Shader& lightCubeShader, Shader& shaderTex, Shader& shaderMP, g
 	shaderTex.setFloat("spotLight.outerCutOff", glm::cos(glm::radians(15.0f)));
 	shaderTex.setBool("flashlightOn", torchOn);
 
-
+	shaderTex.setInt("numberofStreetlights", 14);
+	for (int index = 0; index < 16; index++) {
+		shaderTex.setVec3("streetLights[index].ambient", 0.1f, 0.1f, 0.1f);
+		shaderTex.setVec3("streetLights[index].diffuse", 1.0f, 1.0f, 1.0f);
+		shaderTex.setVec3("streetLights[index].specular", 1.0f, 1.0f, 1.0f);
+		shaderTex.setFloat("streetLights[index].constant", 1.0f);
+		shaderTex.setFloat("streetLights[index].linear", 0.09f);
+		shaderTex.setFloat("streetLights[index].quadratic", 0.032f);
+		shaderTex.setBool("streetLightStatus[index]", false);
+	}
 
 	shaderMP.use();
 	shaderMP.setMat4("projection", projection);
@@ -531,32 +534,181 @@ void shaderSetup(Shader& lightCubeShader, Shader& shaderTex, Shader& shaderMP, g
 	shaderMP.setFloat("spotLight.outerCutOff", glm::cos(glm::radians(15.0f)));
 	shaderMP.setBool("flashlightOn", torchOn);
 
+	shaderMP.setInt("numberofStreetlights", 14);
+	for (int index = 0; index < 16; index++) {
+		shaderMP.setVec3("streetLights[index].ambient", 0.1f, 0.1f, 0.1f);
+		shaderMP.setVec3("streetLights[index].diffuse", 1.0f, 1.0f, 1.0f);
+		shaderMP.setVec3("streetLights[index].specular", 1.0f, 1.0f, 1.0f);
+		shaderMP.setFloat("streetLights[index].constant", 1.0f);
+		shaderMP.setFloat("streetLights[index].linear", 0.09f);
+		shaderMP.setFloat("streetLights[index].quadratic", 0.032f);
+		shaderMP.setBool("streetLightStatus[index]", false);
+	}
 	
 }
 
-void streetlightSetup(Shader& shader, int index, float slX, float slY, float slZ)
+void streetlightSetup(Shader& shader, float moveZ, float slAmb, float slDiff, float slSpec, float slConst, float slLin, float slQuad)
 {
-	shader.use();
-	shader.setVec3("streetLights[index].position", slX, slY, slZ);
-	shader.setVec3("streetLights[index].ambient", 0.1f, 0.1f, 0.1f);
-	shader.setVec3("streetLights[index].diffuse", 1.0f, 1.0f, 1.0f);
-	shader.setVec3("streetLights[index].specular", 1.0f, 1.0f, 1.0f);
-	shader.setFloat("streetLights[index].constant", 1.0f);
-	shader.setFloat("streetLights[index].linear", 0.09f);
-	shader.setFloat("streetLights[index].quadratic", 0.032f);
-	shader.setBool("streetLightStatus[index]", true);
+	float firstStreetlightXLeft = -0.8f, firstStreetlightXRight = 2.8f, firstStreetlightY = 1.5f, firstStreetlightZ = 8.0f + moveZ;
+	glm::vec4 firstStreetlightLeft = glm::vec4(firstStreetlightXLeft, firstStreetlightY, firstStreetlightZ, 1.0f);
+	glm::vec4 firstStreetlightRight = glm::vec4(firstStreetlightXRight, firstStreetlightY, firstStreetlightZ, 1.0f);
+	glm::vec4 streetlightTogether;
+	int numOfStreetLight = 7;
+	int gap = -4.0f, index = 0;
 
+	//float slAmb = 0.1f, slDiff = 0.5f, slSpec = 0.5f, slConst = 1.0f, slLin = 0.09f, slQuad = 0.032f;
 	
+
+	shader.use();
+	shader.setInt("numberofStreetlights", 14);
+	shader.setBool("streetLightOn", streetLightOn);
+	shader.setVec3("streetLights[0].position", firstStreetlightXLeft, firstStreetlightY, firstStreetlightZ + index*gap);
+	shader.setVec3("streetLights[0].ambient", slAmb, slAmb, slAmb);
+	shader.setVec3("streetLights[0].diffuse", slDiff, slDiff, slDiff);
+	shader.setVec3("streetLights[0].specular", slSpec, slSpec, slSpec);
+	shader.setFloat("streetLights[0].constant", slConst);
+	shader.setFloat("streetLights[0].linear", slLin);
+	shader.setFloat("streetLights[0].quadratic", slQuad);
+	shader.setBool("streetLightStatus[0]", true);
+	index++;
+
+	shader.setVec3("streetLights[1].position", firstStreetlightXLeft, firstStreetlightY, firstStreetlightZ + index*gap);
+	shader.setVec3("streetLights[1].ambient", slAmb, slAmb, slAmb);
+	shader.setVec3("streetLights[1].diffuse", slDiff, slDiff, slDiff);
+	shader.setVec3("streetLights[1].specular", slSpec, slSpec, slSpec);
+	shader.setFloat("streetLights[1].constant", slConst);
+	shader.setFloat("streetLights[1].linear", slLin);
+	shader.setFloat("streetLights[1].quadratic", slQuad);
+	shader.setBool("streetLightStatus[1]", true);
+	index++;
+
+	shader.setVec3("streetLights[2].position", firstStreetlightXLeft, firstStreetlightY, firstStreetlightZ + index*gap);
+	shader.setVec3("streetLights[2].ambient", slAmb, slAmb, slAmb);
+	shader.setVec3("streetLights[2].diffuse", slDiff, slDiff, slDiff);
+	shader.setVec3("streetLights[2].specular", slSpec, slSpec, slSpec);
+	shader.setFloat("streetLights[2].constant", slConst);
+	shader.setFloat("streetLights[2].linear", slLin);
+	shader.setFloat("streetLights[2].quadratic", slQuad);
+	shader.setBool("streetLightStatus[2]", true);
+	index++;
+
+	shader.setVec3("streetLights[3].position", firstStreetlightXLeft, firstStreetlightY, firstStreetlightZ + index*gap);
+	shader.setVec3("streetLights[3].ambient", slAmb, slAmb, slAmb);
+	shader.setVec3("streetLights[3].diffuse", slDiff, slDiff, slDiff);
+	shader.setVec3("streetLights[3].specular", slSpec, slSpec, slSpec);
+	shader.setFloat("streetLights[3].constant", slConst);
+	shader.setFloat("streetLights[3].linear", slLin);
+	shader.setFloat("streetLights[3].quadratic", slQuad);
+	shader.setBool("streetLightStatus[3]", true);
+	index++;
+
+	shader.setVec3("streetLights[4].position", firstStreetlightXLeft, firstStreetlightY, firstStreetlightZ + index*gap);
+	shader.setVec3("streetLights[4].ambient", slAmb, slAmb, slAmb);
+	shader.setVec3("streetLights[4].diffuse", slDiff, slDiff, slDiff);
+	shader.setVec3("streetLights[4].specular", slSpec, slSpec, slSpec);
+	shader.setFloat("streetLights[4].constant", slConst);
+	shader.setFloat("streetLights[4].linear", slLin);
+	shader.setFloat("streetLights[4].quadratic", slQuad);
+	shader.setBool("streetLightStatus[4]", true);
+	index++;
+
+	shader.setVec3("streetLights[5].position", firstStreetlightXLeft, firstStreetlightY, firstStreetlightZ + index*gap);
+	shader.setVec3("streetLights[5].ambient", slAmb, slAmb, slAmb);
+	shader.setVec3("streetLights[5].diffuse", slDiff, slDiff, slDiff);
+	shader.setVec3("streetLights[5].specular", slSpec, slSpec, slSpec);
+	shader.setFloat("streetLights[5].constant", slConst);
+	shader.setFloat("streetLights[5].linear", slLin);
+	shader.setFloat("streetLights[5].quadratic", slQuad);
+	shader.setBool("streetLightStatus[5]", true);
+	index++;
+
+	shader.setVec3("streetLights[6].position", firstStreetlightXLeft, firstStreetlightY, firstStreetlightZ + index*gap);
+	shader.setVec3("streetLights[6].ambient", slAmb, slAmb, slAmb);
+	shader.setVec3("streetLights[6].diffuse", slDiff, slDiff, slDiff);
+	shader.setVec3("streetLights[6].specular", slSpec, slSpec, slSpec);
+	shader.setFloat("streetLights[6].constant", slConst);
+	shader.setFloat("streetLights[6].linear", slLin);
+	shader.setFloat("streetLights[6].quadratic", slQuad);
+	shader.setBool("streetLightStatus[6]", true);
+	
+	index = 0;
+
+	shader.setVec3("streetLights[7].position", firstStreetlightXRight, firstStreetlightY, firstStreetlightZ + index*gap);
+	shader.setVec3("streetLights[7].ambient", slAmb, slAmb, slAmb);
+	shader.setVec3("streetLights[7].diffuse", slDiff, slDiff, slDiff);
+	shader.setVec3("streetLights[7].specular", slSpec, slSpec, slSpec);
+	shader.setFloat("streetLights[7].constant", slConst);
+	shader.setFloat("streetLights[7].linear", slLin);
+	shader.setFloat("streetLights[7].quadratic", slQuad);
+	shader.setBool("streetLightStatus[7]", true);
+	index++;
+
+	shader.setVec3("streetLights[8].position", firstStreetlightXRight, firstStreetlightY, firstStreetlightZ + index*gap);
+	shader.setVec3("streetLights[8].ambient", slAmb, slAmb, slAmb);
+	shader.setVec3("streetLights[8].diffuse", slDiff, slDiff, slDiff);
+	shader.setVec3("streetLights[8].specular", slSpec, slSpec, slSpec);
+	shader.setFloat("streetLights[8].constant", slConst);
+	shader.setFloat("streetLights[8].linear", slLin);
+	shader.setFloat("streetLights[8].quadratic", slQuad);
+	shader.setBool("streetLightStatus[8]", true);
+	index++;
+
+	shader.setVec3("streetLights[9].position", firstStreetlightXRight, firstStreetlightY, firstStreetlightZ + index*gap);
+	shader.setVec3("streetLights[9].ambient", slAmb, slAmb, slAmb);
+	shader.setVec3("streetLights[9].diffuse", slDiff, slDiff, slDiff);
+	shader.setVec3("streetLights[9].specular", slSpec, slSpec, slSpec);
+	shader.setFloat("streetLights[9].constant", slConst);
+	shader.setFloat("streetLights[9].linear", slLin);
+	shader.setFloat("streetLights[9].quadratic", slQuad);
+	shader.setBool("streetLightStatus[9]", true);
+	index++;
+
+	shader.setVec3("streetLights[10].position", firstStreetlightXRight, firstStreetlightY, firstStreetlightZ + index*gap);
+	shader.setVec3("streetLights[10].ambient", slAmb, slAmb, slAmb);
+	shader.setVec3("streetLights[10].diffuse", slDiff, slDiff, slDiff);
+	shader.setVec3("streetLights[10].specular", slSpec, slSpec, slSpec);
+	shader.setFloat("streetLights[10].constant", slConst);
+	shader.setFloat("streetLights[10].linear", slLin);
+	shader.setFloat("streetLights[10].quadratic", slQuad);
+	shader.setBool("streetLightStatus[10]", true);
+	index++;
+
+	shader.setVec3("streetLights[11].position", firstStreetlightXRight, firstStreetlightY, firstStreetlightZ + index*gap);
+	shader.setVec3("streetLights[11].ambient", slAmb, slAmb, slAmb);
+	shader.setVec3("streetLights[11].diffuse", slDiff, slDiff, slDiff);
+	shader.setVec3("streetLights[11].specular", slSpec, slSpec, slSpec);
+	shader.setFloat("streetLights[11].constant", slConst);
+	shader.setFloat("streetLights[11].linear", slLin);
+	shader.setFloat("streetLights[11].quadratic", slQuad);
+	shader.setBool("streetLightStatus[11]", true);
+	index++;
+
+	shader.setVec3("streetLights[12].position", firstStreetlightXRight, firstStreetlightY, firstStreetlightZ + index*gap);
+	shader.setVec3("streetLights[12].ambient", slAmb, slAmb, slAmb);
+	shader.setVec3("streetLights[12].diffuse", slDiff, slDiff, slDiff);
+	shader.setVec3("streetLights[12].specular", slSpec, slSpec, slSpec);
+	shader.setFloat("streetLights[12].constant", slConst);
+	shader.setFloat("streetLights[12].linear", slLin);
+	shader.setFloat("streetLights[12].quadratic", slQuad);
+	shader.setBool("streetLightStatus[12]", true);
+	index++;
+
+	shader.setVec3("streetLights[13].position", firstStreetlightXRight, firstStreetlightY, firstStreetlightZ + index*gap);
+	shader.setVec3("streetLights[13].ambient", slAmb, slAmb, slAmb);
+	shader.setVec3("streetLights[13].diffuse", slDiff, slDiff, slDiff);
+	shader.setVec3("streetLights[13].specular", slSpec, slSpec, slSpec);
+	shader.setFloat("streetLights[13].constant", slConst);
+	shader.setFloat("streetLights[13].linear", slLin);
+	shader.setFloat("streetLights[13].quadratic", slQuad);
+	shader.setBool("streetLightStatus[13]", true);
+	index++;
+
 }
 
 void worldExpansion(Shader& shaderTex, Shader& shaderMP, World& world, Components& component, glm::mat4 alTogether)
 {
 	glm::mat4 rotate, scale, translate, identity = glm::mat4(1.0f);
 	int numOfBuilding = 7, numOfStreetLight = 7, numOfResidential = 2;
-	float fisrtStreetlightXLeft = -0.8f, fisrtStreetlightXRight = 2.8f, firstStreetlightY = 1.5f, firstStreetlightZ = 5.0f;
-	glm::vec4 firstStreetlightLeft = glm::vec4(fisrtStreetlightXLeft, firstStreetlightY, firstStreetlightZ, 1.0f);
-	glm::vec4 firstStreetlightRight = glm::vec4(fisrtStreetlightXRight, firstStreetlightY, firstStreetlightZ, 1.0f);
-	glm::vec4 streetlightTogether;
 
 	shaderTex.use();
 
@@ -572,15 +724,6 @@ void worldExpansion(Shader& shaderTex, Shader& shaderMP, World& world, Component
 		component.building(shaderTex, true, alTogether * glm::translate(identity, glm::vec3(-3.5f, -0.5f, 7.0f - 4.0f*i)) * rotate * scale);
 		component.building(shaderTex, true, alTogether * glm::translate(identity, glm::vec3(3.5f, -0.5f, 7.0f - 4.0f*i)) * rotate * scale);		
 	}
-	shaderTex.setInt("numberofStreetlights", numOfStreetLight*2);
-	for (int i = 0; i < numOfStreetLight; i++) {
-		translate = glm::translate(identity, glm::vec3(0.0f, 0.0f, -4.0f * i));
-		streetlightTogether = alTogether * translate * firstStreetlightLeft;
-		streetlightSetup(shaderTex, i, streetlightTogether.x, streetlightTogether.y, streetlightTogether.z);
-
-		streetlightTogether = alTogether * translate * firstStreetlightRight;
-		streetlightSetup(shaderTex, i*2, streetlightTogether.x, streetlightTogether.y, streetlightTogether.z);
-	}
 
 	shaderMP.use();	
 
@@ -591,16 +734,6 @@ void worldExpansion(Shader& shaderTex, Shader& shaderMP, World& world, Component
 		component.streetlight(shaderMP, alTogether * glm::translate(identity, glm::vec3(-1.0f, -0.5f, 5.0f - i * 4.0f)));
 		// right side of the road
 		component.streetlight(shaderMP, alTogether * glm::translate(identity, glm::vec3(3.0f, -0.5f, 5.0f - i * 4.0f)) * rotate);
-	}
-
-	shaderMP.setInt("numberofStreetlights", numOfStreetLight * 2);
-	for (int i = 0; i < numOfStreetLight; i++) {
-		translate = glm::translate(identity, glm::vec3(0.0f, 0.0f, -4.0f * i));
-		streetlightTogether = alTogether * translate * firstStreetlightLeft;
-		streetlightSetup(shaderMP, i, streetlightTogether.x, streetlightTogether.y, streetlightTogether.z);
-
-		streetlightTogether = alTogether * translate * firstStreetlightRight;
-		streetlightSetup(shaderMP, i*2, streetlightTogether.x, streetlightTogether.y, streetlightTogether.z);
 	}
 }
 

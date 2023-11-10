@@ -2,10 +2,13 @@
 D:\CMake\Projects\Escape_game_v2\Sphere.h(184,26): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
 D:\CMake\Projects\Escape_game_v2\Sphere.h(185,25): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
 D:\CMake\Projects\Escape_game_v2\Sphere.h(187,26): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-D:\CMake\Projects\Escape_game_v2\Main.cpp(123,61): warning C4101: 'rotate': unreferenced local variable
-D:\CMake\Projects\Escape_game_v2\Main.cpp(123,69): warning C4101: 'scale': unreferenced local variable
-D:\CMake\Projects\Escape_game_v2\Main.cpp(123,20): warning C4101: 'altogether': unreferenced local variable
-D:\CMake\Projects\Escape_game_v2\Main.cpp(311,22): warning C4305: '+=': truncation from 'double' to 'float'
-D:\CMake\Projects\Escape_game_v2\Main.cpp(325,22): warning C4305: '+=': truncation from 'double' to 'float'
-D:\CMake\Projects\Escape_game_v2\Main.cpp(609,27): warning C4101: 'translate': unreferenced local variable
+D:\CMake\Projects\Escape_game_v2\Main.cpp(124,61): warning C4101: 'rotate': unreferenced local variable
+D:\CMake\Projects\Escape_game_v2\Main.cpp(124,69): warning C4101: 'scale': unreferenced local variable
+D:\CMake\Projects\Escape_game_v2\Main.cpp(124,20): warning C4101: 'altogether': unreferenced local variable
+D:\CMake\Projects\Escape_game_v2\Main.cpp(300,22): warning C4305: '+=': truncation from 'double' to 'float'
+D:\CMake\Projects\Escape_game_v2\Main.cpp(314,22): warning C4305: '+=': truncation from 'double' to 'float'
+D:\CMake\Projects\Escape_game_v2\Main.cpp(557,10): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+D:\CMake\Projects\Escape_game_v2\Main.cpp(555,12): warning C4101: 'streetlightTogether': unreferenced local variable
+D:\CMake\Projects\Escape_game_v2\Main.cpp(710,27): warning C4101: 'translate': unreferenced local variable
+D:\CMake\Projects\Escape_game_v2\Main.cpp(742,27): warning C4101: 'translate': unreferenced local variable
   Escape_game_v2.vcxproj -> D:\CMake\Projects\Escape_game_v2\x64\Debug\Escape_game_v2.exe

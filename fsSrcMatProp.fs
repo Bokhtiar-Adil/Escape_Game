@@ -65,6 +65,7 @@ uniform vec3 emission;
 uniform PointLight streetLights[MAX_NR_STREET_LIGHTS];
 uniform bool streetLightStatus[MAX_NR_STREET_LIGHTS];
 uniform int numberofStreetlights;
+uniform bool streetLightOn;
 
 // function prototypes
 vec3 CalcDirectionalLight(DirectionalLight light, vec3 normal, vec3 viewDir);
@@ -92,9 +93,11 @@ void main()
         result += CalcSpotLight(spotLight, norm, FragPos, viewDir);
     }
     // streetLights calculation - a variant of pointlights
-    for(int i = 0; i < numberofStreetlights; i++) {
-        if (streetLightStatus[i] == true) {
-            result += CalcPointLight(streetLights[i], norm, FragPos, viewDir);
+    if (streetLightOn == true) {
+        for(int i = 0; i < numberofStreetlights; i++) {
+            if (streetLightStatus[i] == true) {
+                result += CalcPointLight(streetLights[i], norm, FragPos, viewDir);
+            }
         }
     }
     FragColor = vec4(result, 1.0);
