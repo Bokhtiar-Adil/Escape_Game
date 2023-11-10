@@ -18,7 +18,7 @@
 using namespace std;
 
 float initialCameraZ = 8.0f;
-Camera camera(glm::vec3(1.0f, 0.2f, initialCameraZ));
+Camera camera(glm::vec3(1.0f, 0.8f, initialCameraZ));
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
 
@@ -50,7 +50,7 @@ void simpleRoom(unsigned int& VAO, Shader& shader, glm::mat4 offset, glm::mat4 a
 
 // helper functions
 void shaderSetup(Shader& lightCubeShader, Shader& shaderTex, Shader& shaderMP, glm::mat4& projection, glm::mat4& view);
-void worldExpansion(Shader& shaderTex, Shader& shaderMP, World& world, Components& component, glm::mat4 revolve);
+void worldExpansion(Shader& shaderTex, Shader& shaderMP, Shader& lightCubeShader, World& world, Components& component, glm::mat4 alTogether);
 void protagonistMoveHandler(Character& protagonist, Shader& shaderMP, glm::mat4 revolve);
 void streetlightSetup(Shader& shader, float moveZ, float slAmb = 0.1f, float slDiff = 0.5f, float slSpec = 0.5f, float slConst = 1.0f, float slLin = 0.09f, float slQuad = 0.032f);
 void dayNightControl();
@@ -84,6 +84,9 @@ int nightDuration = 0;
 float sunAmb = 0.3f, sunDiff = 0.8f, sunSpec = 1.0f;
 bool dayNightCycleMode = true;
 bool dayNightDirectMode = false;
+float moonX = 6.0f;
+float moonY = 0.0f;
+float moonZ = sunZ;
 
 int main()
 {
@@ -149,10 +152,6 @@ int main()
 		view = camera.GetViewMatrix();
 
 		shaderSetup(lightCubeShader, shaderTex, shaderMP, projection, view);
-		shaderTex.use();
-		streetlightSetup(shaderTex, protagonistZmove);
-		shaderMP.use();
-		streetlightSetup(shaderMP, protagonistZmove);
 		
 		xoffset = 0.5f, yoffset = 0.5f;
 		offset = glm::translate(identity, glm::vec3(xoffset, yoffset, zoffset));
@@ -168,14 +167,17 @@ int main()
 		}
 		currentBlockBase = -1 * (currentBlockNumber * 30.0f);
 		translate = glm::translate(identity, glm::vec3(0.0f, 0.0f, currentBlockBase + 0.0f)); 
-		worldExpansion(shaderTex, shaderMP, world, component, translate);
+		worldExpansion(shaderTex, shaderMP, lightCubeShader, world, component, translate);
 		translate = glm::translate(identity, glm::vec3(0.0f, 0.0f, currentBlockBase - 30.0f));
-		worldExpansion(shaderTex, shaderMP, world, component, translate);
+		worldExpansion(shaderTex, shaderMP, lightCubeShader, world, component, translate);
 		/**/
 
 		protagonistMoveHandler(protagonist, shaderMP, revolve);
 		
 		//component.tree(shaderMP, false, glm::translate(identity, glm::vec3(0.0f, 0.0f, 3.0f)) * revolve);
+
+		if (!nightMode) component.sun(lightCubeShader, glm::translate(identity, glm::vec3(sunX, sunY+2.0f, protagonistZmove - 20.0f)));
+		if (streetLightOn) component.moon(lightCubeShader, glm::translate(identity, glm::vec3(moonX, moonY + 2.0f, protagonistZmove - 20.0f)));
 
 		//if (camera.Position.x != px) cout << "cam x: " << camera.Position.x << "\n";
 		//if (camera.Position.y != py) cout << "cam y: " << camera.Position.y << "\n";
@@ -355,6 +357,7 @@ void mouse_callback(GLFWwindow* window, double xposIn, double yposIn)
 
 void dayNightControl()
 {
+	//sunZ = protagonistZmove + 5.0f;
 	if (dayNightCycleMode) {
 		float gradualSunLightChange = 0.001f;
 		float gradualSunPositionChange = 0.01f;
@@ -363,21 +366,32 @@ void dayNightControl()
 			if (sunDiff < 0.8f) sunDiff += gradualSunLightChange;
 			if (sunSpec < 1.0f) sunSpec += gradualSunLightChange;
 			if (sunAmb >= 0.3f && sunDiff >= 0.8f && sunSpec >= 1.0f) sunX -= gradualSunPositionChange;
+			if (sunY < 3.0f) sunY += gradualSunPositionChange;
 		}
 		else {
+			sunY -= gradualSunPositionChange;
 			if (sunAmb > 0.0f) sunAmb -= gradualSunLightChange;
 			if (sunDiff > 0.0f) sunDiff -= gradualSunLightChange;
 			if (sunSpec > 0.0f) sunSpec -= gradualSunLightChange;
 			//sunX = 6.0f;
 			if (sunDiff <= 0.0f) nightMode = true;
-			if (nightMode) nightDuration++;
-			if (nightDuration == 1000) {
+			if (nightMode) {
+				nightDuration++;
+				moonX -= gradualSunPositionChange;
+			}
+			if (nightDuration == 1200) {
 				nightMode = false;
 				nightDuration = 0;
 				sunX = 6.0f;
+				sunY = 0.0f;
+				moonX = sunX;
+				moonY = 0.0f;
 			}
 		}
-		if (sunDiff <= 0.3f) streetLightOn = true;
+		if (sunDiff <= 0.3f) {
+			streetLightOn = true;
+			if (moonY < 3.0f) moonY += gradualSunPositionChange;
+		}
 		else streetLightOn = false;
 	}
 	else {
@@ -492,16 +506,7 @@ void shaderSetup(Shader& lightCubeShader, Shader& shaderTex, Shader& shaderMP, g
 	shaderTex.setFloat("spotLight.outerCutOff", glm::cos(glm::radians(15.0f)));
 	shaderTex.setBool("flashlightOn", torchOn);
 
-	shaderTex.setInt("numberofStreetlights", 14);
-	for (int index = 0; index < 16; index++) {
-		shaderTex.setVec3("streetLights[index].ambient", 0.1f, 0.1f, 0.1f);
-		shaderTex.setVec3("streetLights[index].diffuse", 1.0f, 1.0f, 1.0f);
-		shaderTex.setVec3("streetLights[index].specular", 1.0f, 1.0f, 1.0f);
-		shaderTex.setFloat("streetLights[index].constant", 1.0f);
-		shaderTex.setFloat("streetLights[index].linear", 0.09f);
-		shaderTex.setFloat("streetLights[index].quadratic", 0.032f);
-		shaderTex.setBool("streetLightStatus[index]", false);
-	}
+	streetlightSetup(shaderTex, protagonistZmove);
 
 	shaderMP.use();
 	shaderMP.setMat4("projection", projection);
@@ -534,16 +539,9 @@ void shaderSetup(Shader& lightCubeShader, Shader& shaderTex, Shader& shaderMP, g
 	shaderMP.setFloat("spotLight.outerCutOff", glm::cos(glm::radians(15.0f)));
 	shaderMP.setBool("flashlightOn", torchOn);
 
-	shaderMP.setInt("numberofStreetlights", 14);
-	for (int index = 0; index < 16; index++) {
-		shaderMP.setVec3("streetLights[index].ambient", 0.1f, 0.1f, 0.1f);
-		shaderMP.setVec3("streetLights[index].diffuse", 1.0f, 1.0f, 1.0f);
-		shaderMP.setVec3("streetLights[index].specular", 1.0f, 1.0f, 1.0f);
-		shaderMP.setFloat("streetLights[index].constant", 1.0f);
-		shaderMP.setFloat("streetLights[index].linear", 0.09f);
-		shaderMP.setFloat("streetLights[index].quadratic", 0.032f);
-		shaderMP.setBool("streetLightStatus[index]", false);
-	}
+
+
+	streetlightSetup(shaderMP, protagonistZmove);
 	
 }
 
@@ -705,7 +703,7 @@ void streetlightSetup(Shader& shader, float moveZ, float slAmb, float slDiff, fl
 
 }
 
-void worldExpansion(Shader& shaderTex, Shader& shaderMP, World& world, Components& component, glm::mat4 alTogether)
+void worldExpansion(Shader& shaderTex, Shader& shaderMP, Shader& lightCubeShader, World& world, Components& component, glm::mat4 alTogether)
 {
 	glm::mat4 rotate, scale, translate, identity = glm::mat4(1.0f);
 	int numOfBuilding = 7, numOfStreetLight = 7, numOfResidential = 2;
@@ -731,9 +729,9 @@ void worldExpansion(Shader& shaderTex, Shader& shaderMP, World& world, Component
 	rotate = glm::rotate(identity, glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 	for (int i = 0; i < numOfStreetLight; i++) {
 		// left side of the road
-		component.streetlight(shaderMP, alTogether * glm::translate(identity, glm::vec3(-1.0f, -0.5f, 5.0f - i * 4.0f)));
+		component.streetlight(shaderMP, lightCubeShader, alTogether * glm::translate(identity, glm::vec3(-1.0f, -0.5f, 5.0f - i * 4.0f)));
 		// right side of the road
-		component.streetlight(shaderMP, alTogether * glm::translate(identity, glm::vec3(3.0f, -0.5f, 5.0f - i * 4.0f)) * rotate);
+		component.streetlight(shaderMP, lightCubeShader, alTogether * glm::translate(identity, glm::vec3(3.0f, -0.5f, 5.0f - i * 4.0f)) * rotate);
 	}
 }
 

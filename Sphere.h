@@ -174,6 +174,23 @@ public:
         glBindVertexArray(0);
     }
 
+    void drawSphereWithManualColor(Shader& lightingShader, glm::mat4 model) const      // draw surface
+    {
+        lightingShader.use();
+
+        lightingShader.setMat4("model", model);
+
+        // draw a sphere with VAO
+        glBindVertexArray(sphereVAO);
+        glDrawElements(GL_TRIANGLES,                    // primitive type
+            this->getIndexCount(),          // # of indices
+            GL_UNSIGNED_INT,                 // data type
+            (void*)0);                       // offset to indices
+
+        // unbind VAO
+        glBindVertexArray(0);
+    }
+
 private:
     // member functions
     void buildCoordinatesAndIndices()

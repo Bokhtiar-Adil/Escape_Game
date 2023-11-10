@@ -987,7 +987,7 @@ public:
 		else cube.drawCubeWithMaterialisticProperty(shader, this->amb, this->diff, this->spec, this->shininess, modelTogether);
 	}
 
-	void streetlight(Shader& shader, glm::mat4 alTogether = glm::mat4(1.0f))
+	void streetlight(Shader& shader, Shader& lightCubeShader, glm::mat4 alTogether = glm::mat4(1.0f))
 	{
 		baseHeight = 2.0f;
 		baseWidth = 0.05f;
@@ -1080,6 +1080,26 @@ public:
 		modelTogether = alTogether * spheremodel;
 		sphere.drawSphere(shader, modelTogether);
 
+	}
+
+	void sun(Shader& shader, glm::mat4 alTogether = glm::mat4(1.0f))
+	{
+		shader.use();
+		shader.setVec3("color", 1.0f, 1.0f, 0.0f);
+		scale = glm::scale(identity, glm::vec3(0.5, 0.5f, 0.5f));
+		model = translate * scale * identity;
+		modelTogether = alTogether * model;
+		sphere.drawSphereWithManualColor(shader, modelTogether);
+	}
+
+	void moon(Shader& shader, glm::mat4 alTogether = glm::mat4(1.0f))
+	{
+		shader.use();
+		shader.setVec3("color", 1.0f, 1.0f, 1.0f);
+		scale = glm::scale(identity, glm::vec3(0.5, 0.5f, 0.5f));
+		model = translate * scale * identity;
+		modelTogether = alTogether * model;
+		sphere.drawSphereWithManualColor(shader, modelTogether);
 	}
 
 };
