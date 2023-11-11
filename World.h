@@ -151,7 +151,7 @@ public:
 		cube.drawCubeWithMaterialisticProperty(shader, this->amb, this->diff, this->spec, this->shininess, modelTogether);
 	}
 
-	void residential(Shader& shader, bool withTexture, glm::mat4 alTogether = glm::mat4(1.0f))
+	void residential(Shader& shader, bool withTexture, bool left, glm::mat4 alTogether = glm::mat4(1.0f))
 	{
 		blockWidth = 3.0f;
 		blockLength = 15.0f;
@@ -170,6 +170,20 @@ public:
 		modelTogether = alTogether * model;
 		if (withTexture) cube.drawCubeWithTexture(shader, dMap, sMap, shininess, modelTogether);
 		else cube.drawCubeWithMaterialisticProperty(shader, this->amb, this->diff, this->spec, this->shininess, modelTogether);
+
+		if (left) {
+			rotate = glm::rotate(identity, glm::radians(-90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+			for (int i = 0; i < 15; i++) {
+				component.wall(shader, true, alTogether * glm::translate(identity, glm::vec3(-0.002f * blockWidth, 0.0f, 7.0f - 1.0f*i)) * rotate);
+			}
+		}
+		else {
+			rotate = glm::rotate(identity, glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+			for (int i = 0; i < 15; i++) {
+				component.wall(shader, true, alTogether * glm::translate(identity, glm::vec3(blockWidth - 0.05f, 0.0f, 7.0f - 1.0f * i)) * rotate);
+			}
+		}
+		
 	}
 };
 

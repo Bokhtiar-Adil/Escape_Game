@@ -50,7 +50,7 @@ void simpleRoom(unsigned int& VAO, Shader& shader, glm::mat4 offset, glm::mat4 a
 
 // helper functions
 void shaderSetup(Shader& lightCubeShader, Shader& shaderTex, Shader& shaderMP, glm::mat4& projection, glm::mat4& view);
-void worldExpansion(Shader& shaderTex, Shader& shaderMP, Shader& lightCubeShader, World& world, Components& component, glm::mat4 alTogether);
+void worldExpansion(Shader& shaderTex, Shader& shaderMP, Shader& lightCubeShader, World& world, Components& component, vector<int>& sequence, glm::mat4 alTogether);
 void protagonistMoveHandler(Character& protagonist, Shader& shaderMP, glm::mat4 revolve);
 void streetlightSetup(Shader& shader, float moveZ, float slAmb = 0.1f, float slDiff = 0.5f, float slSpec = 0.5f, float slConst = 1.0f, float slLin = 0.09f, float slQuad = 0.032f);
 void dayNightControl();
@@ -84,9 +84,12 @@ int nightDuration = 0;
 float sunAmb = 0.3f, sunDiff = 0.8f, sunSpec = 1.0f;
 bool dayNightCycleMode = true;
 bool dayNightDirectMode = false;
+float dayNightSystem = true;
 float moonX = 6.0f;
 float moonY = 0.0f;
 float moonZ = sunZ;
+
+int numOfBlockComponent = 7, numOfStreetLight = 7, numOfResidential = 2, typeOfBlockComponent = 2;
 
 int main()
 {
@@ -132,7 +135,11 @@ int main()
 	Character protagonist;
 
 	float px = 1.0f, py = 0.2f, pz = initialCameraZ;
+	vector<int> sequence;
 
+	for (int i = 0; i < numOfBlockComponent; i++) {
+		sequence.push_back(rand() % typeOfBlockComponent);
+	}
 
 	while (!glfwWindowShouldClose(window)) {
 
@@ -144,8 +151,13 @@ int main()
 
 		processInput(window);
 
-		if (!nightMode) glClearColor(sunDiff+0.2f, sunDiff + 0.2f, sunDiff + 0.2f, sunDiff + 0.2f);
-		else glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+		if (dayNightSystem) {
+			if (!nightMode) glClearColor(sunDiff + 0.2f, sunDiff + 0.2f, sunDiff + 0.2f, sunDiff + 0.2f);
+			else glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+		}
+		else {
+			glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+		}
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		projection = glm::perspective(glm::radians(camera.Zoom), (float)WIN_WIDTH / (float)WIN_HEIGHT, 0.1f, 30.0f);
@@ -167,17 +179,26 @@ int main()
 		}
 		currentBlockBase = -1 * (currentBlockNumber * 30.0f);
 		translate = glm::translate(identity, glm::vec3(0.0f, 0.0f, currentBlockBase + 0.0f)); 
-		worldExpansion(shaderTex, shaderMP, lightCubeShader, world, component, translate);
+		worldExpansion(shaderTex, shaderMP, lightCubeShader, world, component, sequence, translate);
 		translate = glm::translate(identity, glm::vec3(0.0f, 0.0f, currentBlockBase - 30.0f));
-		worldExpansion(shaderTex, shaderMP, lightCubeShader, world, component, translate);
+		worldExpansion(shaderTex, shaderMP, lightCubeShader, world, component, sequence, translate);
 		/**/
 
 		protagonistMoveHandler(protagonist, shaderMP, revolve);
 		
 		//component.tree(shaderMP, false, glm::translate(identity, glm::vec3(0.0f, 0.0f, 3.0f)) * revolve);
 
-		if (!nightMode) component.sun(lightCubeShader, glm::translate(identity, glm::vec3(sunX, sunY+2.0f, protagonistZmove - 20.0f)));
-		if (streetLightOn) component.moon(lightCubeShader, glm::translate(identity, glm::vec3(moonX, moonY + 2.0f, protagonistZmove - 20.0f)));
+		if (dayNightSystem) {
+			if (!nightMode) component.sun(lightCubeShader, glm::translate(identity, glm::vec3(sunX, sunY + 2.0f, protagonistZmove - 20.0f)));
+			if (streetLightOn) component.moon(lightCubeShader, glm::translate(identity, glm::vec3(moonX, moonY + 2.0f, protagonistZmove - 20.0f)));
+		}
+		else {
+			if (!nightMode) component.sun(lightCubeShader, glm::translate(identity, glm::vec3(sunX, sunY + 2.0f, protagonistZmove - 20.0f)));
+			if (streetLightOn) component.moon(lightCubeShader, glm::translate(identity, glm::vec3(moonX, moonY + 2.0f, protagonistZmove - 20.0f)));
+		}
+		
+
+		//component.waterTank(shaderMP, false, glm::translate(identity, glm::vec3(0.0f, 0.0f, 2.0f)) * revolve);
 
 		//if (camera.Position.x != px) cout << "cam x: " << camera.Position.x << "\n";
 		//if (camera.Position.y != py) cout << "cam y: " << camera.Position.y << "\n";
@@ -328,7 +349,12 @@ void processInput(GLFWwindow* window)
 		rotate_obj_axis_z = 1.0;
 	}
 	if (glfwGetKey(window, GLFW_KEY_0) == GLFW_PRESS) {
-		dayNightCycleMode = !dayNightCycleMode;
+		//dayNightCycleMode = !dayNightCycleMode;
+		sunX = 3.0f;
+		sunY = 3.0f;
+		moonX = 3.0f;
+		moonY = 3.0f;
+		dayNightSystem = !dayNightSystem;
 	}
 
 
@@ -357,6 +383,7 @@ void mouse_callback(GLFWwindow* window, double xposIn, double yposIn)
 
 void dayNightControl()
 {
+	if (!dayNightSystem) return;
 	//sunZ = protagonistZmove + 5.0f;
 	if (dayNightCycleMode) {
 		float gradualSunLightChange = 0.001f;
@@ -703,27 +730,36 @@ void streetlightSetup(Shader& shader, float moveZ, float slAmb, float slDiff, fl
 
 }
 
-void worldExpansion(Shader& shaderTex, Shader& shaderMP, Shader& lightCubeShader, World& world, Components& component, glm::mat4 alTogether)
+void worldExpansion(Shader& shaderTex, Shader& shaderMP, Shader& lightCubeShader, World& world, Components& component, vector<int>& sequence, glm::mat4 alTogether)
 {
 	glm::mat4 rotate, scale, translate, identity = glm::mat4(1.0f);
-	int numOfBuilding = 7, numOfStreetLight = 7, numOfResidential = 2;
+	//int numOfBlockComponent = 7, numOfStreetLight = 7, numOfResidential = 2, typeOfBlockComponent = 2;
 
 	shaderTex.use();
 
 	for (int i = 0; i < numOfResidential; i++) {
-		world.residential(shaderTex, true, alTogether * glm::translate(identity, glm::vec3(-4.0f, -0.5f, -6.0f - i*15.0f)));
-		world.residential(shaderTex, true, alTogether * glm::translate(identity, glm::vec3(3.0f, -0.5f, -6.0f - i*15.0f)));
+		world.residential(shaderTex, true, true, alTogether * glm::translate(identity, glm::vec3(-4.0f, -0.5f, -6.0f - i*15.0f)));
+		world.residential(shaderTex, true, false, alTogether * glm::translate(identity, glm::vec3(3.0f, -0.5f, -6.0f - i*15.0f)));
 	}	
 
 	scale = glm::scale(identity, glm::vec3(1.0f, 1.5f, 1.0f));
-	rotate = glm::rotate(identity, glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+	rotate = glm::rotate(identity, glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));	
 
-	for (int i = 0; i < numOfBuilding; i++) {
-		component.building(shaderTex, true, alTogether * glm::translate(identity, glm::vec3(-3.5f, -0.5f, 7.0f - 4.0f*i)) * rotate * scale);
-		component.building(shaderTex, true, alTogether * glm::translate(identity, glm::vec3(3.5f, -0.5f, 7.0f - 4.0f*i)) * rotate * scale);		
+	for (int i = 0; i < numOfBlockComponent; i++) {
+		if (sequence[i] == 0) {
+			component.building(shaderTex, true, alTogether * glm::translate(identity, glm::vec3(-3.5f, -0.5f, 7.0f - 4.0f * i)) * rotate * scale);
+			component.building(shaderTex, true, alTogether * glm::translate(identity, glm::vec3(3.5f, -0.5f, 7.0f - 4.0f * i)) * rotate * scale);
+		}
+		else {
+			component.waterTank(shaderMP, false, alTogether * glm::translate(identity, glm::vec3(-2.8f, -0.5f, 7.0f - 4.5f * i)));
+			component.waterTank(shaderMP, false, alTogether * glm::translate(identity, glm::vec3(3.8f, -0.5f, 7.0f - 4.5f * i)));
+		}
+		
 	}
 
 	shaderMP.use();	
+
+	
 
 	world.road(shaderMP, alTogether * glm::translate(identity, glm::vec3(-1.0f, -0.5f, -21.0f)));	
 	rotate = glm::rotate(identity, glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));

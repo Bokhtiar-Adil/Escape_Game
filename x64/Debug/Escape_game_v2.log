@@ -2,13 +2,13 @@
 D:\CMake\Projects\Escape_game_v2\Sphere.h(201,26): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
 D:\CMake\Projects\Escape_game_v2\Sphere.h(202,25): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
 D:\CMake\Projects\Escape_game_v2\Sphere.h(204,26): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-D:\CMake\Projects\Escape_game_v2\Main.cpp(127,61): warning C4101: 'rotate': unreferenced local variable
-D:\CMake\Projects\Escape_game_v2\Main.cpp(127,69): warning C4101: 'scale': unreferenced local variable
-D:\CMake\Projects\Escape_game_v2\Main.cpp(127,20): warning C4101: 'altogether': unreferenced local variable
-D:\CMake\Projects\Escape_game_v2\Main.cpp(302,22): warning C4305: '+=': truncation from 'double' to 'float'
-D:\CMake\Projects\Escape_game_v2\Main.cpp(316,22): warning C4305: '+=': truncation from 'double' to 'float'
-D:\CMake\Projects\Escape_game_v2\Main.cpp(555,10): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
-D:\CMake\Projects\Escape_game_v2\Main.cpp(553,12): warning C4101: 'streetlightTogether': unreferenced local variable
-D:\CMake\Projects\Escape_game_v2\Main.cpp(708,27): warning C4101: 'translate': unreferenced local variable
-D:\CMake\Projects\Escape_game_v2\Main.cpp(740,27): warning C4101: 'translate': unreferenced local variable
+D:\CMake\Projects\Escape_game_v2\Main.cpp(130,61): warning C4101: 'rotate': unreferenced local variable
+D:\CMake\Projects\Escape_game_v2\Main.cpp(130,69): warning C4101: 'scale': unreferenced local variable
+D:\CMake\Projects\Escape_game_v2\Main.cpp(130,20): warning C4101: 'altogether': unreferenced local variable
+D:\CMake\Projects\Escape_game_v2\Main.cpp(323,22): warning C4305: '+=': truncation from 'double' to 'float'
+D:\CMake\Projects\Escape_game_v2\Main.cpp(337,22): warning C4305: '+=': truncation from 'double' to 'float'
+D:\CMake\Projects\Escape_game_v2\Main.cpp(582,10): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+D:\CMake\Projects\Escape_game_v2\Main.cpp(580,12): warning C4101: 'streetlightTogether': unreferenced local variable
+D:\CMake\Projects\Escape_game_v2\Main.cpp(735,27): warning C4101: 'translate': unreferenced local variable
+D:\CMake\Projects\Escape_game_v2\Main.cpp(776,27): warning C4101: 'translate': unreferenced local variable
   Escape_game_v2.vcxproj -> D:\CMake\Projects\Escape_game_v2\x64\Debug\Escape_game_v2.exe

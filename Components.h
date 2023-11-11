@@ -134,9 +134,9 @@ private:
 	{
 		shader.use();
 
-		this->amb = glm::vec3(1.0f, 0.0f, 0.0f);
+		/*this->amb = glm::vec3(1.0f, 0.0f, 0.0f);
 		this->diff = glm::vec3(1.0f, 0.0f, 0.0f);
-		this->spec = glm::vec3(0.3, 0.3, 0.3);
+		this->spec = glm::vec3(0.3, 0.3, 0.3);*/
 
 		shader.setVec3("material.ambient", this->amb);
 		shader.setVec3("material.diffuse", this->diff);
@@ -147,7 +147,7 @@ private:
 		rotate = glm::rotate(identity, glm::radians(theta), glm::vec3(0.0f, 0.0f, 1.0f));
 		model = glm::mat4(1.0f);
 		int portions = (int)(360 / theta);
-		for (int i = 0; i < portions; i++) {		
+		for (int i = 0; i <= portions; i++) {		
 			modelTogether = alTogether * model;
 			shader.setMat4("model", modelTogether);
 
@@ -1100,6 +1100,77 @@ public:
 		model = translate * scale * identity;
 		modelTogether = alTogether * model;
 		sphere.drawSphereWithManualColor(shader, modelTogether);
+	}
+
+	void waterTank(Shader& shader, bool withTexture, glm::mat4 alTogether = glm::mat4(1.0f))
+	{
+		baseHeight = 1.0f;
+		baseWidth = 0.1f;
+
+		if (withTexture) {
+			/*this->dMap = walldmp;
+			this->sMap = wallsmp;*/
+		}
+		else {
+			this->amb = glm::vec3(0.45f, 0.36f, 0.26f);
+			this->diff = glm::vec3(0.45f, 0.36f, 0.26f);
+			this->spec = glm::vec3(0.0f, 0.0f, 0.0f);
+		}
+
+		shader.setBool("exposedToSun", true);
+
+		// stands
+
+		model = identity;
+		scale = glm::scale(identity, glm::vec3(baseWidth, baseHeight, baseWidth));
+		translate = glm::translate(identity, glm::vec3(0.0f, 0.0f, -0.8f));
+		model = translate * scale * model;
+		modelTogether = alTogether * model;
+		if (withTexture) cube.drawCubeWithTexture(shader, dMap, sMap, this->shininess, modelTogether);
+		else cube.drawCubeWithMaterialisticProperty(shader, this->amb, this->diff, this->spec, this->shininess, modelTogether);
+
+		translate = glm::translate(identity, glm::vec3(1.0f, 0.0f, 0.0f));
+		model = translate * model;
+		modelTogether = alTogether * model;
+		if (withTexture) cube.drawCubeWithTexture(shader, dMap, sMap, this->shininess, modelTogether);
+		else cube.drawCubeWithMaterialisticProperty(shader, this->amb, this->diff, this->spec, this->shininess, modelTogether);
+
+		translate = glm::translate(identity, glm::vec3(0.0f, 0.0f, 1.8f));
+		model = translate * model;
+		modelTogether = alTogether * model;
+		if (withTexture) cube.drawCubeWithTexture(shader, dMap, sMap, this->shininess, modelTogether);
+		else cube.drawCubeWithMaterialisticProperty(shader, this->amb, this->diff, this->spec, this->shininess, modelTogether);
+
+		translate = glm::translate(identity, glm::vec3(-1.0f, 0.0f, 0.0f));
+		model = translate * model;
+		modelTogether = alTogether * model;
+		if (withTexture) cube.drawCubeWithTexture(shader, dMap, sMap, this->shininess, modelTogether);
+		else cube.drawCubeWithMaterialisticProperty(shader, this->amb, this->diff, this->spec, this->shininess, modelTogether);
+
+		// base
+		model = identity;
+		scale = glm::scale(identity, glm::vec3(2.0f, 0.05f, 2.0f));
+		translate = glm::translate(identity, glm::vec3(-0.45f, 1.0f, -0.8f));
+		model = translate * scale * model;
+		modelTogether = alTogether * model;
+		if (withTexture) cube.drawCubeWithTexture(shader, dMap, sMap, this->shininess, modelTogether);
+		else cube.drawCubeWithMaterialisticProperty(shader, this->amb, this->diff, this->spec, this->shininess, modelTogether);
+
+		// tank
+
+		this->amb = glm::vec3(0.1f, 0.1f, 0.1f);
+		this->diff = glm::vec3(0.8f, 0.8f, 0.8f);
+		this->spec = glm::vec3(0.3, 0.3, 0.3);
+
+		glm::mat4 tires = glm::scale(identity, glm::vec3(1.0f, 1.0f, 1.0f));
+		translate = glm::translate(identity, glm::vec3(0.55f, 1.05f, 0.25f));
+		rotate = glm::rotate(identity, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+		tires = translate * rotate * tires;
+		glm::mat4 tiresTogether = alTogether * tires;
+		theta = 10.0f;
+		setupCylinder(theta);
+		drawCylinder(shader, tiresTogether, theta);
+
 	}
 
 };
