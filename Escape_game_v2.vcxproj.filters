@@ -30,6 +30,12 @@
     <ClCompile Include="Curves.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Text.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource_manager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h">
@@ -54,6 +60,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Character.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Text.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource_manager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -82,6 +94,8 @@
     <None Include="fsSrcBoth.fs">
       <Filter>Source Files</Filter>
     </None>
+    <None Include="text_2d.vs" />
+    <None Include="text_2d.fs" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="roadLined.jpg">
@@ -120,10 +134,42 @@
     <Image Include="windows.jpg">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="no_exit.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="seventyone.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="seventyone1.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="sky1.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="mosque_wall.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="door2.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <Text Include="commented_out_parts.txt">
       <Filter>Source Files</Filter>
     </Text>
+  </ItemGroup>
+  <ItemGroup>
+    <Font Include="Antonio-Bold.ttf">
+      <Filter>Resource Files</Filter>
+    </Font>
+    <Font Include="Antonio-Light.ttf">
+      <Filter>Resource Files</Filter>
+    </Font>
+    <Font Include="Antonio-Regular.ttf">
+      <Filter>Resource Files</Filter>
+    </Font>
+    <Font Include="OCRAEXT.TTF">
+      <Filter>Resource Files</Filter>
+    </Font>
   </ItemGroup>
 </Project>

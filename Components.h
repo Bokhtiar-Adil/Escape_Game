@@ -68,6 +68,41 @@ private:
 		return textureID;
 	}
 
+	unsigned int loadTextureV2(char const* path)
+	{
+		glGenTextures(1, &textureID);
+
+		data = stbi_load(path, &widthtex, &heighttex, &nrComponents, 0);
+		if (data)
+		{
+
+			if (nrComponents == 1)
+				format = GL_RED;
+			else if (nrComponents == 3)
+				format = GL_RGB;
+			else if (nrComponents == 4)
+				format = GL_RGBA;
+
+			glBindTexture(GL_TEXTURE_2D, textureID);
+			glTexImage2D(GL_TEXTURE_2D, 0, format, widthtex, heighttex, 0, format, GL_UNSIGNED_BYTE, data);
+			glGenerateMipmap(GL_TEXTURE_2D);
+
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+			stbi_image_free(data);
+		}
+		else
+		{
+			std::cout << "Texture failed to load at path: " << path << std::endl;
+			stbi_image_free(data);
+		}
+
+		return textureID;
+	}
+
 	void setupCylinder(float theta = 45.0f)
 	{
 		yVal = glm::sin(glm::radians(theta));
@@ -163,7 +198,7 @@ private:
 		
 	}
 
-	unsigned int boxtex, walldmp, wallsmp, tabledmp, doordmp, walldmp2, windowsdmp;
+	unsigned int boxtex, walldmp, wallsmp, tabledmp, doordmp, walldmp2, windowsdmp, grass, grass2, palestine1, noexit, seventyone, mosqueWall, door2;
 
 	void loadAllTextures()
 	{
@@ -174,6 +209,13 @@ private:
 		doordmp = loadTexture("woodenDoor.jpg");
 		walldmp2 = loadTexture("whitewall2.jpg");
 		windowsdmp = loadTexture("windows.jpg");
+		grass = loadTexture("grass.jpg");
+		grass2 = loadTextureV2("grass.jpg");
+		//palestine1 = loadTexture("palestine.jpg");
+		noexit = loadTexture("no_exit.jpg");
+		seventyone = loadTexture("seventyone1.jpg");
+		mosqueWall = loadTexture("mosque_wall.jpg");
+		door2 = loadTexture("door2.jpg");
 	}
 
 public:
@@ -1170,6 +1212,204 @@ public:
 		theta = 10.0f;
 		setupCylinder(theta);
 		drawCylinder(shader, tiresTogether, theta);
+
+	}
+
+	void texturedSphere(Shader& shader, glm::mat4 alTogether = glm::mat4(1.0f))
+	{
+		//translate = glm::translate(identity, glm::vec3(0.17f, 0.0f, 0.0f));
+		
+		this->dMap = grass;
+		this->sMap = grass;
+
+		spheremodel = translate * identity;
+		modelTogether = alTogether * spheremodel;
+		sphere.drawSphereWIthTexture(shader, this->dMap, this->sMap, modelTogether);
+	}
+
+	void billboard_noexit(Shader& shaderTex, Shader& shaderMP, glm::mat4 alTogether = glm::mat4(1.0f))
+	{
+		baseHeight = 1.0f;
+		baseWidth = 0.1f;
+
+		this->amb = glm::vec3(0.45f, 0.36f, 0.26f);
+		this->diff = glm::vec3(0.45f, 0.36f, 0.26f);
+		this->spec = glm::vec3(0.0f, 0.0f, 0.0f);
+
+		shaderMP.use();
+		shaderMP.setBool("exposedToSun", true);
+
+		// stands
+
+		model = identity;
+		scale = glm::scale(identity, glm::vec3(baseWidth, baseHeight, baseWidth));
+		translate = glm::translate(identity, glm::vec3(0.0f, 0.0f, 0.0f));
+		model = translate * scale * model;
+		modelTogether = alTogether * model;
+		cube.drawCubeWithMaterialisticProperty(shaderMP, this->amb, this->diff, this->spec, this->shininess, modelTogether);
+
+		translate = glm::translate(identity, glm::vec3(1.0f, 0.0f, 0.0f));
+		model = translate * model;
+		modelTogether = alTogether * model;
+		cube.drawCubeWithMaterialisticProperty(shaderMP, this->amb, this->diff, this->spec, this->shininess, modelTogether);
+		
+		shaderTex.use();
+		shaderTex.setBool("exposedToSun", true);
+
+		this->dMap = noexit;
+		
+		model = identity;
+		scale = glm::scale(identity, glm::vec3(1.3f, 1.0f, 0.02f));
+		translate = glm::translate(identity, glm::vec3(-0.1f, 0.8f, 0.11f));
+		model = translate * scale * model;
+		modelTogether = alTogether * model;
+		cube.drawCubeWithTexture(shaderTex, dMap, dMap, this->shininess, modelTogether);
+
+	}
+
+	void billboard_seventyone(Shader& shaderTex, Shader& shaderMP, glm::mat4 alTogether = glm::mat4(1.0f))
+	{
+		baseHeight = 1.0f;
+		baseWidth = 0.1f;
+
+		this->amb = glm::vec3(0.45f, 0.36f, 0.26f);
+		this->diff = glm::vec3(0.45f, 0.36f, 0.26f);
+		this->spec = glm::vec3(0.0f, 0.0f, 0.0f);
+
+		shaderMP.use();
+		shaderMP.setBool("exposedToSun", true);
+
+		// stands
+
+		model = identity;
+		scale = glm::scale(identity, glm::vec3(baseWidth, baseHeight, baseWidth));
+		translate = glm::translate(identity, glm::vec3(0.0f, 0.0f, 0.0f));
+		model = translate * scale * model;
+		modelTogether = alTogether * model;
+		cube.drawCubeWithMaterialisticProperty(shaderMP, this->amb, this->diff, this->spec, this->shininess, modelTogether);
+
+		translate = glm::translate(identity, glm::vec3(1.0f, 0.0f, 0.0f));
+		model = translate * model;
+		modelTogether = alTogether * model;
+		cube.drawCubeWithMaterialisticProperty(shaderMP, this->amb, this->diff, this->spec, this->shininess, modelTogether);
+
+		shaderTex.use();
+		shaderTex.setBool("exposedToSun", true);
+
+		this->dMap = seventyone;
+
+		model = identity;
+		scale = glm::scale(identity, glm::vec3(1.3f, 1.0f, 0.02f));
+		translate = glm::translate(identity, glm::vec3(-0.1f, 0.8f, 0.11f));
+		model = translate * scale * model;
+		modelTogether = alTogether * model;
+		cube.drawCubeWithTexture(shaderTex, dMap, dMap, this->shininess, modelTogether);
+
+
+	}
+
+	void mosque(Shader& shaderTex, Shader& shaderMP, glm::mat4 alTogether = glm::mat4(1.0f))
+	{
+		height = 1.8f;
+		widthx = 3.0f;
+		widthz = 2.0f;
+
+		this->dMap = mosqueWall;
+		this->sMap = mosqueWall;
+		
+		this->amb = glm::vec3(0.88f, 0.88f, 0.88f);
+		this->diff = glm::vec3(0.88f, 0.88f, 0.88f);
+		this->spec = glm::vec3(0.3, 0.3, 0.3);	
+		
+
+		// outer shape		
+		shaderMP.use();
+		shaderMP.setBool("exposedToSun", true);
+
+		model = identity;
+		scale = glm::scale(identity, glm::vec3(widthx + 0.2f, 0.1f, widthz + 0.2f));
+		//translate = glm::translate(identity, glm::vec3(0.0f, 0.0f, 0.0f));
+		model = scale * model;
+		modelTogether = alTogether * model;
+		cube.drawCubeWithMaterialisticProperty(shaderMP, this->amb, this->diff, this->spec, this->shininess, modelTogether);
+
+		shaderTex.use();
+		shaderTex.setBool("exposedToSun", true);
+
+		model = identity;
+		scale = glm::scale(identity, glm::vec3(widthx, height, widthz));
+		translate = glm::translate(identity, glm::vec3(0.1f, 0.1f, 0.0f));
+		model = translate * scale * model;
+		modelTogether = alTogether * model;
+		cube.drawCubeWithTexture(shaderTex, dMap, sMap, this->shininess, modelTogether);
+
+		// minaret
+
+		this->amb = glm::vec3(0.0f, 0.1f, 0.0f);
+		this->diff = glm::vec3(0.0f, 1.0f, 0.0f);
+		this->spec = glm::vec3(0.3, 0.3, 0.3);
+
+		model = identity;
+		scale = glm::scale(identity, glm::vec3(0.5f, 3.5f, 0.5f));
+		translate = glm::translate(identity, glm::vec3(0.0f, 0.0f, -1.0f));
+		model = translate * scale * model;
+		modelTogether = alTogether * model;
+		cube.drawCubeWithMaterialisticProperty(shaderMP, this->amb, this->diff, this->spec, this->shininess, modelTogether);
+
+		// top of minaret and dome
+
+		model = identity;
+		scale = glm::scale(identity, glm::vec3(0.01f, 0.3f, 0.01f));
+		translate = glm::translate(identity, glm::vec3(0.24f, 3.6f, -0.75f));
+		model = translate * scale * model;
+		modelTogether = alTogether * model;
+		cube.drawCubeWithMaterialisticProperty(shaderMP, this->amb, this->diff, this->spec, this->shininess, modelTogether);
+
+		model = identity;
+		scale = glm::scale(identity, glm::vec3(0.01f, 0.3f, 0.01f));
+		translate = glm::translate(identity, glm::vec3(1.6f, height + 1.0f, 1.0f));
+		model = translate * scale * model;
+		modelTogether = alTogether * model;
+		cube.drawCubeWithMaterialisticProperty(shaderMP, this->amb, this->diff, this->spec, this->shininess, modelTogether);
+
+		// door
+		this->dMap = door2;
+		this->sMap = door2;
+
+		this->amb = glm::vec3(0.43f, 0.33f, 0.26f);
+		this->diff = glm::vec3(0.43f, 0.33f, 0.26f);
+		this->spec = glm::vec3(0.3, 0.3, 0.3);
+		
+		model = identity;
+		scale = glm::scale(identity, glm::vec3(1.0f, 0.8f, 0.02f));
+		translate = glm::translate(identity, glm::vec3(1.2f, 1.0f, 1.99f));
+		rotate = glm::rotate(identity, glm::radians(-90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+		model = translate * rotate * scale * model;
+		modelTogether = alTogether * model;
+		cube.drawCubeWithTexture(shaderTex, dMap, sMap, this->shininess, modelTogether);
+
+		// dome	
+
+		this->amb = glm::vec3(0.0f, 0.1f, 0.0f);
+		this->diff = glm::vec3(0.0f, 1.0f, 0.0f);
+		this->spec = glm::vec3(0.3, 0.3, 0.3);
+
+		spheremodel = identity;
+		scale = glm::scale(identity, glm::vec3(1.0, 1.0f, 1.0f));
+		translate = glm::translate(identity, glm::vec3(1.6f, height, 1.0f));
+		spheremodel = translate * scale * spheremodel;
+		modelTogether = alTogether * spheremodel;
+		sphere.setMaterialisticProperties(this->amb, this->diff, this->spec);
+		sphere.drawSphere(shaderMP, modelTogether);
+
+		// top of minaret
+		spheremodel = identity;
+		scale = glm::scale(identity, glm::vec3(0.3, 0.3f, 0.3f));
+		translate = glm::translate(identity, glm::vec3(0.24f, 3.5f, -0.75f));
+		spheremodel = translate * scale * spheremodel;
+		modelTogether = alTogether * spheremodel;
+		sphere.setMaterialisticProperties(this->amb, this->diff, this->spec);
+		sphere.drawSphere(shaderMP, modelTogether);
 
 	}
 

@@ -37,7 +37,7 @@ public:
         buildVertices();
 
         glGenVertexArrays(1, &sphereVAO);
-        glBindVertexArray(sphereVAO);
+        glBindVertexArray(sphereVAO); 
 
         // create VBO to copy vertex data to VBO
         unsigned int sphereVBO;
@@ -179,6 +179,34 @@ public:
         lightingShader.use();
 
         lightingShader.setMat4("model", model);
+
+        // draw a sphere with VAO
+        glBindVertexArray(sphereVAO);
+        glDrawElements(GL_TRIANGLES,                    // primitive type
+            this->getIndexCount(),          // # of indices
+            GL_UNSIGNED_INT,                 // data type
+            (void*)0);                       // offset to indices
+
+        // unbind VAO
+        glBindVertexArray(0);
+    }
+
+    void drawSphereWIthTexture(Shader& shaderWithTexture, unsigned int dMap, unsigned int sMap, glm::mat4 model = glm::mat4(1.0f))
+    {
+        shaderWithTexture.use();
+        
+        shaderWithTexture.setInt("material.diffuse", 0);
+        shaderWithTexture.setInt("material.specular", 1);
+        shaderWithTexture.setFloat("material.shininess", this->shininess);
+        shaderWithTexture.setMat4("model", model);
+
+        // bind diffuse map
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, dMap);
+        // bind specular map
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, sMap);
+        
 
         // draw a sphere with VAO
         glBindVertexArray(sphereVAO);

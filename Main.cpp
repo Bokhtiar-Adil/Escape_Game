@@ -2,15 +2,17 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-
 #include <stb_image.h>
+#include <ft2build.h>
+#include FT_FREETYPE_H
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include "shader.h"
-#include "camera.h"
+#include "Shader.h"
+#include "Camera.h"
+#include "Text.h"
 #include "Components.h"
 #include "World.h"
 #include "Character.h"
@@ -32,6 +34,9 @@ float fov = 45.0f;
 int WIN_WIDTH = 1200;
 int WIN_HEIGHT = 700;
 
+unsigned int SCR_WIDTH = 1200;
+unsigned int SCR_HEIGHT = 700;
+
 void frame_buffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void processInput(GLFWwindow* window);
@@ -49,11 +54,13 @@ void simpleRoom(unsigned int& VAO, Shader& shader, glm::mat4 offset, glm::mat4 a
 
 
 // helper functions
-void shaderSetup(Shader& lightCubeShader, Shader& shaderTex, Shader& shaderMP, glm::mat4& projection, glm::mat4& view);
+void shaderSetup(Shader& lightCubeShader, Shader& shaderTex, Shader& shaderMP, Shader& shaderSky, glm::mat4& projection, glm::mat4& view);
 void worldExpansion(Shader& shaderTex, Shader& shaderMP, Shader& lightCubeShader, World& world, Components& component, vector<int>& sequence, glm::mat4 alTogether);
 void protagonistMoveHandler(Character& protagonist, Shader& shaderMP, glm::mat4 revolve);
 void streetlightSetup(Shader& shader, float moveZ, float slAmb = 0.1f, float slDiff = 0.5f, float slSpec = 0.5f, float slConst = 1.0f, float slLin = 0.09f, float slQuad = 0.032f);
 void dayNightControl();
+void skyManager(Shader& shader, World& world, glm::mat4 alTogether);
+
 
 bool torchOn = false;
 bool nightMode = false;
@@ -91,6 +98,8 @@ float moonZ = sunZ;
 
 int numOfBlockComponent = 7, numOfStreetLight = 7, numOfResidential = 2, typeOfBlockComponent = 2;
 
+bool menu = true;
+
 int main()
 {
 	glfwInit();
@@ -120,12 +129,16 @@ int main()
 
 	Shader shaderMP("vsSrc.vs", "fsSrcMatProp.fs");
 	Shader shaderTex("vsSrc.vs", "fsSrcTex.fs");
+	Shader shaderSky("vsSrc.vs", "fsSrcTex.fs");
 	Shader shader("vsSrc.vs", "fsSrcBoth.fs");
 	Shader lightCubeShader("lightCube.vs", "lightCube.fs");
+	Shader textShader("text_2d.vs", "text_2d.fs");
 
 	glEnable(GL_DEPTH_TEST);
-
-	// render
+	//glEnable(GL_CULL_FACE);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	
 
 	glm::mat4 offset, altogether, projection, view, translate, rotate, scale, identity = glm::mat4(1.0f);
 	float xoffset = 0.0f, yoffset = 0.0f, zoffset = 0.0f;
@@ -133,6 +146,7 @@ int main()
 	Components component;
 	World world;
 	Character protagonist;
+	Text text(textShader, SCR_WIDTH, SCR_HEIGHT);
 
 	float px = 1.0f, py = 0.2f, pz = initialCameraZ;
 	vector<int> sequence;
@@ -140,6 +154,13 @@ int main()
 	for (int i = 0; i < numOfBlockComponent; i++) {
 		sequence.push_back(rand() % typeOfBlockComponent);
 	}
+
+	text.Load("Antonio-Bold.ttf", 48);
+	text.RenderText("This is a sample text", 0.0f, 0.0f, 1.0f, glm::vec3(0.5, 0.8f, 0.2f));
+	glfwMakeContextCurrent(window);
+	
+	//glEnable(GL_DEPTH_TEST);
+	// render
 
 	while (!glfwWindowShouldClose(window)) {
 
@@ -150,10 +171,18 @@ int main()
 		jumpCoolDown++;
 
 		processInput(window);
+		
+		/*if (menu) {
+			glDisable(GL_DEPTH_TEST);
+			text.RenderText("This is a sample text", 0.0f, 0.0f, 1.0f, glm::vec3(0.5, 0.8f, 0.2f));
+		}*/
+		
+		//glEnable(GL_DEPTH_TEST);
+		
 
 		if (dayNightSystem) {
-			if (!nightMode) glClearColor(sunDiff + 0.2f, sunDiff + 0.2f, sunDiff + 0.2f, sunDiff + 0.2f);
-			else glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+			if (!nightMode) glClearColor(sunDiff, sunDiff, sunDiff, 1.0f);
+			else glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		}
 		else {
 			glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
@@ -163,7 +192,7 @@ int main()
 		projection = glm::perspective(glm::radians(camera.Zoom), (float)WIN_WIDTH / (float)WIN_HEIGHT, 0.1f, 30.0f);
 		view = camera.GetViewMatrix();
 
-		shaderSetup(lightCubeShader, shaderTex, shaderMP, projection, view);
+		shaderSetup(lightCubeShader, shaderTex, shaderMP, shaderSky, projection, view);
 		
 		xoffset = 0.5f, yoffset = 0.5f;
 		offset = glm::translate(identity, glm::vec3(xoffset, yoffset, zoffset));
@@ -186,8 +215,12 @@ int main()
 
 		protagonistMoveHandler(protagonist, shaderMP, revolve);
 		
-		//component.tree(shaderMP, false, glm::translate(identity, glm::vec3(0.0f, 0.0f, 3.0f)) * revolve);
+		//component.mosque(shaderTex, shaderMP, glm::translate(identity, glm::vec3(0.0f, 0.0f, 3.0f)) * revolve);
+		//shaderTex.use();
+		//component.texturedSphere(shaderTex, glm::translate(identity, glm::vec3(0.0f, 2.0f, 3.0f)) * revolve);
 
+		
+		skyManager(shaderSky, world, glm::translate(identity, glm::vec3(-25.0f, 0.0f, -25.0f)));
 		if (dayNightSystem) {
 			if (!nightMode) component.sun(lightCubeShader, glm::translate(identity, glm::vec3(sunX, sunY + 2.0f, protagonistZmove - 20.0f)));
 			if (streetLightOn) component.moon(lightCubeShader, glm::translate(identity, glm::vec3(moonX, moonY + 2.0f, protagonistZmove - 20.0f)));
@@ -199,6 +232,9 @@ int main()
 		
 
 		//component.waterTank(shaderMP, false, glm::translate(identity, glm::vec3(0.0f, 0.0f, 2.0f)) * revolve);
+		/*scale = glm::scale(identity, glm::vec3(0.8f, 0.5f, 0.5f));
+		rotate = glm::rotate(identity, glm::radians(-90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+		component.billboard_seventyone(shaderTex, shaderMP, glm::translate(identity, glm::vec3(0.0f, -0.5f, 1.0f)) * scale);*/
 
 		//if (camera.Position.x != px) cout << "cam x: " << camera.Position.x << "\n";
 		//if (camera.Position.y != py) cout << "cam y: " << camera.Position.y << "\n";
@@ -207,10 +243,17 @@ int main()
 		py = camera.Position.y;
 		pz = camera.Position.z;
 
+		/*text.RenderText(shader, "This is sample text", 25.0f, 25.0f, 1.0f,
+			glm::vec3(0.5, 0.8f, 0.2f));*/	
+		
+
 		glfwSwapBuffers(window);
 		glfwPollEvents();
-	}
 
+		//glDisable(GL_DEPTH_TEST);
+		
+	}
+	
 	shader.deleteProgram();
 
 	glfwTerminate();
@@ -229,6 +272,9 @@ void processInput(GLFWwindow* window)
 {
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, true);
+
+	if (glfwGetKey(window, GLFW_KEY_M) == GLFW_PRESS)
+		menu = !menu;
 
 	float cameraSpeed = static_cast<float>(2.5 * deltaTime);
 
@@ -283,7 +329,11 @@ void processInput(GLFWwindow* window)
 		camera.Orbit();
 	}
 	if (glfwGetKey(window, GLFW_KEY_H) == GLFW_PRESS) {
-		camera.ResetPosition();
+		glm::vec4 identity = glm::vec4(1.0f);
+		glm::vec4 protagonistInitial = glm::vec4(protagonistXinitial, protagonistYinitial, protagonistZinitial, 1.0f);
+		glm::vec4 protagonistMove = glm::vec4(protagonistXmove, protagonistYmove, protagonistZmove, 1.0f);
+		glm::vec4 pos = protagonistMove * protagonistInitial;
+		camera.ResetPosition(pos.z);
 	}
 	if (glfwGetKey(window, GLFW_KEY_T) == GLFW_PRESS) {
 		torchOn = !torchOn;
@@ -453,7 +503,7 @@ void dayNightControl()
 	}
 }
 
-void shaderSetup(Shader& lightCubeShader, Shader& shaderTex, Shader& shaderMP, glm::mat4& projection, glm::mat4& view)
+void shaderSetup(Shader& lightCubeShader, Shader& shaderTex, Shader& shaderMP, Shader& shaderSky, glm::mat4& projection, glm::mat4& view)
 {
 	lightCubeShader.use();
 	lightCubeShader.setMat4("projection", projection);
@@ -566,9 +616,39 @@ void shaderSetup(Shader& lightCubeShader, Shader& shaderTex, Shader& shaderMP, g
 	shaderMP.setFloat("spotLight.outerCutOff", glm::cos(glm::radians(15.0f)));
 	shaderMP.setBool("flashlightOn", torchOn);
 
-
-
 	streetlightSetup(shaderMP, protagonistZmove);
+
+	shaderSky.use();
+	shaderSky.setMat4("projection", projection);
+	shaderSky.setMat4("view", view);
+	if (nightMode) shaderSky.setBool("nightMode", true);
+	else shaderSky.setBool("nightMode", false);
+	shaderSky.setBool("flashlightOn", false);
+	shaderSky.setInt("numberofPointlights", 0);
+	shaderSky.setVec3("viewPos", camera.Position);
+
+	// light properties
+
+	shaderSky.setVec3("dirLight.direction", -sunX, sunY, -sunZ);
+	shaderSky.setVec3("dirLight.ambient", sunDiff, sunDiff, sunDiff);
+	shaderSky.setVec3("dirLight.diffuse", sunDiff, sunDiff, sunDiff);
+	shaderSky.setVec3("dirLight.specular", sunDiff, sunDiff, sunDiff);
+	shaderSky.setBool("nightMode", nightMode);
+
+	// spotlight
+	shaderSky.setVec3("spotLight.position", camera.Position);
+	shaderSky.setVec3("spotLight.direction", camera.Front);
+	shaderSky.setVec3("spotLight.ambient", 0.0f, 0.0f, 0.0f);
+	shaderSky.setVec3("spotLight.diffuse", 1.0f, 1.0f, 1.0f);
+	shaderSky.setVec3("spotLight.specular", 1.0f, 1.0f, 1.0f);
+	shaderSky.setFloat("spotLight.constant", 1.0f);
+	shaderSky.setFloat("spotLight.linear", 0.09f);
+	shaderSky.setFloat("spotLight.quadratic", 0.032f);
+	shaderSky.setFloat("spotLight.cutOff", glm::cos(glm::radians(12.5f)));
+	shaderSky.setFloat("spotLight.outerCutOff", glm::cos(glm::radians(15.0f)));
+	shaderSky.setBool("flashlightOn", torchOn);
+
+	//streetlightSetup(shaderSky, protagonistZmove);
 	
 }
 
@@ -730,12 +810,25 @@ void streetlightSetup(Shader& shader, float moveZ, float slAmb, float slDiff, fl
 
 }
 
+void skyManager(Shader& shader, World& world, glm::mat4 alTogether)
+{
+	glm::mat4 identity = glm::mat4(1.0f);
+	shader.use();
+	world.sky(shader, alTogether * glm::translate(identity, glm::vec3(0.0f, 6.0f, protagonistZmove)));
+}
+
 void worldExpansion(Shader& shaderTex, Shader& shaderMP, Shader& lightCubeShader, World& world, Components& component, vector<int>& sequence, glm::mat4 alTogether)
 {
-	glm::mat4 rotate, scale, translate, identity = glm::mat4(1.0f);
+	glm::mat4 rotate, scale, translate, identity = glm::mat4(1.0f), rotateMosque;
 	//int numOfBlockComponent = 7, numOfStreetLight = 7, numOfResidential = 2, typeOfBlockComponent = 2;
 
 	shaderTex.use();
+
+	scale = glm::scale(identity, glm::vec3(0.8f, 0.5f, 0.5f));
+	rotate = glm::rotate(identity, glm::radians(-90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+	component.billboard_noexit(shaderTex, shaderMP, alTogether * glm::translate(identity, glm::vec3(3.0f, -0.5f, 7.0f)) * rotate *scale);
+	rotate = glm::rotate(identity, glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+	component.billboard_noexit(shaderTex, shaderMP, alTogether * glm::translate(identity, glm::vec3(-1.0f, -0.5f, 7.0f)) * rotate * scale);
 
 	for (int i = 0; i < numOfResidential; i++) {
 		world.residential(shaderTex, true, true, alTogether * glm::translate(identity, glm::vec3(-4.0f, -0.5f, -6.0f - i*15.0f)));
@@ -744,19 +837,41 @@ void worldExpansion(Shader& shaderTex, Shader& shaderMP, Shader& lightCubeShader
 
 	scale = glm::scale(identity, glm::vec3(1.0f, 1.5f, 1.0f));
 	rotate = glm::rotate(identity, glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));	
+	rotateMosque = glm::rotate(identity, glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
 	for (int i = 0; i < numOfBlockComponent; i++) {
-		if (sequence[i] == 0) {
-			component.building(shaderTex, true, alTogether * glm::translate(identity, glm::vec3(-3.5f, -0.5f, 7.0f - 4.0f * i)) * rotate * scale);
-			component.building(shaderTex, true, alTogether * glm::translate(identity, glm::vec3(3.5f, -0.5f, 7.0f - 4.0f * i)) * rotate * scale);
-		}
-		else {
+		if (i == 0) {
 			component.waterTank(shaderMP, false, alTogether * glm::translate(identity, glm::vec3(-2.8f, -0.5f, 7.0f - 4.5f * i)));
 			component.waterTank(shaderMP, false, alTogether * glm::translate(identity, glm::vec3(3.8f, -0.5f, 7.0f - 4.5f * i)));
 		}
+		else if (i == 3) {
+			component.mosque(shaderTex, shaderMP, alTogether * glm::translate(identity, glm::vec3(-3.5f, -0.5f, 7.0f - 4.0f * i)) * rotate * scale);			
+			component.building(shaderTex, true, alTogether * glm::translate(identity, glm::vec3(3.5f, -0.5f, 7.0f - 4.0f * i)) * rotate * scale);
+		}
+		else if (i == 1) {
+			component.building(shaderTex, true, alTogether * glm::translate(identity, glm::vec3(-3.5f, -0.5f, 7.0f - 4.0f * i)) * rotate * scale);
+			component.mosque(shaderTex, shaderMP, alTogether * glm::translate(identity, glm::vec3(5.5f, -0.5f, 7.0f - 6.0f * i)) * rotateMosque * rotate * scale);
+		}
+		else {
+			component.building(shaderTex, true, alTogether * glm::translate(identity, glm::vec3(-3.5f, -0.5f, 7.0f - 4.0f * i)) * rotate * scale);
+			component.building(shaderTex, true, alTogether * glm::translate(identity, glm::vec3(3.5f, -0.5f, 7.0f - 4.0f * i)) * rotate * scale);
+		}
+		/*if (sequence[i] == 0) {
+			component.building(shaderTex, true, alTogether * glm::translate(identity, glm::vec3(-3.5f, -0.5f, 7.0f - 4.0f * i)) * rotate * scale);
+			component.building(shaderTex, true, alTogether * glm::translate(identity, glm::vec3(3.5f, -0.5f, 7.0f - 4.0f * i)) * rotate * scale);
+		}
+		else if (sequence[i] == 1) {
+			component.waterTank(shaderMP, false, alTogether * glm::translate(identity, glm::vec3(-2.8f, -0.5f, 7.0f - 4.5f * i)));
+			component.waterTank(shaderMP, false, alTogether * glm::translate(identity, glm::vec3(3.8f, -0.5f, 7.0f - 4.5f * i)));
+		}*/
+		/*else if (sequence[i] == 3) {
+			scale = glm::scale(identity, glm::vec3(0.8f, 0.5f, 0.5f));
+			rotate = glm::rotate(identity, glm::radians(-90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+			component.billboard(shaderTex, shaderMP, glm::translate(identity, glm::vec3(0.0f, 0.0f, 3.0f)) * scale);
+		}*/
 		
 	}
-
+	
 	shaderMP.use();	
 
 	

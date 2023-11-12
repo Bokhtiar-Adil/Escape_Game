@@ -23,7 +23,7 @@ private:
 	Cube cube = Cube();
 	Components component = Components();
 
-	float roadLength, roadWidth, garageWidth, garageLength, blockWidth, blockLength;
+	float roadLength, roadWidth, garageWidth, garageLength, blockWidth, blockLength, skyLength, skyWidth;
 	unsigned int textureID;
 	int widthtex, heighttex, nrComponents;
 	unsigned char* data;
@@ -65,11 +65,12 @@ private:
 		return textureID;
 	}
 
-	unsigned int grass;
+	unsigned int grass, skytex;
 
 	void loadAllTextures()
 	{
 		grass = loadTexture("grass.jpg");
+		skytex= loadTexture("sky1.jpg");
 	}
 
 public:
@@ -179,11 +180,33 @@ public:
 		}
 		else {
 			rotate = glm::rotate(identity, glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-			for (int i = 0; i < 15; i++) {
+			for (int i = 0; i < 20; i++) {
 				component.wall(shader, true, alTogether * glm::translate(identity, glm::vec3(blockWidth - 0.05f, 0.0f, 7.0f - 1.0f * i)) * rotate);
 			}
 		}
 		
+	}
+
+	void sky(Shader& shader, glm::mat4 alTogether = glm::mat4(1.0f))
+	{
+		skyWidth = 50.0f;
+		skyLength = 40.0f;
+		
+		this->dMap = skytex;
+
+		model = identity;
+		scale = glm::scale(identity, glm::vec3(skyWidth, 0.1f, skyLength));
+		model = scale * model;
+		modelTogether = alTogether * model;
+		cube.drawCubeWithTexture(shader, dMap, dMap, shininess, modelTogether);
+
+		model = identity;
+		scale = glm::scale(identity, glm::vec3(skyWidth, 10.0f, 0.1));	
+		
+		model = scale * model;
+		modelTogether = alTogether * model;
+		cube.drawCubeWithTexture(shader, dMap, dMap, shininess, modelTogether);
+
 	}
 };
 

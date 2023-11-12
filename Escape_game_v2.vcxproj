@@ -112,7 +112,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>glfw3.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>glfw3.lib;opengl32.lib;freetype.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -136,7 +136,9 @@
     <ClCompile Include="Components.cpp" />
     <ClCompile Include="Curves.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="Resource_manager.cpp" />
     <ClCompile Include="stb_image.cpp" />
+    <ClCompile Include="Text.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
@@ -144,8 +146,10 @@
     <ClInclude Include="Components.h" />
     <ClInclude Include="Cube.h" />
     <ClInclude Include="Curves.h" />
+    <ClInclude Include="Resource_manager.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="Sphere.h" />
+    <ClInclude Include="Text.h" />
     <ClInclude Include="World.h" />
   </ItemGroup>
   <ItemGroup>
@@ -155,6 +159,8 @@
     <None Include="fsSrcPrimary.fs" />
     <None Include="lightCube.fs" />
     <None Include="lightCube.vs" />
+    <None Include="text_2d.fs" />
+    <None Include="text_2d.vs" />
     <None Include="vsSrc.vs" />
     <None Include="vsSrcPrimary.vs" />
   </ItemGroup>
@@ -163,9 +169,15 @@
     <Image Include="container2.png" />
     <Image Include="container2_specular.png" />
     <Image Include="designedTiles.jpg" />
+    <Image Include="door2.jpg" />
     <Image Include="grass.jpg" />
+    <Image Include="mosque_wall.jpg" />
+    <Image Include="no_exit.jpg" />
     <Image Include="palestine.jpg" />
     <Image Include="roadLined.jpg" />
+    <Image Include="seventyone.jpg" />
+    <Image Include="seventyone1.jpg" />
+    <Image Include="sky1.jpg" />
     <Image Include="whitewall2.jpg" />
     <Image Include="windows.jpg" />
     <Image Include="woodCypress.jpg" />
@@ -174,6 +186,12 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="commented_out_parts.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Font Include="Antonio-Bold.ttf" />
+    <Font Include="Antonio-Light.ttf" />
+    <Font Include="Antonio-Regular.ttf" />
+    <Font Include="OCRAEXT.TTF" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
