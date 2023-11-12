@@ -56,11 +56,12 @@ void simpleRoom(unsigned int& VAO, Shader& shader, glm::mat4 offset, glm::mat4 a
 
 // helper functions
 void shaderSetup(Shader& lightCubeShader, Shader& shaderTex, Shader& shaderMP, Shader& shaderSky, Shader& shaderCurves, glm::mat4& projection, glm::mat4& view);
-void worldExpansion(Shader& shaderTex, Shader& shaderMP, Shader& lightCubeShader, World& world, Components& component, vector<int>& sequence, glm::mat4 alTogether);
+void worldExpansion(Shader& shaderTex, Shader& shaderMP, Shader& shaderCurves, Shader& lightCubeShader, World& world, Components& component, vector<int>& sequence, glm::mat4 alTogether);
 void protagonistMoveHandler(Character& protagonist, Shader& shaderMP, glm::mat4 revolve);
 void streetlightSetup(Shader& shader, float moveZ, float slAmb = 0.1f, float slDiff = 0.5f, float slSpec = 0.5f, float slConst = 1.0f, float slLin = 0.09f, float slQuad = 0.032f);
 void dayNightControl();
 void skyManager(Shader& shader, World& world, glm::mat4 alTogether);
+void tree(Shader& shaderMP, Shader& shaderCurves, Curves& treeCurves, bool withTexture, glm::mat4 alTogether = glm::mat4(1.0f));
 
 
 bool torchOn = false;
@@ -139,7 +140,8 @@ int main()
 	Shader shader("vsSrc.vs", "fsSrcBoth.fs");
 	Shader lightCubeShader("lightCube.vs", "lightCube.fs");
 	Shader textShader("text_2d.vs", "text_2d.fs");
-	Shader shaderCurves("vsSrcCurves.vs", "fsSrcMatProp.fs");
+	Shader shaderCurves("vsSrcCurves.vs", "fsSrcCurves.fs");
+
 
 	glEnable(GL_DEPTH_TEST);
 	//glEnable(GL_CULL_FACE);
@@ -150,11 +152,11 @@ int main()
 	glm::mat4 offset, altogether, translate, rotate, scale, identity = glm::mat4(1.0f);
 	float xoffset = 0.0f, yoffset = 0.0f, zoffset = 0.0f;
 
-	Components component;
+	Components component(WIN_WIDTH, WIN_HEIGHT);
 	World world;
 	Character protagonist;
 	Text text(textShader, SCR_WIDTH, SCR_HEIGHT);
-	Curves hatCurves;
+	Curves hatCurves, treeCurves;
 
 	float px = 1.0f, py = 0.2f, pz = initialCameraZ;
 	vector<int> sequence;
@@ -173,15 +175,19 @@ int main()
 	//curves.setControlPoints();
 
 	hatCurves.setViewport(viewport);
+	treeCurves.setViewport(viewport);
 	/*curves.setProjView(projection, view);*/
 	
 	vector<float> dummycntrlpoints = {223, 65, 232, 90, 232, 145, 219, 191, 210, 245, 232, 278, 268, 300, 309, 307, 351, 307, 384, 304};
 	vector<float> treeTopPoints = { 632, 48, 612, 38, 595, 24, 575, 18, 552, 20, 531, 29, 507, 51, 498, 79, 499, 104, 514, 123, 524, 135, 506, 147, 486, 155, 461, 160, 433, 174, 419, 192, 404, 221, 399, 247, 419, 266, 442, 280, 474, 298, 485, 313, 465, 319, 443, 334, 418, 354, 395, 375, 364, 400, 351, 434, 347, 478, 364, 516, 394, 541, 425, 557, 481, 575, 521, 587, 566, 572, 592, 548, 620, 509, 631, 493, 647, 460 };
 	vector<float> tree2 = { 540, 39, 483, 100, 452, 164, 424, 247, 402, 316, 393, 393, 421, 447, 473, 485, 529, 492, 583, 480, 615, 431};
 	vector<float> hat = {642, 78, 569, 58, 495, 55, 459, 107, 416, 148, 340, 164, 289, 238, 192, 247, 119, 354, 45, 434};
+	vector<float> tree3 = { 611, 48, 572, 46, 507, 56, 435, 89, 407, 133, 380, 207, 394, 260, 375, 297, 319, 357, 299, 440, 364, 511, 437, 554, 502, 568, 549, 559, 579, 519 };
  	//curves.setControlPoints(dummycntrlpoints);
 	hatCurves.setControlPoints(hat);
-	
+	treeCurves.setControlPointsV2(tree3);
+	hatCurves.setWinProperties(1200, 700);
+	treeCurves.setWinProperties(1200, 700);
 
 	//glEnable(GL_DEPTH_TEST);
 	// render
@@ -231,8 +237,11 @@ int main()
 		scale = glm::scale(identity, glm::vec3(0.2f, 0.2f, 0.2f));
 		translate = glm::translate(identity, glm::vec3(protagonistXinitial, 0.4f, protagonistZinitial));
 		hatCurves.setModel(glm::translate(identity, glm::vec3(protagonistXmove, protagonistYmove, protagonistZmove)) * translate * scale * revolve);
+		treeCurves.setModel(glm::translate(identity, glm::vec3(0.0f, 3.0f, 1.0f)) * translate * revolve);
 
+		shaderCurves.setBool("overrideColor", false);
 		hatCurves.drawCurves(shaderCurves);
+		//treeCurves.drawCurves(shaderCurves);
 
 		currentBlockBase = 0.0f;
 		if ((-1 * camera.Position.z + initialCameraZ) - currentBlockNumber * 30.0f > 30.0f) {
@@ -240,14 +249,15 @@ int main()
 		}
 		currentBlockBase = -1 * (currentBlockNumber * 30.0f);
 		translate = glm::translate(identity, glm::vec3(0.0f, 0.0f, currentBlockBase + 0.0f)); 
-		worldExpansion(shaderTex, shaderMP, lightCubeShader, world, component, sequence, translate);
+		worldExpansion(shaderTex, shaderMP, shaderCurves, lightCubeShader, world, component, sequence, translate);
 		translate = glm::translate(identity, glm::vec3(0.0f, 0.0f, currentBlockBase - 30.0f));
-		worldExpansion(shaderTex, shaderMP, lightCubeShader, world, component, sequence, translate);
+		worldExpansion(shaderTex, shaderMP, shaderCurves, lightCubeShader, world, component, sequence, translate);
 		/**/
 
 		protagonistMoveHandler(protagonist, shaderMP, revolve);
 		
-		//component.mosque(shaderTex, shaderMP, glm::translate(identity, glm::vec3(0.0f, 0.0f, 3.0f)) * revolve);
+		//component.tree(shaderMP, shaderCurves, false,  glm::translate(identity, glm::vec3(0.0f, 0.0f, 3.0f)) * revolve);
+		//tree(shaderMP, shaderCurves, treeCurves, false,  glm::translate(identity, glm::vec3(0.0f, 0.0f, 3.0f)) * revolve);
 		//shaderTex.use();
 		//component.texturedSphere(shaderTex, glm::translate(identity, glm::vec3(0.0f, 2.0f, 3.0f)) * revolve);
 
@@ -629,6 +639,7 @@ void shaderSetup(Shader& lightCubeShader, Shader& shaderTex, Shader& shaderMP, S
 	shaderMP.setBool("flashlightOn", false);
 	shaderMP.setInt("numberofPointlights", 0);
 	shaderMP.setVec3("viewPos", camera.Position);
+	//shaderCurves.setBool("curve", false);
 
 	// light properties
 
@@ -698,14 +709,21 @@ void shaderSetup(Shader& lightCubeShader, Shader& shaderTex, Shader& shaderMP, S
 	shaderCurves.setBool("flashlightOn", false);
 	shaderCurves.setInt("numberofPointlights", 0);
 	shaderCurves.setVec3("viewPos", camera.Position);
+	shaderCurves.setBool("curve", true);
 
 	// light properties
 
 	// directional light 
 	shaderCurves.setVec3("dirLight.direction", -sunX, -sunY, -sunZ);
-	shaderCurves.setVec3("dirLight.ambient", sunAmb, sunAmb, sunAmb);
-	shaderCurves.setVec3("dirLight.diffuse", sunDiff, sunDiff, sunDiff);
+	shaderCurves.setVec3("dirLight.ambient", sunAmb * 0.5f, sunAmb * 0.5f, sunAmb * 0.5f);
+	shaderCurves.setVec3("dirLight.diffuse", sunDiff * 0.5f, sunDiff * 0.5f, sunDiff * 0.5f);
 	shaderCurves.setVec3("dirLight.specular", sunSpec, sunSpec, sunSpec);
+	shaderCurves.setBool("nightMode", nightMode);
+
+	shaderCurves.setVec3("dirLight2.direction", -sunX, -sunY, sunZ);
+	shaderCurves.setVec3("dirLight2.ambient", sunAmb*0.5f, sunAmb*0.5f, sunAmb*0.5f);
+	shaderCurves.setVec3("dirLight2.diffuse", sunDiff * 0.5f, sunDiff * 0.5f, sunDiff * 0.5f);
+	shaderCurves.setVec3("dirLight2.specular", sunSpec * 0.5f, sunSpec * 0.5f, sunSpec * 0.5f);
 	shaderCurves.setBool("nightMode", nightMode);
 
 	// spotlight
@@ -890,7 +908,7 @@ void skyManager(Shader& shader, World& world, glm::mat4 alTogether)
 	world.sky(shader, alTogether * glm::translate(identity, glm::vec3(0.0f, 6.0f, protagonistZmove)));
 }
 
-void worldExpansion(Shader& shaderTex, Shader& shaderMP, Shader& lightCubeShader, World& world, Components& component, vector<int>& sequence, glm::mat4 alTogether)
+void worldExpansion(Shader& shaderTex, Shader& shaderMP, Shader& shaderCurves, Shader& lightCubeShader, World& world, Components& component, vector<int>& sequence, glm::mat4 alTogether)
 {
 	glm::mat4 rotate, scale, translate, identity = glm::mat4(1.0f), rotateMosque;
 	//int numOfBlockComponent = 7, numOfStreetLight = 7, numOfResidential = 2, typeOfBlockComponent = 2;
@@ -914,20 +932,20 @@ void worldExpansion(Shader& shaderTex, Shader& shaderMP, Shader& lightCubeShader
 
 	for (int i = 0; i < numOfBlockComponent; i++) {
 		if (i == 0) {
-			component.waterTank(shaderMP, false, alTogether * glm::translate(identity, glm::vec3(-2.8f, -0.5f, 7.0f - 4.5f * i)));
-			component.waterTank(shaderMP, false, alTogether * glm::translate(identity, glm::vec3(3.8f, -0.5f, 7.0f - 4.5f * i)));
+			component.waterTank(shaderMP, false, alTogether * glm::translate(identity, glm::vec3(-3.0f, -0.5f, 7.0f - 4.5f * i)));
+			component.waterTank(shaderMP, false, alTogether * glm::translate(identity, glm::vec3(4.0f, -0.5f, 7.0f - 4.5f * i)));
 		}
 		else if (i == 3) {
-			component.mosque(shaderTex, shaderMP, alTogether * glm::translate(identity, glm::vec3(-3.5f, -0.5f, 7.0f - 4.0f * i)) * rotate * scale);			
-			component.building(shaderTex, true, alTogether * glm::translate(identity, glm::vec3(3.5f, -0.5f, 7.0f - 4.0f * i)) * rotate * scale);
+			component.mosque(shaderTex, shaderMP, alTogether * glm::translate(identity, glm::vec3(-3.7f, -0.5f, 7.0f - 4.0f * i)) * rotate * scale);			
+			component.building(shaderTex, true, alTogether * glm::translate(identity, glm::vec3(3.7f, -0.5f, 7.0f - 4.0f * i)) * rotate * scale);
 		}
 		else if (i == 1) {
-			component.building(shaderTex, true, alTogether * glm::translate(identity, glm::vec3(-3.5f, -0.5f, 7.0f - 4.0f * i)) * rotate * scale);
-			component.mosque(shaderTex, shaderMP, alTogether * glm::translate(identity, glm::vec3(5.5f, -0.5f, 7.0f - 6.0f * i)) * rotateMosque * rotate * scale);
+			component.building(shaderTex, true, alTogether * glm::translate(identity, glm::vec3(-3.7f, -0.5f, 7.0f - 4.0f * i)) * rotate * scale);
+			component.mosque(shaderTex, shaderMP, alTogether * glm::translate(identity, glm::vec3(5.7f, -0.5f, 7.0f - 6.0f * i)) * rotateMosque * rotate * scale);
 		}
 		else {
-			component.building(shaderTex, true, alTogether * glm::translate(identity, glm::vec3(-3.5f, -0.5f, 7.0f - 4.0f * i)) * rotate * scale);
-			component.building(shaderTex, true, alTogether * glm::translate(identity, glm::vec3(3.5f, -0.5f, 7.0f - 4.0f * i)) * rotate * scale);
+			component.building(shaderTex, true, alTogether * glm::translate(identity, glm::vec3(-3.7f, -0.5f, 7.0f - 4.0f * i)) * rotate * scale);
+			component.building(shaderTex, true, alTogether * glm::translate(identity, glm::vec3(3.7f, -0.5f, 7.0f - 4.0f * i)) * rotate * scale);
 		}
 		/*if (sequence[i] == 0) {
 			component.building(shaderTex, true, alTogether * glm::translate(identity, glm::vec3(-3.5f, -0.5f, 7.0f - 4.0f * i)) * rotate * scale);
@@ -947,8 +965,6 @@ void worldExpansion(Shader& shaderTex, Shader& shaderMP, Shader& lightCubeShader
 	
 	shaderMP.use();	
 
-	
-
 	world.road(shaderMP, alTogether * glm::translate(identity, glm::vec3(-1.0f, -0.5f, -21.0f)));	
 	rotate = glm::rotate(identity, glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 	for (int i = 0; i < numOfStreetLight; i++) {
@@ -956,6 +972,12 @@ void worldExpansion(Shader& shaderTex, Shader& shaderMP, Shader& lightCubeShader
 		component.streetlight(shaderMP, lightCubeShader, alTogether * glm::translate(identity, glm::vec3(-1.0f, -0.5f, 5.0f - i * 4.0f)));
 		// right side of the road
 		component.streetlight(shaderMP, lightCubeShader, alTogether * glm::translate(identity, glm::vec3(3.0f, -0.5f, 5.0f - i * 4.0f)) * rotate);
+	}
+	for (int i = 0; i < numOfStreetLight; i++) {
+		// left side of the road
+		component.tree(shaderMP, shaderCurves, false, alTogether * glm::translate(identity, glm::vec3(-1.0f, -0.5f, 12.0f - i * 4.0f)));
+		// right side of the road
+		component.tree(shaderMP, shaderCurves, false, alTogether * glm::translate(identity, glm::vec3(3.0f, -0.5f, 12.0f - i * 4.0f)) * rotate);
 	}
 }
 
@@ -970,4 +992,42 @@ void protagonistMoveHandler(Character& protagonist, Shader& shaderMP, glm::mat4 
 	protagonistAlTogether = protagonistMove * protagonistInitial * rotate * scale * revolve;
 	protagonist.drawProtagonist(shaderMP, protagonistAlTogether);
 	if (jumpCoolDown==15) protagonistYmove = 0.0f;
+}
+
+void tree(Shader& shaderMP, Shader& shaderCurves, Curves& treeCurves, bool withTexture, glm::mat4 alTogether)
+{
+	Cube cube;
+	float baseHeight = 1.0f;
+	float baseWidth = 0.1f;
+
+	glm::vec3 amb = glm::vec3(0.45f, 0.36f, 0.26f);
+	glm::vec3 diff = glm::vec3(0.45f, 0.36f, 0.26f);
+	glm::vec3 spec = glm::vec3(0.0f, 0.0f, 0.0f);
+	float shininess = 32.0f;
+
+	glm::mat4 identity = glm::mat4(1.0f), scale, rotate, translate, model, modelTogether;
+
+	// trunk
+	shaderMP.use();
+	shaderMP.setBool("exposedToSun", true);
+	model = identity;
+	scale = glm::scale(identity, glm::vec3(baseWidth, baseHeight, baseWidth));
+	model = scale * model;
+	modelTogether = alTogether * model;
+	cube.drawCubeWithMaterialisticProperty(shaderMP, amb, diff, spec, shininess, modelTogether);
+
+	// top
+	amb = glm::vec3(0.f, 0.1f, 0.0f);
+	diff = glm::vec3(0.0f, 1.0f, 0.0f);
+	spec = glm::vec3(0.0f, 0.0f, 0.0f);
+
+	shaderCurves.use();
+	shaderCurves.setBool("exposedToSun", true);
+	model = identity;
+	translate = glm::translate(identity, glm::vec3(1.0f, 0.4f, 0.0f));
+	model = alTogether * translate;
+	treeCurves.setModel(model);
+	treeCurves.drawCurves(shaderCurves, amb, diff, spec);
+	cout << "here..\n";
+
 }

@@ -67,6 +67,7 @@ uniform bool streetLightStatus[MAX_NR_STREET_LIGHTS];
 uniform int numberofStreetlights;
 uniform bool streetLightOn;
 
+
 // function prototypes
 vec3 CalcDirectionalLight(DirectionalLight light, vec3 normal, vec3 viewDir);
 vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir);
@@ -100,7 +101,7 @@ void main()
             }
         }
     }
-    FragColor = vec4(result, 1.0);
+    FragColor = vec4(result, 1.0f);
 }
 
 // calculates the color when using a directional light.

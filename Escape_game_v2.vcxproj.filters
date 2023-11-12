@@ -33,9 +33,6 @@
     <ClCompile Include="Text.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Resource_manager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h">
@@ -103,7 +100,9 @@
     <None Include="text_2d.vs">
       <Filter>Source Files</Filter>
     </None>
-    <None Include="fsSrcCurves.fs" />
+    <None Include="fsSrcCurves.fs">
+      <Filter>Source Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Image Include="roadLined.jpg">

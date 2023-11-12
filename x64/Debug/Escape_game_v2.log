@@ -3,23 +3,25 @@ D:\CMake\Projects\Escape_game_v2\Text.h(113,37): warning C4838: conversion from 
 D:\CMake\Projects\Escape_game_v2\Sphere.h(229,26): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
 D:\CMake\Projects\Escape_game_v2\Sphere.h(230,25): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
 D:\CMake\Projects\Escape_game_v2\Sphere.h(232,26): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-D:\CMake\Projects\Escape_game_v2\Curves.h(53,25): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
-D:\CMake\Projects\Escape_game_v2\Curves.h(127,19): warning C4244: 'initializing': conversion from 'GLint' to 'float', possible loss of data
-D:\CMake\Projects\Escape_game_v2\Curves.h(127,38): warning C4244: 'initializing': conversion from 'GLint' to 'float', possible loss of data
-D:\CMake\Projects\Escape_game_v2\Curves.h(127,57): warning C4244: 'initializing': conversion from 'GLint' to 'float', possible loss of data
-D:\CMake\Projects\Escape_game_v2\Curves.h(127,76): warning C4244: 'initializing': conversion from 'GLint' to 'float', possible loss of data
-D:\CMake\Projects\Escape_game_v2\Curves.h(186,37): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-D:\CMake\Projects\Escape_game_v2\Curves.h(186,28): warning C4244: 'initializing': conversion from 'double' to 'const float', possible loss of data
-D:\CMake\Projects\Escape_game_v2\Curves.h(189,18): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-D:\CMake\Projects\Escape_game_v2\Curves.h(199,29): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-D:\CMake\Projects\Escape_game_v2\Curves.h(205,23): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-D:\CMake\Projects\Escape_game_v2\Curves.h(206,23): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-D:\CMake\Projects\Escape_game_v2\Main.cpp(150,43): warning C4101: 'rotate': unreferenced local variable
-D:\CMake\Projects\Escape_game_v2\Main.cpp(150,20): warning C4101: 'altogether': unreferenced local variable
-D:\CMake\Projects\Escape_game_v2\Main.cpp(405,22): warning C4305: '+=': truncation from 'double' to 'float'
-D:\CMake\Projects\Escape_game_v2\Main.cpp(419,22): warning C4305: '+=': truncation from 'double' to 'float'
-D:\CMake\Projects\Escape_game_v2\Main.cpp(735,10): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
-D:\CMake\Projects\Escape_game_v2\Main.cpp(733,12): warning C4101: 'streetlightTogether': unreferenced local variable
-D:\CMake\Projects\Escape_game_v2\Main.cpp(895,27): warning C4101: 'translate': unreferenced local variable
-D:\CMake\Projects\Escape_game_v2\Main.cpp(964,27): warning C4101: 'translate': unreferenced local variable
+D:\CMake\Projects\Escape_game_v2\Curves.h(55,25): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+D:\CMake\Projects\Escape_game_v2\Curves.h(68,25): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+D:\CMake\Projects\Escape_game_v2\Curves.h(156,19): warning C4244: 'initializing': conversion from 'GLint' to 'float', possible loss of data
+D:\CMake\Projects\Escape_game_v2\Curves.h(156,38): warning C4244: 'initializing': conversion from 'GLint' to 'float', possible loss of data
+D:\CMake\Projects\Escape_game_v2\Curves.h(156,57): warning C4244: 'initializing': conversion from 'GLint' to 'float', possible loss of data
+D:\CMake\Projects\Escape_game_v2\Curves.h(156,76): warning C4244: 'initializing': conversion from 'GLint' to 'float', possible loss of data
+D:\CMake\Projects\Escape_game_v2\Curves.h(215,37): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+D:\CMake\Projects\Escape_game_v2\Curves.h(215,28): warning C4244: 'initializing': conversion from 'double' to 'const float', possible loss of data
+D:\CMake\Projects\Escape_game_v2\Curves.h(218,18): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+D:\CMake\Projects\Escape_game_v2\Curves.h(228,29): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+D:\CMake\Projects\Escape_game_v2\Curves.h(234,23): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+D:\CMake\Projects\Escape_game_v2\Curves.h(235,23): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+D:\CMake\Projects\Escape_game_v2\Main.cpp(152,43): warning C4101: 'rotate': unreferenced local variable
+D:\CMake\Projects\Escape_game_v2\Main.cpp(152,20): warning C4101: 'altogether': unreferenced local variable
+D:\CMake\Projects\Escape_game_v2\Main.cpp(415,22): warning C4305: '+=': truncation from 'double' to 'float'
+D:\CMake\Projects\Escape_game_v2\Main.cpp(429,22): warning C4305: '+=': truncation from 'double' to 'float'
+D:\CMake\Projects\Escape_game_v2\Main.cpp(753,10): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+D:\CMake\Projects\Escape_game_v2\Main.cpp(751,12): warning C4101: 'streetlightTogether': unreferenced local variable
+D:\CMake\Projects\Escape_game_v2\Main.cpp(913,27): warning C4101: 'translate': unreferenced local variable
+D:\CMake\Projects\Escape_game_v2\Main.cpp(986,27): warning C4101: 'translate': unreferenced local variable
+D:\CMake\Projects\Escape_game_v2\Main.cpp(1008,47): warning C4101: 'rotate': unreferenced local variable
   Escape_game_v2.vcxproj -> D:\CMake\Projects\Escape_game_v2\x64\Debug\Escape_game_v2.exe

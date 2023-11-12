@@ -21,7 +21,7 @@ private:
 	glm::vec3 amb, diff, spec;
 
 	Cube cube = Cube();
-	Components component = Components();
+	Components component = Components(1200, 700);
 
 	float roadLength, roadWidth, garageWidth, garageLength, blockWidth, blockLength, skyLength, skyWidth;
 	unsigned int textureID;
@@ -93,6 +93,7 @@ public:
 		this->diff = glm::vec3(0.3f, 0.3f, 0.3f);
 		this->spec = glm::vec3(0.0, 0.0, 0.0);
 
+		shader.use();
 		shader.setBool("exposedToSun", true);
 		model = identity;
 		scale = glm::scale(identity, glm::vec3(roadWidth, 0.1f, roadLength));
@@ -133,6 +134,9 @@ public:
 			cube.drawCubeWithMaterialisticProperty(shader, this->amb, this->diff, this->spec, this->shininess, modelTogether);
 		}
 
+		/*translate = glm::translate(identity, glm::vec3(4.0f, 0.0f, 10.0f));
+		modelTogether = alTogether * translate * identity;
+		component.tree(shader, shaderCurves, false, modelTogether);*/
 	}
 
 	void garage(Shader& shader, glm::mat4 alTogether = glm::mat4(1.0f))

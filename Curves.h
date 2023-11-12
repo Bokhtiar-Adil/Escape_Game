@@ -33,6 +33,8 @@ public:
     bool lineMode = false;
     unsigned int bezierVAO;
 
+    int win_width, win_height;
+
     glm::mat4 projection, view, translate, rotate, scale, model, identity;
 
     Curves()
@@ -61,6 +63,19 @@ public:
         bezierVAO = hollowBezier(cntrlPoints.data(), ((unsigned int)cntrlPoints.size() / 3) - 1);
     }
 
+    void setControlPointsV2(vector<float>& points)
+    {
+        int numOfPoints = points.size();
+        for (int i = 0; i < numOfPoints; i += 2) {
+            //scsToWcs(points[i], points[i+1], wcs);
+            normalizationV2(points[i], points[i + 1], wcs);
+            cntrlPoints.push_back(wcs[0]);
+            cntrlPoints.push_back(wcs[1]);
+            cntrlPoints.push_back(wcs[2]);
+        }
+        bezierVAO = hollowBezier(cntrlPoints.data(), ((unsigned int)cntrlPoints.size() / 3) - 1);
+    }
+
     void setProjView(glm::mat4 proj, glm::mat4 vw)
     {
         this->projection = proj;
@@ -78,13 +93,19 @@ public:
             this->viewport[i] = vpInfo[i];
     }
 
-    void drawCurves(Shader& shader)
+    void setWinProperties(int width, int height)
+    {
+        this->win_width = width;
+        this->win_height = height;
+    }
+
+    void drawCurves(Shader& shader, glm::vec3 amb = glm::vec3(1.0f, 0.0f, 1.0f), glm::vec3 diff = glm::vec3(1.0f, 0.0f, 1.0f), glm::vec3 spec = glm::vec3(1.0f, 1.0f, 1.0f))
     {
         shader.use();
         shader.setBool("exposedToSun", true);
-        shader.setVec3("material.ambient", glm::vec3(1.0f, 0.0f, 1.0f));
-        shader.setVec3("material.diffuse", glm::vec3(1.0f, 0.0f, 1.0f));
-        shader.setVec3("material.specular", glm::vec3(1.0f, 1.0f, 1.0f));
+        shader.setVec3("material.ambient", amb);
+        shader.setVec3("material.diffuse", diff);
+        shader.setVec3("material.specular", spec);
         shader.setFloat("material.shininess", 32.0f);
         shader.setMat4("model", this->model);
 
@@ -96,6 +117,7 @@ public:
 
         // unbind VAO
         glBindVertexArray(0);
+        //cout << "here2\n";
     }
 
     
@@ -106,6 +128,13 @@ private:
     {
         wcsv[0] = (sx) / (viewport[2] - viewport[0]);
         wcsv[1] = (sy) / (viewport[3] - viewport[1]);
+        wcsv[2] = 1.0f;
+    }
+
+    void normalizationV2(float sx, float sy, float wcsv[3])
+    {
+        wcsv[0] = (2 * sx / 1200) - 1;
+        wcsv[1] = (-2 * sy / 700) + 1;
         wcsv[2] = 1.0f;
     }
 

@@ -10,10 +10,13 @@
 #include "Cube.h"
 #include "Shader.h"
 #include "Sphere.h"
+#include "Curves.h"
 
 class Components
 {
 private:
+
+	int win_width, win_height;
 
 	glm::mat4 identity, model, modelTogether, scale, translate, rotate, spheremodel;
 	unsigned int dMap, sMap;
@@ -22,6 +25,7 @@ private:
 
 	Cube cube = Cube();
 	Sphere sphere = Sphere();
+	Curves treeCurves = Curves();
 
 	unsigned int cylinderVAO;
 	unsigned int cylinderVBO;
@@ -218,14 +222,31 @@ private:
 		door2 = loadTexture("door2.jpg");
 	}
 
+	void loadAllCurves()
+	{
+		vector<float> tree3 = { 611, 48, 572, 46, 507, 56, 435, 89, 407, 133, 380, 207, 394, 260, 375, 297, 319, 357, 299, 440, 364, 511, 437, 554, 502, 568, 549, 559, 579, 519 };
+		treeCurves.setControlPointsV2(tree3);
+	}
+
 public:
 
-	Components()
+	Components(int width, int height)
 	{
+		this->win_width = width;
+		this->win_height = height;
+
 		identity = glm::mat4(1.0f);
 
 		loadAllTextures();
+		loadAllCurves();
+		treeCurves.setWinProperties(this->win_width, this->win_height);
+
 	}	
+
+	void setCurvesProperties(glm::mat4 projection, glm::mat4 view, GLint viewport[])
+	{
+		treeCurves.setViewport(viewport);
+	}
 
 	void table(Shader& shader, bool withTexture, glm::mat4 alTogether = glm::mat4(1.0f))
 	{
@@ -1067,7 +1088,7 @@ public:
 		
 	}
 
-	void tree(Shader& shader, bool withTexture, glm::mat4 alTogether = glm::mat4(1.0f))
+	void tree(Shader& shaderMP, Shader& shaderCurves, bool withTexture, glm::mat4 alTogether = glm::mat4(1.0f))
 	{
 		baseHeight = 1.0f;
 		baseWidth = 0.1f;
@@ -1082,45 +1103,31 @@ public:
 			this->spec = glm::vec3(0.0f, 0.0f, 0.0f);
 		}
 
-		shader.setBool("exposedToSun", true);
+		// trunk
+		shaderMP.use();
+		shaderMP.setBool("exposedToSun", true);
 		model = identity;
 		scale = glm::scale(identity, glm::vec3(baseWidth, baseHeight, baseWidth));
 		model = scale * model;
 		modelTogether = alTogether * model;
-		if (withTexture) cube.drawCubeWithTexture(shader, dMap, sMap, this->shininess, modelTogether);
-		else cube.drawCubeWithMaterialisticProperty(shader, this->amb, this->diff, this->spec, this->shininess, modelTogether);
+		if (withTexture) cube.drawCubeWithTexture(shaderMP, dMap, sMap, this->shininess, modelTogether);
+		else cube.drawCubeWithMaterialisticProperty(shaderMP, this->amb, this->diff, this->spec, this->shininess, modelTogether);
 
-		scale = glm::scale(identity, glm::vec3(baseWidth * 0.5f, baseHeight * 0.4f, baseWidth * 0.5f));
-		rotate = glm::rotate(identity, glm::radians(-30.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-		translate = glm::translate(identity, glm::vec3(0.02f, baseHeight*0.8f, 0.02f));
-		model = translate * rotate * scale * identity;
-		modelTogether = alTogether * model;
-		if (withTexture) cube.drawCubeWithTexture(shader, dMap, sMap, this->shininess, modelTogether);
-		else cube.drawCubeWithMaterialisticProperty(shader, this->amb, this->diff, this->spec, this->shininess, modelTogether);
+		// top
+		this->amb = glm::vec3(0.f, 0.1f, 0.0f);
+		this->diff = glm::vec3(0.0f, 1.0f, 0.0f);
+		this->spec = glm::vec3(0.0f, 0.0f, 0.0f);
 
-		scale = glm::scale(identity, glm::vec3(baseWidth * 0.5f, baseHeight * 0.4f, baseWidth * 0.5f));
-		rotate = glm::rotate(identity, glm::radians(30.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-		translate = glm::translate(identity, glm::vec3(0.02f, baseHeight * 0.8f, 0.05f));
-		model = translate * rotate * scale * identity;
-		modelTogether = alTogether * model;
-		if (withTexture) cube.drawCubeWithTexture(shader, dMap, sMap, this->shininess, modelTogether);
-		else cube.drawCubeWithMaterialisticProperty(shader, this->amb, this->diff, this->spec, this->shininess, modelTogether);
-
-		scale = glm::scale(identity, glm::vec3(0.3f, 0.3f, 0.3f));
-		translate = glm::translate(identity, glm::vec3(0.0f, baseHeight, -0.1f));
-		spheremodel = translate * scale * identity;
-		modelTogether = alTogether * spheremodel;
-		sphere.drawSphere(shader, modelTogether);
-
-		translate = glm::translate(identity, glm::vec3(-0.1f, 0.2f, 0.0f));
-		spheremodel = translate * spheremodel;
-		modelTogether = alTogether * spheremodel;
-		sphere.drawSphere(shader, modelTogether);
-
-		translate = glm::translate(identity, glm::vec3(0.0f, 0.2f, 0.1f));
-		spheremodel = translate * spheremodel;
-		modelTogether = alTogether * spheremodel;
-		sphere.drawSphere(shader, modelTogether);
+		shaderCurves.use();
+		shaderCurves.setBool("exposedToSun", true);
+		shaderCurves.setBool("overrideColor", true);
+		shaderCurves.setVec3("color", glm::vec3(0.035f, 0.52f, 0.28f));
+		model = identity;
+		translate = glm::translate(identity, glm::vec3(0.05f, baseHeight, 0.05f));
+		model = alTogether * translate;
+		treeCurves.setModel(model);
+		treeCurves.drawCurves(shaderCurves, this->amb, this->diff, this->spec);
+		//cout << "here..\n";
 
 	}
 

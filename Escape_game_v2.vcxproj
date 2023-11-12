@@ -136,7 +136,6 @@
     <ClCompile Include="Components.cpp" />
     <ClCompile Include="Curves.cpp" />
     <ClCompile Include="Main.cpp" />
-    <ClCompile Include="Resource_manager.cpp" />
     <ClCompile Include="stb_image.cpp" />
     <ClCompile Include="Text.cpp" />
   </ItemGroup>
