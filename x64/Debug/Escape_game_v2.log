@@ -15,13 +15,13 @@ D:\CMake\Projects\Escape_game_v2\Curves.h(218,18): warning C4244: 'initializing'
 D:\CMake\Projects\Escape_game_v2\Curves.h(228,29): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
 D:\CMake\Projects\Escape_game_v2\Curves.h(234,23): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
 D:\CMake\Projects\Escape_game_v2\Curves.h(235,23): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-D:\CMake\Projects\Escape_game_v2\Main.cpp(152,43): warning C4101: 'rotate': unreferenced local variable
-D:\CMake\Projects\Escape_game_v2\Main.cpp(152,20): warning C4101: 'altogether': unreferenced local variable
-D:\CMake\Projects\Escape_game_v2\Main.cpp(415,22): warning C4305: '+=': truncation from 'double' to 'float'
-D:\CMake\Projects\Escape_game_v2\Main.cpp(429,22): warning C4305: '+=': truncation from 'double' to 'float'
-D:\CMake\Projects\Escape_game_v2\Main.cpp(753,10): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
-D:\CMake\Projects\Escape_game_v2\Main.cpp(751,12): warning C4101: 'streetlightTogether': unreferenced local variable
-D:\CMake\Projects\Escape_game_v2\Main.cpp(913,27): warning C4101: 'translate': unreferenced local variable
-D:\CMake\Projects\Escape_game_v2\Main.cpp(986,27): warning C4101: 'translate': unreferenced local variable
-D:\CMake\Projects\Escape_game_v2\Main.cpp(1008,47): warning C4101: 'rotate': unreferenced local variable
+D:\CMake\Projects\Escape_game_v2\Main.cpp(155,43): warning C4101: 'rotate': unreferenced local variable
+D:\CMake\Projects\Escape_game_v2\Main.cpp(155,20): warning C4101: 'altogether': unreferenced local variable
+D:\CMake\Projects\Escape_game_v2\Main.cpp(421,22): warning C4305: '+=': truncation from 'double' to 'float'
+D:\CMake\Projects\Escape_game_v2\Main.cpp(435,22): warning C4305: '+=': truncation from 'double' to 'float'
+D:\CMake\Projects\Escape_game_v2\Main.cpp(759,10): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+D:\CMake\Projects\Escape_game_v2\Main.cpp(757,12): warning C4101: 'streetlightTogether': unreferenced local variable
+D:\CMake\Projects\Escape_game_v2\Main.cpp(918,27): warning C4101: 'translate': unreferenced local variable
+D:\CMake\Projects\Escape_game_v2\Main.cpp(991,27): warning C4101: 'translate': unreferenced local variable
+D:\CMake\Projects\Escape_game_v2\Main.cpp(1024,47): warning C4101: 'rotate': unreferenced local variable
   Escape_game_v2.vcxproj -> D:\CMake\Projects\Escape_game_v2\x64\Debug\Escape_game_v2.exe

@@ -60,7 +60,7 @@ void worldExpansion(Shader& shaderTex, Shader& shaderMP, Shader& shaderCurves, S
 void protagonistMoveHandler(Character& protagonist, Shader& shaderMP, glm::mat4 revolve);
 void streetlightSetup(Shader& shader, float moveZ, float slAmb = 0.1f, float slDiff = 0.5f, float slSpec = 0.5f, float slConst = 1.0f, float slLin = 0.09f, float slQuad = 0.032f);
 void dayNightControl();
-void skyManager(Shader& shader, World& world, glm::mat4 alTogether);
+void skyManager(Shader& shaderTex, Shader& shaderMP, Shader& shaderSky, World& world, glm::mat4 alTogether);
 void tree(Shader& shaderMP, Shader& shaderCurves, Curves& treeCurves, bool withTexture, glm::mat4 alTogether = glm::mat4(1.0f));
 
 
@@ -86,6 +86,9 @@ int currentBlockNumber = 0;
 float protagonistZmove = 0.0f, protagonistXmove = 0.0f, protagonistYmove = 0.0f;
 float protagonistXinitial = 1.05f, protagonistYinitial = 0.4f, protagonistZinitial = 5.0f;
 int jumpCoolDown = 0;
+int protagonistMovementForm = 0, protagonistMovementFormCounter = 0;
+
+
 float sunX = 1.05f;
 float sunY = 3.0f;
 float sunZ = 5.0f;
@@ -262,7 +265,7 @@ int main()
 		//component.texturedSphere(shaderTex, glm::translate(identity, glm::vec3(0.0f, 2.0f, 3.0f)) * revolve);
 
 		
-		skyManager(shaderSky, world, glm::translate(identity, glm::vec3(-25.0f, 0.0f, -25.0f)));
+		skyManager(shaderTex, shaderMP, shaderSky, world, glm::translate(identity, glm::vec3(1.0f, 0.0f, protagonistZmove))); 
 		if (dayNightSystem) {
 			if (!nightMode) component.sun(lightCubeShader, glm::translate(identity, glm::vec3(sunX, sunY + 2.0f, protagonistZmove - 20.0f)));
 			if (streetLightOn) component.moon(lightCubeShader, glm::translate(identity, glm::vec3(moonX, moonY + 2.0f, protagonistZmove - 20.0f)));
@@ -324,6 +327,9 @@ void processInput(GLFWwindow* window)
 		camera.ProcessKeyboard(FORWARD, deltaTime);
 		currentCharacterPos += 0.05f;
 		protagonistZmove -= (camera.MovementSpeed * deltaTime);
+		if (protagonistMovementFormCounter == 0) {
+			protagonistMovementForm = 1;
+		}
 	}
 		
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
@@ -901,11 +907,10 @@ void streetlightSetup(Shader& shader, float moveZ, float slAmb, float slDiff, fl
 
 }
 
-void skyManager(Shader& shader, World& world, glm::mat4 alTogether)
+void skyManager(Shader& shaderTex, Shader& shaderMP, Shader& shaderSky, World& world, glm::mat4 alTogether)
 {
 	glm::mat4 identity = glm::mat4(1.0f);
-	shader.use();
-	world.sky(shader, alTogether * glm::translate(identity, glm::vec3(0.0f, 6.0f, protagonistZmove)));
+	world.sky(shaderTex, shaderMP, shaderSky, sunAmb, sunDiff, sunSpec, alTogether * glm::translate(identity, glm::vec3(0.0f, 6.0f, 0.0f)));
 }
 
 void worldExpansion(Shader& shaderTex, Shader& shaderMP, Shader& shaderCurves, Shader& lightCubeShader, World& world, Components& component, vector<int>& sequence, glm::mat4 alTogether)
@@ -990,8 +995,19 @@ void protagonistMoveHandler(Character& protagonist, Shader& shaderMP, glm::mat4 
 	protagonistInitial = glm::translate(identity, glm::vec3(protagonistXinitial, protagonistYinitial, protagonistZinitial));
 	protagonistMove = glm::translate(identity, glm::vec3(protagonistXmove, protagonistYmove, protagonistZmove));
 	protagonistAlTogether = protagonistMove * protagonistInitial * rotate * scale * revolve;
-	protagonist.drawProtagonist(shaderMP, protagonistAlTogether);
+
+	if (protagonistMovementForm == 0) protagonist.drawProtagonist(shaderMP, protagonistAlTogether, "still");
+	else if (protagonistMovementForm == 1) protagonist.drawProtagonist(shaderMP, protagonistAlTogether, "right");
+	else if (protagonistMovementForm == 2) protagonist.drawProtagonist(shaderMP, protagonistAlTogether, "left");
+
 	if (jumpCoolDown==15) protagonistYmove = 0.0f;
+
+	if (protagonistMovementForm != 0) protagonistMovementFormCounter++;
+	if (protagonistMovementFormCounter > 20 && protagonistMovementFormCounter < 40) protagonistMovementForm = 2;
+	else if (protagonistMovementFormCounter > 40) {
+		protagonistMovementForm = 0;
+		protagonistMovementFormCounter = 0;
+	}
 }
 
 void tree(Shader& shaderMP, Shader& shaderCurves, Curves& treeCurves, bool withTexture, glm::mat4 alTogether)

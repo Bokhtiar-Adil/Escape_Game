@@ -159,6 +159,12 @@
     <Image Include="door2.jpg">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="cloud.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="cloudlittle.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <Text Include="commented_out_parts.txt">

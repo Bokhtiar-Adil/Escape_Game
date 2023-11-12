@@ -9,19 +9,21 @@
 
 #include "Shader.h"
 #include "Cube.h"
+#include "Sphere.h"
 #include "Components.h"
 
 class World
 {
 private:
 
-	glm::mat4 identity, model, modelTogether, scale, translate, rotate;
+	glm::mat4 identity, model, modelTogether, scale, translate, rotate, spheremodel;
 	unsigned int dMap, sMap;
 	float shininess = 32.0f;
 	glm::vec3 amb, diff, spec;
 
 	Cube cube = Cube();
 	Components component = Components(1200, 700);
+	Sphere sphere = Sphere();
 
 	float roadLength, roadWidth, garageWidth, garageLength, blockWidth, blockLength, skyLength, skyWidth;
 	unsigned int textureID;
@@ -65,12 +67,13 @@ private:
 		return textureID;
 	}
 
-	unsigned int grass, skytex;
+	unsigned int grass, skytex, cloudtex;
 
 	void loadAllTextures()
 	{
 		grass = loadTexture("grass.jpg");
 		skytex= loadTexture("sky1.jpg");
+		cloudtex = loadTexture("cloudlittle.jpg");
 	}
 
 public:
@@ -191,25 +194,46 @@ public:
 		
 	}
 
-	void sky(Shader& shader, glm::mat4 alTogether = glm::mat4(1.0f))
+	void sky(Shader& shaderTex, Shader& shaderMP, Shader& shaderSky, float amb, float diff, float spec, glm::mat4 alTogether = glm::mat4(1.0f))
 	{
-		skyWidth = 50.0f;
-		skyLength = 40.0f;
+		/*skyWidth = 1.0f;
+		skyLength = 1.0f;
 		
-		this->dMap = skytex;
+		this->dMap = cloudtex;
+
+		shaderSky.use();
+		shaderSky.setBool("exposedToSun", true);
 
 		model = identity;
-		scale = glm::scale(identity, glm::vec3(skyWidth, 0.1f, skyLength));
-		model = scale * model;
+		scale = glm::scale(identity, glm::vec3(skyWidth, 0.01f, skyLength));
+		rotate = glm::rotate(identity, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+		model = rotate * scale * model;
 		modelTogether = alTogether * model;
-		cube.drawCubeWithTexture(shader, dMap, dMap, shininess, modelTogether);
+		cube.drawCubeWithTexture(shaderSky, dMap, dMap, shininess, modelTogether);*/
 
-		model = identity;
+		/*model = identity;
 		scale = glm::scale(identity, glm::vec3(skyWidth, 10.0f, 0.1));	
 		
 		model = scale * model;
 		modelTogether = alTogether * model;
-		cube.drawCubeWithTexture(shader, dMap, dMap, shininess, modelTogether);
+		cube.drawCubeWithTexture(shaderTex, dMap, dMap, shininess, modelTogether);*/
+
+		/*shaderSky.use();
+		shaderSky.setBool("exposedToSun", true);*/
+
+		/*this->amb = glm::vec3(0.0f, 0.0f, 0.1f);
+		this->diff = glm::vec3(0.0f, 0.0f, 0.8f);
+		this->spec = glm::vec3(0.0, 0.0, 1.0);*/
+
+		/*this->amb = glm::vec3(amb, amb, amb);
+		this->diff = glm::vec3(diff, diff, diff);
+		this->spec = glm::vec3(spec, spec, spec);
+
+		scale = glm::scale(identity, glm::vec3(30.0f, 30.0f, 20.0f));
+		spheremodel = scale * identity;
+		modelTogether = alTogether * spheremodel;
+		sphere.setMaterialisticProperties(this->amb, this->diff, this->spec);
+		sphere.drawSphere(shaderSky, modelTogether);*/
 
 	}
 };
