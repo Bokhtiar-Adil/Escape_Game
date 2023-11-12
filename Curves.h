@@ -52,7 +52,8 @@ public:
     {
         int numOfPoints = points.size();
         for (int i = 0; i < numOfPoints; i+=2) {
-            scsToWcs(points[i], points[i+1], wcs);
+            //scsToWcs(points[i], points[i+1], wcs);
+            normalization(points[i], points[i + 1], wcs);
             cntrlPoints.push_back(wcs[0]);
             cntrlPoints.push_back(wcs[1]);
             cntrlPoints.push_back(wcs[2]);
@@ -85,6 +86,7 @@ public:
         shader.setVec3("material.diffuse", glm::vec3(1.0f, 0.0f, 1.0f));
         shader.setVec3("material.specular", glm::vec3(1.0f, 1.0f, 1.0f));
         shader.setFloat("material.shininess", 32.0f);
+        shader.setMat4("model", this->model);
 
         glBindVertexArray(bezierVAO);
         glDrawElements(GL_TRIANGLES,                    // primitive type
@@ -99,6 +101,13 @@ public:
     
 
 private:
+
+    void normalization(float sx, float sy, float wcsv[3])
+    {
+        wcsv[0] = (sx) / (viewport[2] - viewport[0]);
+        wcsv[1] = (sy) / (viewport[3] - viewport[1]);
+        wcsv[2] = 1.0f;
+    }
 
     void scsToWcs(float sx, float sy, float wcsv[3])
     {
@@ -127,6 +136,8 @@ private:
         wcsv[0] = worldCoordinateVector.x / worldCoordinateVector.w;
         wcsv[1] = worldCoordinateVector.y / worldCoordinateVector.w;
         wcsv[2] = worldCoordinateVector.z / worldCoordinateVector.w;
+
+        
     }
 
     long long nCr(int n, int r)

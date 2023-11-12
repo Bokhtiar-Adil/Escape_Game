@@ -162,21 +162,23 @@ int main()
 		sequence.push_back(rand() % typeOfBlockComponent);
 	}
 
+	glGetIntegerv(GL_VIEWPORT, viewport);
+	cout << viewport[0] << " " << viewport[1] << " " << viewport[2] << " " << viewport[2] << "\n";
+
 	/*text.Load("Antonio-Bold.ttf", 48);
 	text.RenderText("This is a sample text", 0.0f, 0.0f, 1.0f, glm::vec3(0.5, 0.8f, 0.2f));
 	glfwMakeContextCurrent(window);*/
 	
 	//curves.setControlPoints();
 
-	/*projection = glm::perspective(glm::radians(camera.Zoom), (float)WIN_WIDTH / (float)WIN_HEIGHT, 0.1f, 30.0f);
-	view = camera.GetViewMatrix();
-	glGetIntegerv(GL_VIEWPORT, viewport);
 	curves.setViewport(viewport);
-	curves.setProjView(projection, view);
-	scale = glm::scale(identity, glm::vec3(3.0f, 3.0f, 3.0f));
-	curves.setModel(glm::translate(identity, glm::vec3(0.0f, 3.0f, 2.0f)) * scale * revolve);
+	/*curves.setProjView(projection, view);*/
+	
 	vector<float> dummycntrlpoints = {223, 65, 232, 90, 232, 145, 219, 191, 210, 245, 232, 278, 268, 300, 309, 307, 351, 307, 384, 304};
-	curves.setControlPoints(dummycntrlpoints);*/
+	vector<float> treeTopPoints = { 632, 48, 612, 38, 595, 24, 575, 18, 552, 20, 531, 29, 507, 51, 498, 79, 499, 104, 514, 123, 524, 135, 506, 147, 486, 155, 461, 160, 433, 174, 419, 192, 404, 221, 399, 247, 419, 266, 442, 280, 474, 298, 485, 313, 465, 319, 443, 334, 418, 354, 395, 375, 364, 400, 351, 434, 347, 478, 364, 516, 394, 541, 425, 557, 481, 575, 521, 587, 566, 572, 592, 548, 620, 509, 631, 493, 647, 460 };
+	vector<float> tree2 = { 540, 39, 483, 100, 452, 164, 424, 247, 402, 316, 393, 393, 421, 447, 473, 485, 529, 492, 583, 480, 615, 431};
+	//curves.setControlPoints(dummycntrlpoints);
+	curves.setControlPoints(tree2);
 	
 
 	//glEnable(GL_DEPTH_TEST);
@@ -224,9 +226,10 @@ int main()
 		revolve = rotateZMatrix * rotateYMatrix * rotateXMatrix;
 
 		
-		
+		scale = glm::scale(identity, glm::vec3(3.0f, 3.0f, 3.0f));
+		curves.setModel(glm::translate(identity, glm::vec3(0.0f, 3.0f, 2.0f)) * scale * revolve);
 
-		/*curves.drawCurves(shaderMP);*/
+		curves.drawCurves(shaderMP);
 
 		currentBlockBase = 0.0f;
 		if ((-1 * camera.Position.z + initialCameraZ) - currentBlockNumber * 30.0f > 30.0f) {
