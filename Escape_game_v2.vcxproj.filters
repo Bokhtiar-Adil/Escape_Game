@@ -94,8 +94,16 @@
     <None Include="fsSrcBoth.fs">
       <Filter>Source Files</Filter>
     </None>
-    <None Include="text_2d.vs" />
-    <None Include="text_2d.fs" />
+    <None Include="vsSrcCurves.vs">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="text_2d.fs">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="text_2d.vs">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="fsSrcCurves.fs" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="roadLined.jpg">

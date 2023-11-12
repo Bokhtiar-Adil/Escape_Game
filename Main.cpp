@@ -55,7 +55,7 @@ void simpleRoom(unsigned int& VAO, Shader& shader, glm::mat4 offset, glm::mat4 a
 
 
 // helper functions
-void shaderSetup(Shader& lightCubeShader, Shader& shaderTex, Shader& shaderMP, Shader& shaderSky, glm::mat4& projection, glm::mat4& view);
+void shaderSetup(Shader& lightCubeShader, Shader& shaderTex, Shader& shaderMP, Shader& shaderSky, Shader& shaderCurves, glm::mat4& projection, glm::mat4& view);
 void worldExpansion(Shader& shaderTex, Shader& shaderMP, Shader& lightCubeShader, World& world, Components& component, vector<int>& sequence, glm::mat4 alTogether);
 void protagonistMoveHandler(Character& protagonist, Shader& shaderMP, glm::mat4 revolve);
 void streetlightSetup(Shader& shader, float moveZ, float slAmb = 0.1f, float slDiff = 0.5f, float slSpec = 0.5f, float slConst = 1.0f, float slLin = 0.09f, float slQuad = 0.032f);
@@ -139,6 +139,7 @@ int main()
 	Shader shader("vsSrc.vs", "fsSrcBoth.fs");
 	Shader lightCubeShader("lightCube.vs", "lightCube.fs");
 	Shader textShader("text_2d.vs", "text_2d.fs");
+	Shader shaderCurves("vsSrcCurves.vs", "fsSrcMatProp.fs");
 
 	glEnable(GL_DEPTH_TEST);
 	//glEnable(GL_CULL_FACE);
@@ -153,7 +154,7 @@ int main()
 	World world;
 	Character protagonist;
 	Text text(textShader, SCR_WIDTH, SCR_HEIGHT);
-	Curves curves;
+	Curves hatCurves;
 
 	float px = 1.0f, py = 0.2f, pz = initialCameraZ;
 	vector<int> sequence;
@@ -171,14 +172,15 @@ int main()
 	
 	//curves.setControlPoints();
 
-	curves.setViewport(viewport);
+	hatCurves.setViewport(viewport);
 	/*curves.setProjView(projection, view);*/
 	
 	vector<float> dummycntrlpoints = {223, 65, 232, 90, 232, 145, 219, 191, 210, 245, 232, 278, 268, 300, 309, 307, 351, 307, 384, 304};
 	vector<float> treeTopPoints = { 632, 48, 612, 38, 595, 24, 575, 18, 552, 20, 531, 29, 507, 51, 498, 79, 499, 104, 514, 123, 524, 135, 506, 147, 486, 155, 461, 160, 433, 174, 419, 192, 404, 221, 399, 247, 419, 266, 442, 280, 474, 298, 485, 313, 465, 319, 443, 334, 418, 354, 395, 375, 364, 400, 351, 434, 347, 478, 364, 516, 394, 541, 425, 557, 481, 575, 521, 587, 566, 572, 592, 548, 620, 509, 631, 493, 647, 460 };
 	vector<float> tree2 = { 540, 39, 483, 100, 452, 164, 424, 247, 402, 316, 393, 393, 421, 447, 473, 485, 529, 492, 583, 480, 615, 431};
-	//curves.setControlPoints(dummycntrlpoints);
-	curves.setControlPoints(tree2);
+	vector<float> hat = {642, 78, 569, 58, 495, 55, 459, 107, 416, 148, 340, 164, 289, 238, 192, 247, 119, 354, 45, 434};
+ 	//curves.setControlPoints(dummycntrlpoints);
+	hatCurves.setControlPoints(hat);
 	
 
 	//glEnable(GL_DEPTH_TEST);
@@ -215,7 +217,7 @@ int main()
 		view = camera.GetViewMatrix();
 		
 
-		shaderSetup(lightCubeShader, shaderTex, shaderMP, shaderSky, projection, view);
+		shaderSetup(lightCubeShader, shaderTex, shaderMP, shaderSky, shaderCurves, projection, view);
 		
 		xoffset = 0.5f, yoffset = 0.5f;
 		offset = glm::translate(identity, glm::vec3(xoffset, yoffset, zoffset));
@@ -226,10 +228,11 @@ int main()
 		revolve = rotateZMatrix * rotateYMatrix * rotateXMatrix;
 
 		
-		scale = glm::scale(identity, glm::vec3(3.0f, 3.0f, 3.0f));
-		curves.setModel(glm::translate(identity, glm::vec3(0.0f, 3.0f, 2.0f)) * scale * revolve);
+		scale = glm::scale(identity, glm::vec3(0.2f, 0.2f, 0.2f));
+		translate = glm::translate(identity, glm::vec3(protagonistXinitial, 0.4f, protagonistZinitial));
+		hatCurves.setModel(glm::translate(identity, glm::vec3(protagonistXmove, protagonistYmove, protagonistZmove)) * translate * scale * revolve);
 
-		curves.drawCurves(shaderMP);
+		hatCurves.drawCurves(shaderCurves);
 
 		currentBlockBase = 0.0f;
 		if ((-1 * camera.Position.z + initialCameraZ) - currentBlockNumber * 30.0f > 30.0f) {
@@ -532,20 +535,11 @@ void dayNightControl()
 	}
 }
 
-void shaderSetup(Shader& lightCubeShader, Shader& shaderTex, Shader& shaderMP, Shader& shaderSky, glm::mat4& projection, glm::mat4& view)
+void shaderSetup(Shader& lightCubeShader, Shader& shaderTex, Shader& shaderMP, Shader& shaderSky, Shader& shaderCurves, glm::mat4& projection, glm::mat4& view)
 {
 	lightCubeShader.use();
 	lightCubeShader.setMat4("projection", projection);
-	lightCubeShader.setMat4("view", view);
-	
-	shaderTex.use();
-	shaderTex.setMat4("projection", projection);
-	shaderTex.setMat4("view", view);
-	if (nightMode) shaderTex.setBool("nightMode", true);
-	else shaderTex.setBool("nightMode", false);
-	shaderTex.setBool("flashlightOn", false);
-	shaderTex.setInt("numberofPointlights", 0);
-	shaderTex.setVec3("viewPos", camera.Position);
+	lightCubeShader.setMat4("view", view);	
 
 	// light properties
 	dayNightControl();
@@ -586,6 +580,17 @@ void shaderSetup(Shader& lightCubeShader, Shader& shaderTex, Shader& shaderMP, S
 	//	
 	//}
 
+	// shaderTex
+
+	shaderTex.use(); 
+	shaderTex.setMat4("projection", projection); 
+	shaderTex.setMat4("view", view); 
+	if (nightMode) shaderTex.setBool("nightMode", true); 
+	else shaderTex.setBool("nightMode", false); 
+	shaderTex.setBool("flashlightOn", false); 
+	shaderTex.setInt("numberofPointlights", 0); 
+	shaderTex.setVec3("viewPos", camera.Position); 
+
 	// directional light
 	/*shaderTex.setVec3("dirLight.direction", 1.0f, -3.0f, -3.0f);
 	shaderTex.setVec3("dirLight.ambient", 0.3f, 0.3f, 0.3f);
@@ -613,6 +618,8 @@ void shaderSetup(Shader& lightCubeShader, Shader& shaderTex, Shader& shaderMP, S
 	shaderTex.setBool("flashlightOn", torchOn);
 
 	streetlightSetup(shaderTex, protagonistZmove);
+	
+	// shaderMP
 
 	shaderMP.use();
 	shaderMP.setMat4("projection", projection);
@@ -647,6 +654,8 @@ void shaderSetup(Shader& lightCubeShader, Shader& shaderTex, Shader& shaderMP, S
 
 	streetlightSetup(shaderMP, protagonistZmove);
 
+	// shaderSky
+
 	shaderSky.use();
 	shaderSky.setMat4("projection", projection);
 	shaderSky.setMat4("view", view);
@@ -678,6 +687,41 @@ void shaderSetup(Shader& lightCubeShader, Shader& shaderTex, Shader& shaderMP, S
 	shaderSky.setBool("flashlightOn", torchOn);
 
 	//streetlightSetup(shaderSky, protagonistZmove);
+
+	// shaderCurves
+
+	shaderCurves.use();
+	shaderCurves.setMat4("projection", projection);
+	shaderCurves.setMat4("view", view);
+	if (nightMode) shaderCurves.setBool("nightMode", true);
+	else shaderCurves.setBool("nightMode", false);
+	shaderCurves.setBool("flashlightOn", false);
+	shaderCurves.setInt("numberofPointlights", 0);
+	shaderCurves.setVec3("viewPos", camera.Position);
+
+	// light properties
+
+	// directional light 
+	shaderCurves.setVec3("dirLight.direction", -sunX, -sunY, -sunZ);
+	shaderCurves.setVec3("dirLight.ambient", sunAmb, sunAmb, sunAmb);
+	shaderCurves.setVec3("dirLight.diffuse", sunDiff, sunDiff, sunDiff);
+	shaderCurves.setVec3("dirLight.specular", sunSpec, sunSpec, sunSpec);
+	shaderCurves.setBool("nightMode", nightMode);
+
+	// spotlight
+	shaderCurves.setVec3("spotLight.position", camera.Position);
+	shaderCurves.setVec3("spotLight.direction", camera.Front);
+	shaderCurves.setVec3("spotLight.ambient", 0.0f, 0.0f, 0.0f);
+	shaderCurves.setVec3("spotLight.diffuse", 1.0f, 1.0f, 1.0f);
+	shaderCurves.setVec3("spotLight.specular", 1.0f, 1.0f, 1.0f);
+	shaderCurves.setFloat("spotLight.constant", 1.0f);
+	shaderCurves.setFloat("spotLight.linear", 0.09f);
+	shaderCurves.setFloat("spotLight.quadratic", 0.032f);
+	shaderCurves.setFloat("spotLight.cutOff", glm::cos(glm::radians(12.5f)));
+	shaderCurves.setFloat("spotLight.outerCutOff", glm::cos(glm::radians(15.0f)));
+	shaderCurves.setBool("flashlightOn", torchOn);
+
+	streetlightSetup(shaderCurves, protagonistZmove);
 	
 }
 

@@ -10,6 +10,7 @@
 #include "Shader.h"
 #include "Cube.h"
 #include "Sphere.h"
+#include "Curves.h"
 
 
 class Character
@@ -29,6 +30,7 @@ private:
 
 	Cube cube = Cube();
 	Sphere sphere = Sphere();
+	Curves hat;
 
 	unsigned int loadTexture(char const* path)
 	{
@@ -70,6 +72,12 @@ private:
 	{
 		//grass = loadTexture("grass.jpg");
 	}
+
+	/*void loadAllCurves()
+	{
+		vector<float> hatpoints = { 642, 78, 569, 58, 495, 55, 459, 107, 416, 148, 340, 164, 289, 238, 192, 247, 119, 354, 45, 434 };
+		hat.setControlPoints(hatpoints);
+	}*/
 
 public:
 

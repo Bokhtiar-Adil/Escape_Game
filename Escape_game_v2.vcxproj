@@ -154,6 +154,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="fsSrcBoth.fs" />
+    <None Include="fsSrcCurves.fs" />
     <None Include="fsSrcMatProp.fs" />
     <None Include="fsSrcTex.fs" />
     <None Include="fsSrcPrimary.fs" />
@@ -162,6 +163,7 @@
     <None Include="text_2d.fs" />
     <None Include="text_2d.vs" />
     <None Include="vsSrc.vs" />
+    <None Include="vsSrcCurves.vs" />
     <None Include="vsSrcPrimary.vs" />
   </ItemGroup>
   <ItemGroup>
