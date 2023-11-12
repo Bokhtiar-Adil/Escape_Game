@@ -16,6 +16,7 @@
 #include "Components.h"
 #include "World.h"
 #include "Character.h"
+#include "Curves.h"
 
 using namespace std;
 
@@ -100,6 +101,11 @@ int numOfBlockComponent = 7, numOfStreetLight = 7, numOfResidential = 2, typeOfB
 
 bool menu = true;
 
+GLint viewport[4];
+
+glm::mat4 projection = glm::mat4(1.0f), view = glm::mat4(1.0f);
+glm::mat4 revolve = glm::mat4(1.0f);
+
 int main()
 {
 	glfwInit();
@@ -140,13 +146,14 @@ int main()
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	
 
-	glm::mat4 offset, altogether, projection, view, translate, rotate, scale, identity = glm::mat4(1.0f);
+	glm::mat4 offset, altogether, translate, rotate, scale, identity = glm::mat4(1.0f);
 	float xoffset = 0.0f, yoffset = 0.0f, zoffset = 0.0f;
 
 	Components component;
 	World world;
 	Character protagonist;
 	Text text(textShader, SCR_WIDTH, SCR_HEIGHT);
+	Curves curves;
 
 	float px = 1.0f, py = 0.2f, pz = initialCameraZ;
 	vector<int> sequence;
@@ -155,10 +162,23 @@ int main()
 		sequence.push_back(rand() % typeOfBlockComponent);
 	}
 
-	text.Load("Antonio-Bold.ttf", 48);
+	/*text.Load("Antonio-Bold.ttf", 48);
 	text.RenderText("This is a sample text", 0.0f, 0.0f, 1.0f, glm::vec3(0.5, 0.8f, 0.2f));
-	glfwMakeContextCurrent(window);
+	glfwMakeContextCurrent(window);*/
 	
+	//curves.setControlPoints();
+
+	/*projection = glm::perspective(glm::radians(camera.Zoom), (float)WIN_WIDTH / (float)WIN_HEIGHT, 0.1f, 30.0f);
+	view = camera.GetViewMatrix();
+	glGetIntegerv(GL_VIEWPORT, viewport);
+	curves.setViewport(viewport);
+	curves.setProjView(projection, view);
+	scale = glm::scale(identity, glm::vec3(3.0f, 3.0f, 3.0f));
+	curves.setModel(glm::translate(identity, glm::vec3(0.0f, 3.0f, 2.0f)) * scale * revolve);
+	vector<float> dummycntrlpoints = {223, 65, 232, 90, 232, 145, 219, 191, 210, 245, 232, 278, 268, 300, 309, 307, 351, 307, 384, 304};
+	curves.setControlPoints(dummycntrlpoints);*/
+	
+
 	//glEnable(GL_DEPTH_TEST);
 	// render
 
@@ -191,6 +211,7 @@ int main()
 
 		projection = glm::perspective(glm::radians(camera.Zoom), (float)WIN_WIDTH / (float)WIN_HEIGHT, 0.1f, 30.0f);
 		view = camera.GetViewMatrix();
+		
 
 		shaderSetup(lightCubeShader, shaderTex, shaderMP, shaderSky, projection, view);
 		
@@ -200,7 +221,12 @@ int main()
 		glm::mat4 rotateXMatrix = glm::rotate(identity, glm::radians(rotate_obj_x), glm::vec3(1.0f, 0.0f, 0.0f));
 		glm::mat4 rotateYMatrix = glm::rotate(identity, glm::radians(rotate_obj_y), glm::vec3(0.0f, 1.0f, 0.0f));
 		glm::mat4 rotateZMatrix = glm::rotate(identity, glm::radians(rotate_obj_z), glm::vec3(0.0f, 0.0f, 1.0f));
-		glm::mat4 revolve = rotateZMatrix * rotateYMatrix * rotateXMatrix;
+		revolve = rotateZMatrix * rotateYMatrix * rotateXMatrix;
+
+		
+		
+
+		/*curves.drawCurves(shaderMP);*/
 
 		currentBlockBase = 0.0f;
 		if ((-1 * camera.Position.z + initialCameraZ) - currentBlockNumber * 30.0f > 30.0f) {

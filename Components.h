@@ -550,7 +550,7 @@ public:
 		scale = glm::scale(identity, glm::vec3(widthx, height, widthz));
 		model = scale * model;
 		modelTogether = alTogether * model;
-		cube.drawCubeWithMaterialisticProperty(shader, this->amb, this->diff, this->spec, this->shininess, modelTogether);
+		cube.drawCubeWithMaterialisticProperty(shader, this->amb, this->diff, this->spec, this->shininess, modelTogether);		
 
 		// door
 		shader.setBool("withTexture", true);
