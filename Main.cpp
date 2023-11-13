@@ -63,6 +63,7 @@ void streetlightSetup(Shader& shader, float moveZ, float slAmb = 0.1f, float slD
 void dayNightControl();
 void skyManager(Shader& shaderTex, Shader& shaderMP, Shader& shaderSky, World& world, glm::mat4 alTogether);
 void collectorItemsManager(Shader& shader1, Shader& shader2, CollectorItems& items, World& world, Components& component);
+void bonusManager();
 void tree(Shader& shaderMP, Shader& shaderCurves, Curves& treeCurves, bool withTexture, glm::mat4 alTogether = glm::mat4(1.0f));
 
 
@@ -118,9 +119,10 @@ glm::mat4 revolve = glm::mat4(1.0f);
 
 vector<int> bonusItemSequence, bonusItemXPositions, bonusItemYPositions, bonusItemZPositions;
 float bonusItemOffset = 30.0f;
-int boostBonusEffectDuration = 0, darkBonusEffectDuration = 0, slowBonusEffectDuration = 0;
+int boostBonusEffectDuration = 0, darkBonusEffectDuration = 0, slowBonusEffectDuration = 0, maxBoostBonusEffectDuration = 1000;
+int maxDarkBonusEffectDuration = 500, maxSlowBonusEffectDuration;
 bool boostBonusAchieved = false, darkBonusAchieved = false, slowBonusAchieved = false;
-int fuel = 0, coins = 0, boostFactor = 1;
+int fuel = 15, coins = 0, boostFactor = 1;
 
 
 int main()
@@ -220,13 +222,20 @@ int main()
 		bonusItemYPositions.push_back(0.4f);
 	}
 
-
+	float prevTime = 0.0f;
 
 	while (!glfwWindowShouldClose(window)) {
 
 		float currentFrame = static_cast<float>(glfwGetTime());
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
+
+		prevTime += deltaTime;
+		if (prevTime >= 1.0f) {
+			if (fuel > 0) fuel--;
+			if (coins > 0) coins -= 2;
+			prevTime = 0.0f;
+		}
 
 		jumpCoolDown++;
 		if (jumpCoolDown > 20)
@@ -1040,7 +1049,7 @@ void protagonistMoveManager(Character& protagonist, Shader& shaderMP, Shader& li
 
 	float fcoins = coins / 20.0f;
 	float ffuel = fuel / 20.0f;
-	float fboost = boostBonusEffectDuration / 100.0f;
+	float fboost = boostBonusEffectDuration / (maxBoostBonusEffectDuration * 1.0f);
 	if (protagonistMovementForm == 0) protagonist.drawProtagonist(shaderMP, lightCubeShader, protagonistAlTogether, "still", fcoins, ffuel, fboost);
 	else if (protagonistMovementForm == 1) protagonist.drawProtagonist(shaderMP, lightCubeShader, protagonistAlTogether, "right", fcoins, ffuel, fboost); 
 	else if (protagonistMovementForm == 2) protagonist.drawProtagonist(shaderMP, lightCubeShader, protagonistAlTogether, "left", fcoins, ffuel, fboost); 
@@ -1069,12 +1078,24 @@ void collectorItemsManager(Shader& shader1, Shader& shader2, CollectorItems& ite
 			bonusItemZPositions[i] -= bonusItemOffset;
 		}*/
 		if (protagonistZcurrent >= bonusItemZPositions[i] - .05f && protagonistZcurrent <= bonusItemZPositions[i] + 0.05f) {
-			if (protagonistXcurrent >= bonusItemXPositions[i] - .1f && protagonistXcurrent <= bonusItemXPositions[i] + 0.1f) {
+			if (protagonistXcurrent >= bonusItemXPositions[i] - .2f && protagonistXcurrent <= bonusItemXPositions[i] + 0.2f) {
 				bonusItemZPositions[i] -= bonusItemOffset;
 				if (!jumping) {
 					bonusItemZPositions[i] -= bonusItemOffset;
-					if (bonusItemSequence[i] == 1) coins += (5 * boostFactor);
-					if (bonusItemSequence[i] == 2) fuel += (3 * boostFactor);
+					if (bonusItemSequence[i] == 0) {
+						if (!boostBonusAchieved) {
+							boostBonusAchieved = true;
+							slowBonusAchieved = false;
+						}
+					}
+					if (bonusItemSequence[i] == 1) coins += (10 * boostFactor);
+					if (bonusItemSequence[i] == 2) fuel += (5 * boostFactor);
+					if (bonusItemSequence[i] == 3) {
+						if (!darkBonusAchieved) darkBonusAchieved = true;
+					}
+					if (bonusItemSequence[i] == 4) {
+						if (!slowBonusAchieved && !boostBonusAchieved) slowBonusAchieved = true;
+					}
 				}				
 			}			
 		}
@@ -1092,12 +1113,44 @@ void collectorItemsManager(Shader& shader1, Shader& shader2, CollectorItems& ite
 		else items.slowBonusItem(shader1, shader2, 2, glm::translate(identity, glm::vec3(bonusItemXPositions[i], bonusItemYPositions[i], bonusItemZPositions[i])) * rotate);
 	}
 
-	
-	
-	
 	itemAngleChange += 1.0f;
 	if (itemAngleChange > 360) itemAngleChange = 1;
+
+	bonusManager();
 }
+
+void bonusManager()
+{
+	if (boostBonusAchieved) {
+		boostBonusEffectDuration++;		
+		if (boostFactor < 2) boostFactor++;
+		else boostFactor = 2;
+		if (boostBonusEffectDuration > maxBoostBonusEffectDuration) {
+			boostBonusAchieved = false;
+			boostBonusEffectDuration = 0;
+			boostFactor = 1;
+		}		
+	}
+
+	if (slowBonusAchieved) {
+		slowBonusEffectDuration++;
+		boostFactor = 0;
+		if (slowBonusEffectDuration > maxSlowBonusEffectDuration) {
+			slowBonusAchieved = false;
+			slowBonusEffectDuration = 0;
+			boostFactor = 1;
+		}
+	}
+
+	if (darkBonusAchieved) {
+		darkBonusEffectDuration++;
+		if (darkBonusEffectDuration > maxDarkBonusEffectDuration) {
+			darkBonusAchieved = false;
+			darkBonusEffectDuration = 0;
+		}
+	}
+}
+
 
 void tree(Shader& shaderMP, Shader& shaderCurves, Curves& treeCurves, bool withTexture, glm::mat4 alTogether)
 {
