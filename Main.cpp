@@ -85,9 +85,11 @@ float rotate_obj_axis_z = 0.0f;
 float currentBlockBase = 0.0f;
 float currentCharacterPos = initialCameraZ;
 int currentBlockNumber = 0;
-float protagonistZmove = 0.0f, protagonistXmove = 0.0f, protagonistYmove = 0.0f;
+float protagonistXmove = 0.0f, protagonistYmove = 0.0f, protagonistZmove = 0.0f;
 float protagonistXinitial = 1.05f, protagonistYinitial = 0.4f, protagonistZinitial = 5.0f;
+float protagonistXcurrent = protagonistXinitial + protagonistXmove, protagonistYcurrent = protagonistYinitial + protagonistYmove, protagonistZcurrent = protagonistZinitial + protagonistZmove;
 int jumpCoolDown = 0;
+bool jumping = false;
 int protagonistMovementForm = 0, protagonistMovementFormCounter = 0;
 
 
@@ -116,6 +118,7 @@ glm::mat4 revolve = glm::mat4(1.0f);
 
 vector<int> bonusItemSequence, bonusItemXPositions, bonusItemYPositions, bonusItemZPositions;
 float bonusItemOffset = 30.0f;
+
 
 int main()
 {
@@ -210,7 +213,7 @@ int main()
 		temp = rand() % 3;
 		bonusItemXPositions.push_back(0.0f + temp);
 		/*temp = rand() % 2;
-		bonusItemYPositions.push_back(0.5f + temp*2.0f);*/
+		bonusItemYPositions.push_back(0.3f + temp*1.0f);*/
 		bonusItemYPositions.push_back(0.4f);
 	}
 
@@ -223,6 +226,8 @@ int main()
 		lastFrame = currentFrame;
 
 		jumpCoolDown++;
+		if (jumpCoolDown > 20)
+			jumping = false;
 
 		processInput(window);
 		
@@ -279,7 +284,10 @@ int main()
 		//bonusItemOffset = currentBlockNumber * 30.0f;
 		/**/
 
-		protagonistMoveManager(protagonist, shaderMP, revolve);		
+		protagonistMoveManager(protagonist, shaderMP, revolve);	
+		protagonistXcurrent = protagonistXinitial + protagonistXmove;
+		protagonistYcurrent = protagonistYinitial + protagonistYmove;
+		protagonistZcurrent = protagonistZinitial + protagonistZmove;
 		collectorItemsManager(shaderMP, lightCubeShader, items, world, component);
 		
 		skyManager(shaderTex, shaderMP, shaderSky, world, glm::translate(identity, glm::vec3(1.0f, 0.0f, protagonistZmove))); 
@@ -384,6 +392,7 @@ void processInput(GLFWwindow* window)
 		if (jumpCoolDown >= 20) {
 			protagonistYmove = (25.0f * camera.MovementSpeed * deltaTime);
 			jumpCoolDown = 0;
+			jumping = true;
 		}
 	}
 	// camera movement control
@@ -1049,8 +1058,16 @@ void collectorItemsManager(Shader& shader1, Shader& shader2, CollectorItems& ite
 	int numOfBonusItems = bonusItemSequence.size();
 	
 	for (int i = 0; i < numOfBonusItems; i++) {
-		if (protagonistZinitial + protagonistZmove == bonusItemZPositions[i] && protagonistXinitial + protagonistXmove == bonusItemXPositions[i] && protagonistYinitial + protagonistYmove + 0.5f >= bonusItemYPositions[i]) {
+		/*if (protagonistZinitial + protagonistZmove == bonusItemZPositions[i] && protagonistXinitial + protagonistXmove == bonusItemXPositions[i] && protagonistYinitial + protagonistYmove == bonusItemYPositions[i]) {
 			bonusItemZPositions[i] -= bonusItemOffset;
+		}*/
+		if (protagonistZcurrent >= bonusItemZPositions[i] - .05f && protagonistZcurrent <= bonusItemZPositions[i] + 0.05f) {
+			if (protagonistXcurrent >= bonusItemXPositions[i] - .1f && protagonistXcurrent <= bonusItemXPositions[i] + 0.1f) {
+				bonusItemZPositions[i] -= bonusItemOffset;
+				if (!jumping) {
+					bonusItemZPositions[i] -= bonusItemOffset;
+				}				
+			}			
 		}
 		else if (camera.Position.z < bonusItemZPositions[i]) {
 			bonusItemZPositions[i] -= bonusItemOffset;
