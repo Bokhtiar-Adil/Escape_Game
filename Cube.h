@@ -97,7 +97,7 @@ public:
     {
         shader.use();
 
-        shader.setVec3("color", glm::vec3(r, g, b));
+        //shader.setVec3("color", glm::vec3(r, g, b));
         shader.setMat4("model", model);
 
         glBindVertexArray(cubeVAO);

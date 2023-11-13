@@ -58,7 +58,7 @@ void simpleRoom(unsigned int& VAO, Shader& shader, glm::mat4 offset, glm::mat4 a
 // helper functions
 void shaderSetup(Shader& lightCubeShader, Shader& shaderTex, Shader& shaderMP, Shader& shaderSky, Shader& shaderCurves, glm::mat4& projection, glm::mat4& view);
 void worldExpansion(Shader& shaderTex, Shader& shaderMP, Shader& shaderCurves, Shader& lightCubeShader, World& world, Components& component, vector<int>& sequence, glm::mat4 alTogether);
-void protagonistMoveManager(Character& protagonist, Shader& shaderMP, glm::mat4 revolve);
+void protagonistMoveManager(Character& protagonist, Shader& shaderMP, Shader& lightCubeShader, glm::mat4 revolve);
 void streetlightSetup(Shader& shader, float moveZ, float slAmb = 0.1f, float slDiff = 0.5f, float slSpec = 0.5f, float slConst = 1.0f, float slLin = 0.09f, float slQuad = 0.032f);
 void dayNightControl();
 void skyManager(Shader& shaderTex, Shader& shaderMP, Shader& shaderSky, World& world, glm::mat4 alTogether);
@@ -118,6 +118,9 @@ glm::mat4 revolve = glm::mat4(1.0f);
 
 vector<int> bonusItemSequence, bonusItemXPositions, bonusItemYPositions, bonusItemZPositions;
 float bonusItemOffset = 30.0f;
+int boostBonusEffectDuration = 0, darkBonusEffectDuration = 0, slowBonusEffectDuration = 0;
+bool boostBonusAchieved = false, darkBonusAchieved = false, slowBonusAchieved = false;
+int fuel = 0, coins = 0, boostFactor = 1;
 
 
 int main()
@@ -284,7 +287,7 @@ int main()
 		//bonusItemOffset = currentBlockNumber * 30.0f;
 		/**/
 
-		protagonistMoveManager(protagonist, shaderMP, revolve);	
+		protagonistMoveManager(protagonist, shaderMP, lightCubeShader, revolve);	
 		protagonistXcurrent = protagonistXinitial + protagonistXmove;
 		protagonistYcurrent = protagonistYinitial + protagonistYmove;
 		protagonistZcurrent = protagonistZinitial + protagonistZmove;
@@ -1025,7 +1028,7 @@ void worldExpansion(Shader& shaderTex, Shader& shaderMP, Shader& shaderCurves, S
 	}
 }
 
-void protagonistMoveManager(Character& protagonist, Shader& shaderMP, glm::mat4 revolve)
+void protagonistMoveManager(Character& protagonist, Shader& shaderMP, Shader& lightCubeShader, glm::mat4 revolve)
 {
 	glm::mat4 rotate, scale, translate, identity = glm::mat4(1.0f), protagonistInitial, protagonistMove, protagonistAlTogether;
 
@@ -1035,9 +1038,12 @@ void protagonistMoveManager(Character& protagonist, Shader& shaderMP, glm::mat4 
 	protagonistMove = glm::translate(identity, glm::vec3(protagonistXmove, protagonistYmove, protagonistZmove));
 	protagonistAlTogether = protagonistMove * protagonistInitial * rotate * scale * revolve;
 
-	if (protagonistMovementForm == 0) protagonist.drawProtagonist(shaderMP, protagonistAlTogether, "still");
-	else if (protagonistMovementForm == 1) protagonist.drawProtagonist(shaderMP, protagonistAlTogether, "right");
-	else if (protagonistMovementForm == 2) protagonist.drawProtagonist(shaderMP, protagonistAlTogether, "left");
+	float fcoins = coins / 20.0f;
+	float ffuel = fuel / 20.0f;
+	float fboost = boostBonusEffectDuration / 100.0f;
+	if (protagonistMovementForm == 0) protagonist.drawProtagonist(shaderMP, lightCubeShader, protagonistAlTogether, "still", fcoins, ffuel, fboost);
+	else if (protagonistMovementForm == 1) protagonist.drawProtagonist(shaderMP, lightCubeShader, protagonistAlTogether, "right", fcoins, ffuel, fboost); 
+	else if (protagonistMovementForm == 2) protagonist.drawProtagonist(shaderMP, lightCubeShader, protagonistAlTogether, "left", fcoins, ffuel, fboost); 
 
 	if (jumpCoolDown==15) protagonistYmove = 0.0f;
 
@@ -1055,6 +1061,7 @@ void collectorItemsManager(Shader& shader1, Shader& shader2, CollectorItems& ite
 	rotate = glm::rotate(identity, glm::radians(itemAngleChange), glm::vec3(0.0f, 1.0f, 0.0f));
 	float firstItemZ = protagonistZinitial - 3.0f;
 	
+	// 0 = boost, 1 = coin, 2 = fuel, 3 = dark, 4 = slow
 	int numOfBonusItems = bonusItemSequence.size();
 	
 	for (int i = 0; i < numOfBonusItems; i++) {
@@ -1066,6 +1073,8 @@ void collectorItemsManager(Shader& shader1, Shader& shader2, CollectorItems& ite
 				bonusItemZPositions[i] -= bonusItemOffset;
 				if (!jumping) {
 					bonusItemZPositions[i] -= bonusItemOffset;
+					if (bonusItemSequence[i] == 1) coins += (5 * boostFactor);
+					if (bonusItemSequence[i] == 2) fuel += (3 * boostFactor);
 				}				
 			}			
 		}
@@ -1076,7 +1085,7 @@ void collectorItemsManager(Shader& shader1, Shader& shader2, CollectorItems& ite
 	// && protagonistYinitial + protagonistYmove + 0.5f >= bonusItemYPositions[i]
 	
 	for (int i = 0; i < numOfBonusItems; i++) {
-		if (bonusItemSequence[i] == 0) items.speedBonusItem(shader1, shader2, 2, glm::translate(identity, glm::vec3(bonusItemXPositions[i], bonusItemYPositions[i], bonusItemZPositions[i])) * rotate);
+		if (bonusItemSequence[i] == 0) items.boostBonusItem(shader1, shader2, 2, glm::translate(identity, glm::vec3(bonusItemXPositions[i], bonusItemYPositions[i], bonusItemZPositions[i])) * rotate);
 		else if (bonusItemSequence[i] == 1) items.coinBonusItem(shader1, shader2, 2, glm::translate(identity, glm::vec3(bonusItemXPositions[i], bonusItemYPositions[i], bonusItemZPositions[i])) * rotate);
 		else if (bonusItemSequence[i] == 2) items.fuelBonusItem(shader1, shader2, 2, glm::translate(identity, glm::vec3(bonusItemXPositions[i], bonusItemYPositions[i], bonusItemZPositions[i])) * rotate);
 		else if (bonusItemSequence[i] == 3) items.darkBonusItem(shader1, shader2, 2, glm::translate(identity, glm::vec3(bonusItemXPositions[i], bonusItemYPositions[i], bonusItemZPositions[i])) * rotate);

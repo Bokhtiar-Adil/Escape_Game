@@ -240,7 +240,7 @@ public:
 
 	}
 
-	void speedBonusItem(Shader& shader1, Shader& shader2, int whichShader = 1, glm::mat4 alTogether = glm::mat4(1.0f))
+	void boostBonusItem(Shader& shader1, Shader& shader2, int whichShader = 1, glm::mat4 alTogether = glm::mat4(1.0f))
 	{
 		boxWidth = 0.2f;
 

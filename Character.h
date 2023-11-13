@@ -88,7 +88,7 @@ public:
 		loadAllTextures();
 	}
 
-	void drawProtagonist(Shader& shader, glm::mat4 alTogether = glm::mat4(1.0f), string state = "still")
+	void drawProtagonist(Shader& shader, Shader& shader2, glm::mat4 alTogether = glm::mat4(1.0f), string state = "still", float coins = 0.0f, float fuel = 0.0f, float boost = 0.0f)
 	{
 		shader.use();
 
@@ -388,12 +388,41 @@ public:
 		cubemodel = translate * scale * identity;
 		modelTogether = alTogether * cubemodel;
 		cube.drawCubeWithMaterialisticProperty(shader, this->amb, this->diff, this->spec, this->shininess, modelTogether);
+
+		// bonus indicator bars
+		
+		shader2.use();
+
+		// fuel
+		shader2.setVec3("color", glm::vec3(1.0f * (1 - fuel), 1.0f * fuel, 0.0f));
+
+		scale = glm::scale(identity, glm::vec3(0.1f, 0.25f, 0.1f));
+		translate = glm::translate(identity, glm::vec3(-0.05f, 0.4f, 0.00f));
+		cubemodel = translate * scale * identity;
+		modelTogether = alTogether * cubemodel;
+		cube.drawCube(shader2, modelTogether, 1.0f * (1 - fuel), 1.0f * fuel, 0.0f);
+
+		// coins
+		shader2.setVec3("color", glm::vec3(1.0f * (1 - coins), 1.0f * coins, 0.0f));
+
+		translate = glm::translate(identity, glm::vec3(0.3f, 0.0f, 0.00f));
+		cubemodel = translate * cubemodel;
+		modelTogether = alTogether * cubemodel;
+		cube.drawCube(shader2, modelTogether, 1.0f * (1 - coins), 1.0f * coins, 0.0f);
+
+		// boost
+		shader2.setVec3("color", glm::vec3(1.0f * (1 - boost), 1.0f * boost, 0.0f));
+
+		translate = glm::translate(identity, glm::vec3(-0.6f, 0.0f, 0.00f));
+		cubemodel = translate * cubemodel;
+		modelTogether = alTogether * cubemodel;
+		cube.drawCube(shader2, modelTogether, 1.0f * (1 - boost), 1.0f * boost, 0.0f);
 	}
 
-	void move(Shader& shader, glm::mat4 alTogether)
+	/*void move(Shader& shader, glm::mat4 alTogether)
 	{
 		drawProtagonist(shader, alTogether);
-	}
+	}*/
 };
 
 #endif /* character_h */
