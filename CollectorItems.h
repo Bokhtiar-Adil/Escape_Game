@@ -312,6 +312,116 @@ public:
 		
 	}
 
+	void fuelBonusItem(Shader& shader1, Shader& shader2, int whichShader = 1, glm::mat4 alTogether = glm::mat4(1.0f))
+	{
+		boxWidth = 0.2f;
+
+		this->amb = glm::vec3(0.0f, 1.0f, 0.0f);
+		this->diff = glm::vec3(0.0f, 1.0f, 0.f);
+		this->spec = glm::vec3(1.0f, 1.0f, 1.0f);
+
+		if (whichShader == 1) {
+			shader1.use();
+			shader1.setBool("exposedToSun", true);			
+
+			scale = glm::scale(identity, glm::vec3(boxWidth, boxWidth * 2.0f, boxWidth * 0.5f));
+			// rotate = glm::rotate(identity, glm::radians(-45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+			translate = glm::translate(identity, glm::vec3(0.0f, 0.0f, 0.0f));
+			modelTogether = alTogether * translate * scale;
+			cube.drawCubeWithMaterialisticProperty(shader1, this->amb, this->diff, this->spec, this->shininess, modelTogether);
+		}
+		else {
+			shader2.use();
+			//shader2.setBool("exposedToSun", true);
+			shader2.setVec3("color", glm::vec3(0.0f, 0.0f, 1.0f));			
+
+			scale = glm::scale(identity, glm::vec3(boxWidth, boxWidth * 2.0f, boxWidth * 0.5f));
+			// rotate = glm::rotate(identity, glm::radians(-45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+			translate = glm::translate(identity, glm::vec3(0.0f, 0.0f, 0.0f));
+			modelTogether = alTogether * translate * scale;
+			cube.drawCubeWithMaterialisticProperty(shader2, this->amb, this->diff, this->spec, this->shininess, modelTogether);
+		}
+
+	}
+
+	void darkBonusItem(Shader& shader1, Shader& shader2, int whichShader = 1, glm::mat4 alTogether = glm::mat4(1.0f))
+	{
+		boxWidth = 0.2f;
+
+		this->amb = glm::vec3(0.0f, 1.0f, 0.0f);
+		this->diff = glm::vec3(0.0f, 1.0f, 0.f);
+		this->spec = glm::vec3(1.0f, 1.0f, 1.0f);
+
+		if (whichShader == 1) {
+			shader1.use();
+			shader1.setBool("exposedToSun", true);
+
+			scale = glm::scale(identity, glm::vec3(boxWidth, boxWidth * 2.0f, boxWidth * 0.5f));
+			// rotate = glm::rotate(identity, glm::radians(-45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+			translate = glm::translate(identity, glm::vec3(0.0f, 0.0f, 0.0f));
+			modelTogether = alTogether * translate * scale;
+			cube.drawCubeWithMaterialisticProperty(shader1, this->amb, this->diff, this->spec, this->shininess, modelTogether);
+		}
+		else {
+			shader2.use();
+			//shader2.setBool("exposedToSun", true);
+			shader2.setVec3("color", glm::vec3(0.0f, 0.0f, 0.0f));
+
+			scale = glm::scale(identity, glm::vec3(boxWidth, boxWidth, boxWidth));
+			// rotate = glm::rotate(identity, glm::radians(-45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+			translate = glm::translate(identity, glm::vec3(0.0f, 0.0f, 0.0f));
+			modelTogether = alTogether * translate * scale;
+			cube.drawCubeWithMaterialisticProperty(shader2, this->amb, this->diff, this->spec, this->shininess, modelTogether);
+		}
+
+	}
+
+	void slowBonusItem(Shader& shader1, Shader& shader2, int whichShader = 1, glm::mat4 alTogether = glm::mat4(1.0f))
+	{
+		boxWidth = 0.2f;
+
+		this->amb = glm::vec3(0.0f, 1.0f, 0.0f);
+		this->diff = glm::vec3(0.0f, 1.0f, 0.f);
+		this->spec = glm::vec3(1.0f, 1.0f, 1.0f);
+
+		rotate = glm::rotate(identity, glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+
+		if (whichShader == 1) {
+			shader1.use();
+			shader1.setBool("exposedToSun", true);
+
+			scale = glm::scale(identity, glm::vec3(boxWidth * 2.0f, boxWidth, boxWidth * 0.5f));
+			//rotate = glm::rotate(identity, glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+			translate = glm::translate(identity, glm::vec3(-0.1f, 0.1f, 0.0f));
+			modelTogether = alTogether * rotate * translate * scale;
+			cube.drawCubeWithMaterialisticProperty(shader1, this->amb, this->diff, this->spec, this->shininess, modelTogether);
+
+			scale = glm::scale(identity, glm::vec3(boxWidth, boxWidth * 2.0f, boxWidth * 0.5f));
+			// rotate = glm::rotate(identity, glm::radians(-45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+			translate = glm::translate(identity, glm::vec3(0.0f, 0.0f, 0.0f));
+			modelTogether = alTogether * rotate * translate * scale;
+			cube.drawCubeWithMaterialisticProperty(shader1, this->amb, this->diff, this->spec, this->shininess, modelTogether);
+		}
+		else {
+			shader2.use();
+			//shader2.setBool("exposedToSun", true);
+			shader2.setVec3("color", glm::vec3(1.0f, 0.0f, 0.0f));
+
+			scale = glm::scale(identity, glm::vec3(boxWidth * 2.0f, boxWidth, boxWidth * 0.5f));
+			//rotate = glm::rotate(identity, glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+			translate = glm::translate(identity, glm::vec3(-0.1f, 0.1f, 0.0f));
+			modelTogether = alTogether * rotate * translate * scale;
+			cube.drawCubeWithMaterialisticProperty(shader2, this->amb, this->diff, this->spec, this->shininess, modelTogether);
+
+			scale = glm::scale(identity, glm::vec3(boxWidth, boxWidth * 2.0f, boxWidth * 0.5f));
+			// rotate = glm::rotate(identity, glm::radians(-45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+			translate = glm::translate(identity, glm::vec3(0.0f, 0.0f, 0.0f));
+			modelTogether = alTogether * rotate * translate * scale;
+			cube.drawCubeWithMaterialisticProperty(shader2, this->amb, this->diff, this->spec, this->shininess, modelTogether);
+		}
+
+	}
+
 };
 
 #endif /* collectorItems_h */

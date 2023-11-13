@@ -1029,6 +1029,9 @@ void collectorItemsManager(Shader& shader1, Shader& shader2, CollectorItems& ite
 	rotate = glm::rotate(identity, glm::radians(itemAngleChange), glm::vec3(0.0f, 1.0f, 0.0f));
 	items.speedBonusItem(shader1, shader2, 2, glm::translate(identity, glm::vec3(0.0f, 1.0f, 3.0f)) * rotate);
 	items.coinBonusItem(shader1, shader2, 2, glm::translate(identity, glm::vec3(1.0f, 1.0f, 3.0f)) * rotate);
+	items.fuelBonusItem(shader1, shader2, 2, glm::translate(identity, glm::vec3(2.0f, 1.0f, 3.0f)) * rotate);
+	items.darkBonusItem(shader1, shader2, 2, glm::translate(identity, glm::vec3(1.5f, 1.0f, 3.0f)) * rotate);
+	items.slowBonusItem(shader1, shader2, 2, glm::translate(identity, glm::vec3(0.5f, 1.0f, 3.0f)) * rotate);
 	itemAngleChange += 1.0f;
 	if (itemAngleChange > 360) itemAngleChange = 1;
 }

@@ -1,1 +1,2 @@
 D:\CMake\Projects\Escape_game_v2\x64\Debug\Escape_game_v2.exe
+D:\__Graphics_project_git\Escape_game_v2\x64\Debug\Escape_game_v2.exe
