@@ -17,6 +17,7 @@
 #include "World.h"
 #include "Character.h"
 #include "Curves.h"
+#include "CollectorItems.h"
 
 using namespace std;
 
@@ -57,10 +58,11 @@ void simpleRoom(unsigned int& VAO, Shader& shader, glm::mat4 offset, glm::mat4 a
 // helper functions
 void shaderSetup(Shader& lightCubeShader, Shader& shaderTex, Shader& shaderMP, Shader& shaderSky, Shader& shaderCurves, glm::mat4& projection, glm::mat4& view);
 void worldExpansion(Shader& shaderTex, Shader& shaderMP, Shader& shaderCurves, Shader& lightCubeShader, World& world, Components& component, vector<int>& sequence, glm::mat4 alTogether);
-void protagonistMoveHandler(Character& protagonist, Shader& shaderMP, glm::mat4 revolve);
+void protagonistMoveManager(Character& protagonist, Shader& shaderMP, glm::mat4 revolve);
 void streetlightSetup(Shader& shader, float moveZ, float slAmb = 0.1f, float slDiff = 0.5f, float slSpec = 0.5f, float slConst = 1.0f, float slLin = 0.09f, float slQuad = 0.032f);
 void dayNightControl();
 void skyManager(Shader& shaderTex, Shader& shaderMP, Shader& shaderSky, World& world, glm::mat4 alTogether);
+void collectorItemsManager(Shader& shader1, Shader& shader2, CollectorItems& items, World& world, Components& component);
 void tree(Shader& shaderMP, Shader& shaderCurves, Curves& treeCurves, bool withTexture, glm::mat4 alTogether = glm::mat4(1.0f));
 
 
@@ -102,6 +104,8 @@ float moonY = 0.0f;
 float moonZ = sunZ;
 
 int numOfBlockComponent = 7, numOfStreetLight = 7, numOfResidential = 2, typeOfBlockComponent = 2;
+
+float itemAngleChange = 1.0f;
 
 bool menu = true;
 
@@ -160,6 +164,7 @@ int main()
 	Character protagonist;
 	Text text(textShader, SCR_WIDTH, SCR_HEIGHT);
 	Curves hatCurves, treeCurves;
+	CollectorItems items;
 
 	float px = 1.0f, py = 0.2f, pz = initialCameraZ;
 	vector<int> sequence;
@@ -257,13 +262,8 @@ int main()
 		worldExpansion(shaderTex, shaderMP, shaderCurves, lightCubeShader, world, component, sequence, translate);
 		/**/
 
-		protagonistMoveHandler(protagonist, shaderMP, revolve);
-		
-		//component.tree(shaderMP, shaderCurves, false,  glm::translate(identity, glm::vec3(0.0f, 0.0f, 3.0f)) * revolve);
-		//tree(shaderMP, shaderCurves, treeCurves, false,  glm::translate(identity, glm::vec3(0.0f, 0.0f, 3.0f)) * revolve);
-		//shaderTex.use();
-		//component.texturedSphere(shaderTex, glm::translate(identity, glm::vec3(0.0f, 2.0f, 3.0f)) * revolve);
-
+		protagonistMoveManager(protagonist, shaderMP, revolve);
+		collectorItemsManager(shaderMP, lightCubeShader, items, world, component);
 		
 		skyManager(shaderTex, shaderMP, shaderSky, world, glm::translate(identity, glm::vec3(1.0f, 0.0f, protagonistZmove))); 
 		if (dayNightSystem) {
@@ -275,7 +275,11 @@ int main()
 			if (streetLightOn) component.moon(lightCubeShader, glm::translate(identity, glm::vec3(moonX, moonY + 2.0f, protagonistZmove - 20.0f)));
 		}
 		
-
+		//component.tree(shaderMP, shaderCurves, false,  glm::translate(identity, glm::vec3(0.0f, 0.0f, 3.0f)) * revolve);
+		//tree(shaderMP, shaderCurves, treeCurves, false,  glm::translate(identity, glm::vec3(0.0f, 0.0f, 3.0f)) * revolve);
+		//shaderTex.use();
+		//component.texturedSphere(shaderTex, glm::translate(identity, glm::vec3(0.0f, 2.0f, 3.0f)) * revolve);
+		// 
 		//component.waterTank(shaderMP, false, glm::translate(identity, glm::vec3(0.0f, 0.0f, 2.0f)) * revolve);
 		/*scale = glm::scale(identity, glm::vec3(0.8f, 0.5f, 0.5f));
 		rotate = glm::rotate(identity, glm::radians(-90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
@@ -336,16 +340,25 @@ void processInput(GLFWwindow* window)
 		camera.ProcessKeyboard(BACKWARD, deltaTime);
 		currentCharacterPos -= 0.05f;
 		protagonistZmove += (camera.MovementSpeed * deltaTime);
+		if (protagonistMovementFormCounter == 0) {
+			protagonistMovementForm = 1;
+		}
 	}
 		
 	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
 		camera.ProcessKeyboard(LEFT, deltaTime);
 		protagonistXmove -= (camera.MovementSpeed * deltaTime);
+		if (protagonistMovementFormCounter == 0) {
+			protagonistMovementForm = 1;
+		}
 	}
 		
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
 		camera.ProcessKeyboard(RIGHT, deltaTime);
 		protagonistXmove += (camera.MovementSpeed * deltaTime);
+		if (protagonistMovementFormCounter == 0) {
+			protagonistMovementForm = 1;
+		}
 	}
 	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
 		camera.ProcessKeyboard(FORWARD, deltaTime);
@@ -986,7 +999,7 @@ void worldExpansion(Shader& shaderTex, Shader& shaderMP, Shader& shaderCurves, S
 	}
 }
 
-void protagonistMoveHandler(Character& protagonist, Shader& shaderMP, glm::mat4 revolve)
+void protagonistMoveManager(Character& protagonist, Shader& shaderMP, glm::mat4 revolve)
 {
 	glm::mat4 rotate, scale, translate, identity = glm::mat4(1.0f), protagonistInitial, protagonistMove, protagonistAlTogether;
 
@@ -1008,6 +1021,16 @@ void protagonistMoveHandler(Character& protagonist, Shader& shaderMP, glm::mat4 
 		protagonistMovementForm = 0;
 		protagonistMovementFormCounter = 0;
 	}
+}
+
+void collectorItemsManager(Shader& shader1, Shader& shader2, CollectorItems& items, World& world, Components& component)
+{
+	glm::mat4 rotate, translate, scale, model, identity = glm::mat4(1.0f);
+	rotate = glm::rotate(identity, glm::radians(itemAngleChange), glm::vec3(0.0f, 1.0f, 0.0f));
+	items.speedBonusItem(shader1, shader2, 2, glm::translate(identity, glm::vec3(0.0f, 1.0f, 3.0f)) * rotate);
+	items.coinBonusItem(shader1, shader2, 2, glm::translate(identity, glm::vec3(1.0f, 1.0f, 3.0f)) * rotate);
+	itemAngleChange += 1.0f;
+	if (itemAngleChange > 360) itemAngleChange = 1;
 }
 
 void tree(Shader& shaderMP, Shader& shaderCurves, Curves& treeCurves, bool withTexture, glm::mat4 alTogether)
@@ -1047,3 +1070,4 @@ void tree(Shader& shaderMP, Shader& shaderCurves, Curves& treeCurves, bool withT
 	cout << "here..\n";
 
 }
+
