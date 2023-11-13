@@ -69,6 +69,7 @@ uniform int numberofStreetlights;
 uniform bool streetLightOn;
 uniform vec3 color;
 uniform bool overrideColor;
+uniform bool darkBonusAchieved;
 
 // function prototypes
 vec3 CalcDirectionalLight(DirectionalLight light, vec3 normal, vec3 viewDir);
@@ -104,9 +105,9 @@ void main()
             }
         }
     }
-    //if (overrideColor == true) {
-    //    result = color;
-    //}
+    if (darkBonusAchieved == true) {
+        result = CalcSpotLight(spotLight, norm, FragPos, viewDir);
+    }
     FragColor = vec4(result, 1.0f);
 }
 

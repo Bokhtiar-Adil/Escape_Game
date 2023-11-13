@@ -118,7 +118,7 @@ glm::mat4 projection = glm::mat4(1.0f), view = glm::mat4(1.0f);
 glm::mat4 revolve = glm::mat4(1.0f);
 
 vector<int> bonusItemSequence, bonusItemXPositions, bonusItemYPositions, bonusItemZPositions;
-float bonusItemOffset = 30.0f;
+float bonusItemOffset = 20.0f;
 int boostBonusEffectDuration = 0, darkBonusEffectDuration = 0, slowBonusEffectDuration = 0, maxBoostBonusEffectDuration = 1000;
 int maxDarkBonusEffectDuration = 500, maxSlowBonusEffectDuration;
 bool boostBonusAchieved = false, darkBonusAchieved = false, slowBonusAchieved = false;
@@ -214,7 +214,7 @@ int main()
 	for (int i = 0; i < 15; i++) {
 		temp = rand() % 5;
 		bonusItemSequence.push_back(temp);
-		bonusItemZPositions.push_back(protagonistZinitial + 3.0f + i*2.0f);
+		bonusItemZPositions.push_back(protagonistZinitial - 2.0f -  i*1.0f);
 		temp = rand() % 3;
 		bonusItemXPositions.push_back(0.0f + temp);
 		/*temp = rand() % 2;
@@ -237,6 +237,11 @@ int main()
 			prevTime = 0.0f;
 		}
 
+		if (fuel < 5 && coins > 0) {
+			fuel += 2;
+			coins--;
+		}
+
 		jumpCoolDown++;
 		if (jumpCoolDown > 20)
 			jumping = false;
@@ -256,13 +261,12 @@ int main()
 			else glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		}
 		else {
-			glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+			if (!darkBonusAchieved) glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 		}
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		projection = glm::perspective(glm::radians(camera.Zoom), (float)WIN_WIDTH / (float)WIN_HEIGHT, 0.1f, 30.0f);
-		view = camera.GetViewMatrix();
-		
+		view = camera.GetViewMatrix();		
 
 		shaderSetup(lightCubeShader, shaderTex, shaderMP, shaderSky, shaderCurves, projection, view);
 		
@@ -797,6 +801,39 @@ void shaderSetup(Shader& lightCubeShader, Shader& shaderTex, Shader& shaderMP, S
 	shaderCurves.setBool("flashlightOn", torchOn);
 
 	streetlightSetup(shaderCurves, protagonistZmove);
+
+	if (darkBonusAchieved) {
+		shaderMP.use();
+		shaderMP.setBool("darkBonusAchieved", true);
+		shaderTex.use();
+		shaderTex.setBool("darkBonusAchieved", true);
+		shaderSky.use();
+		shaderSky.setBool("darkBonusAchieved", true);
+		lightCubeShader.use();
+		lightCubeShader.setBool("darkBonusAchieved", true);
+		/*shader.use();
+		shader.setBool("darkBonusAchieved", true);*/
+		shaderCurves.use();
+		shaderCurves.setBool("darkBonusAchieved", true);
+		dayNightSystem = false;
+		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+	}
+	else {
+		shaderMP.use();
+		shaderMP.setBool("darkBonusAchieved", false);
+		shaderTex.use();
+		shaderTex.setBool("darkBonusAchieved", false);
+		shaderSky.use();
+		shaderSky.setBool("darkBonusAchieved", false);
+		lightCubeShader.use();
+		lightCubeShader.setBool("darkBonusAchieved", false);
+		/*shader.use();
+		shader.setBool("darkBonusAchieved", false);*/
+		shaderCurves.use();
+		shaderCurves.setBool("darkBonusAchieved", false);
+		dayNightSystem = true;
+		glClearColor(sunDiff, sunDiff, sunDiff, 1.0f);
+	}
 	
 }
 
@@ -1091,7 +1128,10 @@ void collectorItemsManager(Shader& shader1, Shader& shader2, CollectorItems& ite
 					if (bonusItemSequence[i] == 1) coins += (10 * boostFactor);
 					if (bonusItemSequence[i] == 2) fuel += (5 * boostFactor);
 					if (bonusItemSequence[i] == 3) {
-						if (!darkBonusAchieved) darkBonusAchieved = true;
+						if (!darkBonusAchieved) {
+							darkBonusAchieved = true;
+							fuel -= 1;
+						}
 					}
 					if (bonusItemSequence[i] == 4) {
 						if (!slowBonusAchieved && !boostBonusAchieved) slowBonusAchieved = true;
@@ -1150,7 +1190,6 @@ void bonusManager()
 		}
 	}
 }
-
 
 void tree(Shader& shaderMP, Shader& shaderCurves, Curves& treeCurves, bool withTexture, glm::mat4 alTogether)
 {

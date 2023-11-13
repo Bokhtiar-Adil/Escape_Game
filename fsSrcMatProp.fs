@@ -66,6 +66,7 @@ uniform PointLight streetLights[MAX_NR_STREET_LIGHTS];
 uniform bool streetLightStatus[MAX_NR_STREET_LIGHTS];
 uniform int numberofStreetlights;
 uniform bool streetLightOn;
+uniform bool darkBonusAchieved;
 
 
 // function prototypes
@@ -100,6 +101,9 @@ void main()
                 result += CalcPointLight(streetLights[i], norm, FragPos, viewDir);
             }
         }
+    }
+    if (darkBonusAchieved == true) {
+        result = CalcSpotLight(spotLight, norm, FragPos, viewDir);
     }
     FragColor = vec4(result, 1.0f);
 }

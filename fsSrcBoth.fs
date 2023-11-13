@@ -69,6 +69,7 @@ uniform bool exposedToSun;
 uniform bool flashlightOn;
 uniform vec3 emission;
 uniform bool withTexture;
+uniform bool darkBonusAchieved;
 
 // function prototypes
 vec3 CalcDirectionalLight(DirectionalLight light, vec3 normal, vec3 viewDir);
@@ -98,6 +99,9 @@ void main()
         result += CalcSpotLight(spotLight, norm, FragPos, viewDir);
     }
     
+    if (darkBonusAchieved == true) {
+        result = CalcSpotLight(spotLight, norm, FragPos, viewDir);
+    }
     FragColor = vec4(result, 1.0);
 }
 

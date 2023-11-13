@@ -32,30 +32,30 @@ D:\__Graphics_project_git\Escape_game_v2\Main.cpp(222,33): warning C4244: 'argum
           ]
 D:\__Graphics_project_git\Escape_game_v2\Main.cpp(170,43): warning C4101: 'rotate': unreferenced local variable
 D:\__Graphics_project_git\Escape_game_v2\Main.cpp(170,20): warning C4101: 'altogether': unreferenced local variable
-D:\__Graphics_project_git\Escape_game_v2\Main.cpp(472,22): warning C4305: '+=': truncation from 'double' to 'float'
-D:\__Graphics_project_git\Escape_game_v2\Main.cpp(486,22): warning C4305: '+=': truncation from 'double' to 'float'
-D:\__Graphics_project_git\Escape_game_v2\Main.cpp(810,10): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
-D:\__Graphics_project_git\Escape_game_v2\Main.cpp(808,12): warning C4101: 'streetlightTogether': unreferenced local variable
-D:\__Graphics_project_git\Escape_game_v2\Main.cpp(969,27): warning C4101: 'translate': unreferenced local variable
-D:\__Graphics_project_git\Escape_game_v2\Main.cpp(1042,27): warning C4101: 'translate': unreferenced local variable
-D:\__Graphics_project_git\Escape_game_v2\Main.cpp(1074,22): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
-D:\__Graphics_project_git\Escape_game_v2\Main.cpp(1082,31): warning C4244: '-=': conversion from 'float' to '_Ty', possible loss of data
+D:\__Graphics_project_git\Escape_game_v2\Main.cpp(476,22): warning C4305: '+=': truncation from 'double' to 'float'
+D:\__Graphics_project_git\Escape_game_v2\Main.cpp(490,22): warning C4305: '+=': truncation from 'double' to 'float'
+D:\__Graphics_project_git\Escape_game_v2\Main.cpp(847,10): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+D:\__Graphics_project_git\Escape_game_v2\Main.cpp(845,12): warning C4101: 'streetlightTogether': unreferenced local variable
+D:\__Graphics_project_git\Escape_game_v2\Main.cpp(1006,27): warning C4101: 'translate': unreferenced local variable
+D:\__Graphics_project_git\Escape_game_v2\Main.cpp(1079,27): warning C4101: 'translate': unreferenced local variable
+D:\__Graphics_project_git\Escape_game_v2\Main.cpp(1111,22): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+D:\__Graphics_project_git\Escape_game_v2\Main.cpp(1119,31): warning C4244: '-=': conversion from 'float' to '_Ty', possible loss of data
           with
           [
               _Ty=int
           ]
-D:\__Graphics_project_git\Escape_game_v2\Main.cpp(1084,32): warning C4244: '-=': conversion from 'float' to '_Ty', possible loss of data
+D:\__Graphics_project_git\Escape_game_v2\Main.cpp(1121,32): warning C4244: '-=': conversion from 'float' to '_Ty', possible loss of data
           with
           [
               _Ty=int
           ]
-D:\__Graphics_project_git\Escape_game_v2\Main.cpp(1103,30): warning C4244: '-=': conversion from 'float' to '_Ty', possible loss of data
+D:\__Graphics_project_git\Escape_game_v2\Main.cpp(1143,30): warning C4244: '-=': conversion from 'float' to '_Ty', possible loss of data
           with
           [
               _Ty=int
           ]
-D:\__Graphics_project_git\Escape_game_v2\Main.cpp(1069,20): warning C4101: 'translate': unreferenced local variable
-D:\__Graphics_project_git\Escape_game_v2\Main.cpp(1069,38): warning C4101: 'model': unreferenced local variable
-D:\__Graphics_project_git\Escape_game_v2\Main.cpp(1069,31): warning C4101: 'scale': unreferenced local variable
-D:\__Graphics_project_git\Escape_game_v2\Main.cpp(1166,47): warning C4101: 'rotate': unreferenced local variable
+D:\__Graphics_project_git\Escape_game_v2\Main.cpp(1106,20): warning C4101: 'translate': unreferenced local variable
+D:\__Graphics_project_git\Escape_game_v2\Main.cpp(1106,38): warning C4101: 'model': unreferenced local variable
+D:\__Graphics_project_git\Escape_game_v2\Main.cpp(1106,31): warning C4101: 'scale': unreferenced local variable
+D:\__Graphics_project_git\Escape_game_v2\Main.cpp(1205,47): warning C4101: 'rotate': unreferenced local variable
   Escape_game_v2.vcxproj -> D:\__Graphics_project_git\Escape_game_v2\x64\Debug\Escape_game_v2.exe
