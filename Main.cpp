@@ -114,6 +114,9 @@ GLint viewport[4];
 glm::mat4 projection = glm::mat4(1.0f), view = glm::mat4(1.0f);
 glm::mat4 revolve = glm::mat4(1.0f);
 
+vector<int> bonusItemSequence, bonusItemXPositions, bonusItemYPositions, bonusItemZPositions;
+float bonusItemOffset = 30.0f;
+
 int main()
 {
 	glfwInit();
@@ -199,6 +202,19 @@ int main()
 
 	//glEnable(GL_DEPTH_TEST);
 	// render
+	int temp;
+	for (int i = 0; i < 15; i++) {
+		temp = rand() % 5;
+		bonusItemSequence.push_back(temp);
+		bonusItemZPositions.push_back(protagonistZinitial + 3.0f + i*2.0f);
+		temp = rand() % 3;
+		bonusItemXPositions.push_back(0.0f + temp);
+		/*temp = rand() % 2;
+		bonusItemYPositions.push_back(0.5f + temp*2.0f);*/
+		bonusItemYPositions.push_back(0.4f);
+	}
+
+
 
 	while (!glfwWindowShouldClose(window)) {
 
@@ -260,9 +276,10 @@ int main()
 		worldExpansion(shaderTex, shaderMP, shaderCurves, lightCubeShader, world, component, sequence, translate);
 		translate = glm::translate(identity, glm::vec3(0.0f, 0.0f, currentBlockBase - 30.0f));
 		worldExpansion(shaderTex, shaderMP, shaderCurves, lightCubeShader, world, component, sequence, translate);
+		//bonusItemOffset = currentBlockNumber * 30.0f;
 		/**/
 
-		protagonistMoveManager(protagonist, shaderMP, revolve);
+		protagonistMoveManager(protagonist, shaderMP, revolve);		
 		collectorItemsManager(shaderMP, lightCubeShader, items, world, component);
 		
 		skyManager(shaderTex, shaderMP, shaderSky, world, glm::translate(identity, glm::vec3(1.0f, 0.0f, protagonistZmove))); 
@@ -1027,11 +1044,31 @@ void collectorItemsManager(Shader& shader1, Shader& shader2, CollectorItems& ite
 {
 	glm::mat4 rotate, translate, scale, model, identity = glm::mat4(1.0f);
 	rotate = glm::rotate(identity, glm::radians(itemAngleChange), glm::vec3(0.0f, 1.0f, 0.0f));
-	items.speedBonusItem(shader1, shader2, 2, glm::translate(identity, glm::vec3(0.0f, 1.0f, 3.0f)) * rotate);
-	items.coinBonusItem(shader1, shader2, 2, glm::translate(identity, glm::vec3(1.0f, 1.0f, 3.0f)) * rotate);
-	items.fuelBonusItem(shader1, shader2, 2, glm::translate(identity, glm::vec3(2.0f, 1.0f, 3.0f)) * rotate);
-	items.darkBonusItem(shader1, shader2, 2, glm::translate(identity, glm::vec3(1.5f, 1.0f, 3.0f)) * rotate);
-	items.slowBonusItem(shader1, shader2, 2, glm::translate(identity, glm::vec3(0.5f, 1.0f, 3.0f)) * rotate);
+	float firstItemZ = protagonistZinitial - 3.0f;
+	
+	int numOfBonusItems = bonusItemSequence.size();
+	
+	for (int i = 0; i < numOfBonusItems; i++) {
+		if (protagonistZinitial + protagonistZmove == bonusItemZPositions[i] && protagonistXinitial + protagonistXmove == bonusItemXPositions[i] && protagonistYinitial + protagonistYmove + 0.5f >= bonusItemYPositions[i]) {
+			bonusItemZPositions[i] -= bonusItemOffset;
+		}
+		else if (camera.Position.z < bonusItemZPositions[i]) {
+			bonusItemZPositions[i] -= bonusItemOffset;
+		}
+	}	
+	// && protagonistYinitial + protagonistYmove + 0.5f >= bonusItemYPositions[i]
+	
+	for (int i = 0; i < numOfBonusItems; i++) {
+		if (bonusItemSequence[i] == 0) items.speedBonusItem(shader1, shader2, 2, glm::translate(identity, glm::vec3(bonusItemXPositions[i], bonusItemYPositions[i], bonusItemZPositions[i])) * rotate);
+		else if (bonusItemSequence[i] == 1) items.coinBonusItem(shader1, shader2, 2, glm::translate(identity, glm::vec3(bonusItemXPositions[i], bonusItemYPositions[i], bonusItemZPositions[i])) * rotate);
+		else if (bonusItemSequence[i] == 2) items.fuelBonusItem(shader1, shader2, 2, glm::translate(identity, glm::vec3(bonusItemXPositions[i], bonusItemYPositions[i], bonusItemZPositions[i])) * rotate);
+		else if (bonusItemSequence[i] == 3) items.darkBonusItem(shader1, shader2, 2, glm::translate(identity, glm::vec3(bonusItemXPositions[i], bonusItemYPositions[i], bonusItemZPositions[i])) * rotate);
+		else items.slowBonusItem(shader1, shader2, 2, glm::translate(identity, glm::vec3(bonusItemXPositions[i], bonusItemYPositions[i], bonusItemZPositions[i])) * rotate);
+	}
+
+	
+	
+	
 	itemAngleChange += 1.0f;
 	if (itemAngleChange > 360) itemAngleChange = 1;
 }
