@@ -42,6 +42,8 @@ unsigned int SCR_HEIGHT = 700;
 void frame_buffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void processInput(GLFWwindow* window);
+void processInputForBeforeGameStarts(GLFWwindow* window);
+void processInputForGameFinishingMode(GLFWwindow* window);
 //unsigned int loadTexture(char const* path);
 //void drawCube(unsigned int& cubeVAO, Shader& shader, glm::mat4 model);
 
@@ -64,6 +66,7 @@ void dayNightControl();
 void skyManager(Shader& shaderTex, Shader& shaderMP, Shader& shaderSky, World& world, glm::mat4 alTogether);
 void collectorItemsManager(Shader& shader1, Shader& shader2, CollectorItems& items, World& world, Components& component);
 void bonusManager();
+void gameFreezeManager(Shader& shaderTex, Components& component);
 void tree(Shader& shaderMP, Shader& shaderCurves, Curves& treeCurves, bool withTexture, glm::mat4 alTogether = glm::mat4(1.0f));
 
 
@@ -123,6 +126,10 @@ int boostBonusEffectDuration = 0, darkBonusEffectDuration = 0, slowBonusEffectDu
 int maxDarkBonusEffectDuration = 500, maxSlowBonusEffectDuration;
 bool boostBonusAchieved = false, darkBonusAchieved = false, slowBonusAchieved = false;
 int fuel = 15, coins = 0, boostFactor = 1;
+
+float gameStarted = false, gameFinished = false, gameWon = false, gameLost = false;
+float gameStartTime = 0.0f;
+
 
 
 int main()
@@ -224,13 +231,34 @@ int main()
 
 	float prevTime = 0.0f;
 
+	cout << static_cast<float>(glfwGetTime()) << "\n";
+
 	while (!glfwWindowShouldClose(window)) {
 
 		float currentFrame = static_cast<float>(glfwGetTime());
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
 
-		prevTime += deltaTime;
+		cout << static_cast<float>(glfwGetTime()) << "\n";
+
+		if (gameStarted && currentFrame - gameStartTime >= 60.0f) {
+			gameWon = true;
+			gameFinished = true;
+		}
+		else if (gameStarted && fuel == 0) {
+			gameLost = true;
+			gameFinished = true;
+		}
+		
+		if (!gameStarted) {
+			dayNightSystem = false;
+			processInputForBeforeGameStarts(window);
+		}
+		else if (gameFinished) processInputForGameFinishingMode(window);
+		else processInput(window);
+		
+
+		if (gameStarted) prevTime += deltaTime;
 		if (prevTime >= 1.0f) {
 			if (fuel > 0) fuel--;
 			if (coins > 0) coins -= 2;
@@ -246,7 +274,7 @@ int main()
 		if (jumpCoolDown > 20)
 			jumping = false;
 
-		processInput(window);
+		
 		
 		/*if (menu) {
 			glDisable(GL_DEPTH_TEST);
@@ -268,7 +296,18 @@ int main()
 		projection = glm::perspective(glm::radians(camera.Zoom), (float)WIN_WIDTH / (float)WIN_HEIGHT, 0.1f, 30.0f);
 		view = camera.GetViewMatrix();		
 
-		shaderSetup(lightCubeShader, shaderTex, shaderMP, shaderSky, shaderCurves, projection, view);
+		shaderSetup(lightCubeShader, shaderTex, shaderMP, shaderSky, shaderCurves, projection, view);		
+
+		if (!gameStarted) {
+			gameFreezeManager(shaderTex, component);
+		}
+		else if (gameFinished) {
+			gameFreezeManager(shaderTex, component);
+			// break;
+		}
+		else {
+
+		}
 		
 		xoffset = 0.5f, yoffset = 0.5f;
 		offset = glm::translate(identity, glm::vec3(xoffset, yoffset, zoffset));
@@ -315,7 +354,8 @@ int main()
 			if (!nightMode) component.sun(lightCubeShader, glm::translate(identity, glm::vec3(sunX, sunY + 2.0f, protagonistZmove - 20.0f)));
 			if (streetLightOn) component.moon(lightCubeShader, glm::translate(identity, glm::vec3(moonX, moonY + 2.0f, protagonistZmove - 20.0f)));
 		}
-		
+		//if (gameWon) component.winMsg(shaderTex, identity * glm::translate(identity, glm::vec3(0.0f, 0.0f, protagonistZmove - 2.0f)));
+		// component.winMsg(shaderTex, glm::translate(identity, glm::vec3(0.0f, 0.0f, 3.0f)) * revolve);
 		//component.tree(shaderMP, shaderCurves, false,  glm::translate(identity, glm::vec3(0.0f, 0.0f, 3.0f)) * revolve);
 		//tree(shaderMP, shaderCurves, treeCurves, false,  glm::translate(identity, glm::vec3(0.0f, 0.0f, 3.0f)) * revolve);
 		//shaderTex.use();
@@ -511,6 +551,24 @@ void processInput(GLFWwindow* window)
 	}
 
 
+}
+
+void processInputForGameFinishingMode(GLFWwindow* window)
+{
+	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+		glfwSetWindowShouldClose(window, true);
+}
+
+void processInputForBeforeGameStarts(GLFWwindow* window)
+{
+	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+		glfwSetWindowShouldClose(window, true);
+	if (glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_PRESS) {
+		gameStarted = true;
+		dayNightSystem = true;
+		gameStartTime = static_cast<float>(glfwGetTime());
+	}
+		
 }
 
 void mouse_callback(GLFWwindow* window, double xposIn, double yposIn)
@@ -1188,6 +1246,24 @@ void bonusManager()
 			darkBonusAchieved = false;
 			darkBonusEffectDuration = 0;
 		}
+	}
+}
+
+void gameFreezeManager(Shader& shaderTex, Components& component)
+{
+	glm::mat4 identity = glm::mat4(1.0f);
+
+	darkBonusAchieved = false;
+	dayNightSystem = false;
+
+	if (!gameFinished) {
+		component.startMsg(shaderTex, identity * glm::translate(identity, glm::vec3(0.0f, 0.0f, protagonistZinitial - 2.0f)));
+	}
+	else if (gameWon == true) {		
+		component.winMsg(shaderTex, identity * glm::translate(identity, glm::vec3(0.0f, 0.0f, protagonistZmove - 0.2f)));
+	}
+	else if (gameLost) {
+		component.loseMsg(shaderTex, identity * glm::translate(identity, glm::vec3(0.0f, 0.0f, protagonistZmove - 0.2f)));
 	}
 }
 

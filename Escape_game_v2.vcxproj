@@ -172,6 +172,7 @@
     <Image Include="designedTiles.jpg" />
     <Image Include="door2.jpg" />
     <Image Include="grass.jpg" />
+    <Image Include="lose2.png" />
     <Image Include="mosque_wall.jpg" />
     <Image Include="no_exit.jpg" />
     <Image Include="palestine.jpg" />
@@ -179,7 +180,9 @@
     <Image Include="seventyone.jpg" />
     <Image Include="seventyone1.jpg" />
     <Image Include="sky1.jpg" />
+    <Image Include="startlogo.png" />
     <Image Include="whitewall2.jpg" />
+    <Image Include="win.jpg" />
     <Image Include="windows.jpg" />
     <Image Include="woodCypress.jpg" />
     <Image Include="woodenDoor.jpg" />

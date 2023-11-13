@@ -202,7 +202,7 @@ private:
 		
 	}
 
-	unsigned int boxtex, walldmp, wallsmp, tabledmp, doordmp, walldmp2, windowsdmp, grass, grass2, palestine1, noexit, seventyone, mosqueWall, door2;
+	unsigned int boxtex, walldmp, wallsmp, tabledmp, doordmp, walldmp2, windowsdmp, grass, grass2, palestine1, noexit, seventyone, mosqueWall, door2, wintex, losetex, startlogotex; // entertostarttex
 
 	void loadAllTextures()
 	{
@@ -220,6 +220,10 @@ private:
 		seventyone = loadTexture("seventyone1.jpg");
 		mosqueWall = loadTexture("mosque_wall.jpg");
 		door2 = loadTexture("door2.jpg");
+		wintex = loadTexture("win.jpg");
+		losetex = loadTexture("lose2.png");
+		startlogotex = loadTexture("startlogo.png");
+		//entertostarttex = loadTexture("entertoplay2.jpg");
 	}
 
 	void loadAllCurves()
@@ -1418,6 +1422,60 @@ public:
 		sphere.setMaterialisticProperties(this->amb, this->diff, this->spec);
 		sphere.drawSphere(shaderMP, modelTogether);
 
+	}
+
+	void winMsg(Shader& shaderTex, glm::mat4 alTogether = glm::mat4(1.0f))
+	{
+		shaderTex.use();
+		shaderTex.setBool("exposedToSun", true);
+
+		this->dMap = wintex;
+
+		model = identity;
+		scale = glm::scale(identity, glm::vec3(2.0f, 2.0f, 0.02f));
+		translate = glm::translate(identity, glm::vec3(0.0f, 1.0f, 0.0f));
+		model = translate * scale * model;
+		modelTogether = alTogether * model;
+		cube.drawCubeWithTexture(shaderTex, dMap, dMap, this->shininess, modelTogether);
+	}
+
+	void loseMsg(Shader& shaderTex, glm::mat4 alTogether = glm::mat4(1.0f))
+	{
+		shaderTex.use();
+		shaderTex.setBool("exposedToSun", true);
+
+		this->dMap = losetex;
+
+		model = identity;
+		scale = glm::scale(identity, glm::vec3(2.0f, 2.0f, 0.02f));
+		translate = glm::translate(identity, glm::vec3(0.0f, 1.0f, 0.0f));
+		model = translate * scale * model;
+		modelTogether = alTogether * model;
+		cube.drawCubeWithTexture(shaderTex, dMap, dMap, this->shininess, modelTogether);
+	}
+
+	void startMsg(Shader& shaderTex, glm::mat4 alTogether = glm::mat4(1.0f))
+	{
+		shaderTex.use();
+		shaderTex.setBool("exposedToSun", true);
+
+		this->dMap = startlogotex;
+
+		model = identity;
+		scale = glm::scale(identity, glm::vec3(4.0f, 2.0f, 0.02f));
+		translate = glm::translate(identity, glm::vec3(-1.0f, 1.0f, 0.0f));
+		model = translate * scale * model;
+		modelTogether = alTogether * model;
+		cube.drawCubeWithTexture(shaderTex, dMap, dMap, this->shininess, modelTogether);
+
+		/*this->dMap = entertostarttex;
+
+		model = identity;
+		scale = glm::scale(identity, glm::vec3(4.0f, 1.0f, 0.02f));
+		translate = glm::translate(identity, glm::vec3(0.0f, 0.0f, 0.0f));
+		model = translate * scale * model;
+		modelTogether = alTogether * model;
+		cube.drawCubeWithTexture(shaderTex, dMap, dMap, this->shininess, modelTogether);*/
 	}
 
 };

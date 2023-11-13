@@ -159,6 +159,15 @@
     <Image Include="cloudlittle.jpg">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="win.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="lose2.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="startlogo.png">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <Text Include="commented_out_parts.txt">

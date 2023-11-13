@@ -397,7 +397,7 @@ public:
 		shader2.setVec3("color", glm::vec3(1.0f * (1 - fuel), 1.0f * fuel, 0.0f));
 
 		scale = glm::scale(identity, glm::vec3(0.1f, 0.25f, 0.1f));
-		translate = glm::translate(identity, glm::vec3(-0.05f, 0.4f, 0.00f));
+		translate = glm::translate(identity, glm::vec3(-0.05f, 0.5f, 0.00f));
 		cubemodel = translate * scale * identity;
 		modelTogether = alTogether * cubemodel;
 		cube.drawCube(shader2, modelTogether, 1.0f * (1 - fuel), 1.0f * fuel, 0.0f);
