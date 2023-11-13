@@ -11,6 +11,7 @@
 #include "Shader.h"
 #include "Sphere.h"
 #include "Curves.h"
+#include "Cylinder.h"
 
 class Components
 {
@@ -204,6 +205,8 @@ private:
 
 	unsigned int boxtex, walldmp, wallsmp, tabledmp, doordmp, walldmp2, windowsdmp, grass, grass2, palestine1, noexit, seventyone, mosqueWall, door2, wintex, losetex, startlogotex; // entertostarttex
 
+	Cylinder cyl1;
+
 	void loadAllTextures()
 	{
 		boxtex = loadTexture("container2.png");
@@ -232,6 +235,11 @@ private:
 		treeCurves.setControlPointsV2(tree3);
 	}
 
+	void loadAllCylinders()
+	{
+		cyl1.setupCylinderProperties(1.0f, 1.0f, 1.0f, 10, 10, "cloudlittle.jpg");
+	}
+
 public:
 
 	Components(int width, int height)
@@ -243,6 +251,7 @@ public:
 
 		loadAllTextures();
 		loadAllCurves();
+		loadAllCylinders(); 
 		treeCurves.setWinProperties(this->win_width, this->win_height);
 
 	}	
@@ -1476,6 +1485,18 @@ public:
 		model = translate * scale * model;
 		modelTogether = alTogether * model;
 		cube.drawCubeWithTexture(shaderTex, dMap, dMap, this->shininess, modelTogether);*/
+	}
+
+	void cloud(Shader& shaderTex, glm::mat4 alTogether = glm::mat4(1.0f))
+	{
+		baseWidth = 1.0f;
+		
+		scale = glm::scale(identity, glm::vec3(2.0f, 0.6f, 0.1f));
+		rotate = glm::rotate(identity, glm::radians(25.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+		//translate = glm::translate(identity, glm::vec3(0.0f, 0.0f, 0.0f));
+		model = rotate * scale;
+		modelTogether = alTogether * model;
+		cyl1.drawCylinder(shaderTex, modelTogether);
 	}
 
 };

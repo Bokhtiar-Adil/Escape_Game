@@ -24,6 +24,9 @@
     <ClCompile Include="..\..\CMake\Opengl\glad.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Cylinder.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h">
@@ -57,6 +60,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="CollectorItems.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Cylinder.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -151,9 +157,6 @@
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="door2.jpg">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="cloud.png">
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="cloudlittle.jpg">

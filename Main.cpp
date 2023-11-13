@@ -63,7 +63,7 @@ void worldExpansion(Shader& shaderTex, Shader& shaderMP, Shader& shaderCurves, S
 void protagonistMoveManager(Character& protagonist, Shader& shaderMP, Shader& lightCubeShader, glm::mat4 revolve);
 void streetlightSetup(Shader& shader, float moveZ, float slAmb = 0.1f, float slDiff = 0.5f, float slSpec = 0.5f, float slConst = 1.0f, float slLin = 0.09f, float slQuad = 0.032f);
 void dayNightControl();
-void skyManager(Shader& shaderTex, Shader& shaderMP, Shader& shaderSky, World& world, glm::mat4 alTogether);
+void skyManager(Shader& shaderTex, Shader& shaderMP, Shader& shaderSky, World& world, Components& component, glm::mat4 alTogether);
 void collectorItemsManager(Shader& shader1, Shader& shader2, CollectorItems& items, World& world, Components& component);
 void bonusManager();
 void gameFreezeManager(Shader& shaderTex, Components& component);
@@ -233,20 +233,24 @@ int main()
 
 	cout << static_cast<float>(glfwGetTime()) << "\n";
 
+	//gameStarted = true;
+
 	while (!glfwWindowShouldClose(window)) {
 
 		float currentFrame = static_cast<float>(glfwGetTime());
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
 
-		cout << static_cast<float>(glfwGetTime()) << "\n";
+		// cout << static_cast<float>(glfwGetTime()) << "\n";
 
 		if (gameStarted && currentFrame - gameStartTime >= 60.0f) {
 			gameWon = true;
+			gameLost = false;
 			gameFinished = true;
 		}
 		else if (gameStarted && fuel == 0) {
 			gameLost = true;
+			gameWon = false;
 			gameFinished = true;
 		}
 		
@@ -345,7 +349,7 @@ int main()
 		protagonistZcurrent = protagonistZinitial + protagonistZmove;
 		collectorItemsManager(shaderMP, lightCubeShader, items, world, component);
 		
-		skyManager(shaderTex, shaderMP, shaderSky, world, glm::translate(identity, glm::vec3(1.0f, 0.0f, protagonistZmove))); 
+		skyManager(shaderTex, shaderMP, shaderSky, world, component, glm::translate(identity, glm::vec3(1.0f, 0.0f, protagonistZmove))); 
 		if (dayNightSystem) {
 			if (!nightMode) component.sun(lightCubeShader, glm::translate(identity, glm::vec3(sunX, sunY + 2.0f, protagonistZmove - 20.0f)));
 			if (streetLightOn) component.moon(lightCubeShader, glm::translate(identity, glm::vec3(moonX, moonY + 2.0f, protagonistZmove - 20.0f)));
@@ -354,6 +358,9 @@ int main()
 			if (!nightMode) component.sun(lightCubeShader, glm::translate(identity, glm::vec3(sunX, sunY + 2.0f, protagonistZmove - 20.0f)));
 			if (streetLightOn) component.moon(lightCubeShader, glm::translate(identity, glm::vec3(moonX, moonY + 2.0f, protagonistZmove - 20.0f)));
 		}
+		// world.hillSinglePeak(shaderTex, shaderCurves, false, glm::translate(identity, glm::vec3(0.0f, 3.0f, 0.0f)) * revolve);
+		//world.hills(shaderTex, shaderCurves, false, glm::translate(identity, glm::vec3(2.0f, 3.0f, 0.0f)) * glm::scale(identity, glm::vec3(1.0f, 0.75f, 1.0f)));
+		//world.hills(shaderTex, shaderCurves, false, glm::translate(identity, glm::vec3(-2.0f, 3.0f, 0.0f)) * glm::scale(identity, glm::vec3(1.0f, 0.45f, 1.0f)));
 		//if (gameWon) component.winMsg(shaderTex, identity * glm::translate(identity, glm::vec3(0.0f, 0.0f, protagonistZmove - 2.0f)));
 		// component.winMsg(shaderTex, glm::translate(identity, glm::vec3(0.0f, 0.0f, 3.0f)) * revolve);
 		//component.tree(shaderMP, shaderCurves, false,  glm::translate(identity, glm::vec3(0.0f, 0.0f, 3.0f)) * revolve);
@@ -1053,10 +1060,11 @@ void streetlightSetup(Shader& shader, float moveZ, float slAmb, float slDiff, fl
 
 }
 
-void skyManager(Shader& shaderTex, Shader& shaderMP, Shader& shaderSky, World& world, glm::mat4 alTogether)
+void skyManager(Shader& shaderTex, Shader& shaderMP, Shader& shaderSky, World& world, Components& component, glm::mat4 alTogether)
 {
 	glm::mat4 identity = glm::mat4(1.0f);
-	world.sky(shaderTex, shaderMP, shaderSky, sunAmb, sunDiff, sunSpec, alTogether * glm::translate(identity, glm::vec3(0.0f, 6.0f, 0.0f)));
+	// world.sky(shaderTex, shaderMP, shaderSky, sunAmb, sunDiff, sunSpec, alTogether * glm::translate(identity, glm::vec3(0.0f, 6.0f, 0.0f)));
+	// component.cloud(shaderSky, alTogether * glm::translate(identity, glm::vec3(0.0f, 4.0f, -20.0f)));
 }
 
 void worldExpansion(Shader& shaderTex, Shader& shaderMP, Shader& shaderCurves, Shader& lightCubeShader, World& world, Components& component, vector<int>& sequence, glm::mat4 alTogether)
@@ -1087,7 +1095,7 @@ void worldExpansion(Shader& shaderTex, Shader& shaderMP, Shader& shaderCurves, S
 			component.waterTank(shaderMP, false, alTogether * glm::translate(identity, glm::vec3(4.0f, -0.5f, 7.0f - 4.5f * i)));
 		}
 		else if (i == 3) {
-			component.mosque(shaderTex, shaderMP, alTogether * glm::translate(identity, glm::vec3(-3.7f, -0.5f, 7.0f - 4.0f * i)) * rotate * scale);			
+			component.mosque(shaderTex, shaderMP, alTogether * glm::translate(identity, glm::vec3(-3.7f, -0.5f, 7.0f - 4.0f * i)) * rotate * scale);
 			component.building(shaderTex, true, alTogether * glm::translate(identity, glm::vec3(3.7f, -0.5f, 7.0f - 4.0f * i)) * rotate * scale);
 		}
 		else if (i == 1) {
@@ -1102,9 +1110,9 @@ void worldExpansion(Shader& shaderTex, Shader& shaderMP, Shader& shaderCurves, S
 			component.building(shaderTex, true, alTogether * glm::translate(identity, glm::vec3(-3.5f, -0.5f, 7.0f - 4.0f * i)) * rotate * scale);
 			component.building(shaderTex, true, alTogether * glm::translate(identity, glm::vec3(3.5f, -0.5f, 7.0f - 4.0f * i)) * rotate * scale);
 		}
-		else if (sequence[i] == 1) {
-			component.waterTank(shaderMP, false, alTogether * glm::translate(identity, glm::vec3(-2.8f, -0.5f, 7.0f - 4.5f * i)));
-			component.waterTank(shaderMP, false, alTogether * glm::translate(identity, glm::vec3(3.8f, -0.5f, 7.0f - 4.5f * i)));
+		else if (sequence[i] == 1) { 
+			component.waterTank(shaderMP, false, alTogether * glm::translate(identity, glm::vec3(-2.8f, -0.5f, 7.0f - 4.5f * i))); 
+			component.waterTank(shaderMP, false, alTogether * glm::translate(identity, glm::vec3(3.8f, -0.5f, 7.0f - 4.5f * i))); 
 		}*/
 		/*else if (sequence[i] == 3) {
 			scale = glm::scale(identity, glm::vec3(0.8f, 0.5f, 0.5f));
@@ -1113,6 +1121,20 @@ void worldExpansion(Shader& shaderTex, Shader& shaderMP, Shader& shaderCurves, S
 		}*/
 		
 	}
+
+	for (int i = 0; i < 2; i++) {
+		if (i == 0) {
+			world.hills(shaderTex, shaderCurves, false, alTogether * glm::translate(identity, glm::vec3(9.0f, -0.5f, 0.0f - 15.0f * i)) * glm::scale(identity, glm::vec3(1.0f, 3.0f, 2.0f)));
+			world.hillSinglePeak(shaderTex, shaderCurves, false, alTogether * glm::translate(identity, glm::vec3(-7.0f, -0.5f, 0.0f - 15.0f * i)) * glm::scale(identity, glm::vec3(1.0f, 3.0f, 1.5f)));
+		}
+		else {
+			world.hillSinglePeak(shaderTex, shaderCurves, false, alTogether * glm::translate(identity, glm::vec3(9.0f, -0.5f, 0.0f - 15.0f * i)) * glm::scale(identity, glm::vec3(1.0f, 3.0f, 1.5f)));
+			world.hills(shaderTex, shaderCurves, false, alTogether * glm::translate(identity, glm::vec3(-7.0f, -0.5f, 0.0f - 15.0f * i)) * glm::scale(identity, glm::vec3(1.0f, 3.0f, 2.0f)));
+		}
+		
+	}
+	
+
 	
 	shaderMP.use();	
 
@@ -1262,7 +1284,7 @@ void gameFreezeManager(Shader& shaderTex, Components& component)
 	else if (gameWon == true) {		
 		component.winMsg(shaderTex, identity * glm::translate(identity, glm::vec3(0.0f, 0.0f, protagonistZmove - 0.2f)));
 	}
-	else if (gameLost) {
+	else if (gameLost == true) {
 		component.loseMsg(shaderTex, identity * glm::translate(identity, glm::vec3(0.0f, 0.0f, protagonistZmove - 0.2f)));
 	}
 }

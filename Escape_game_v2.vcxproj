@@ -133,6 +133,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\CMake\Opengl\glad.c" />
+    <ClCompile Include="Cylinder.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="stb_image.cpp" />
   </ItemGroup>
@@ -143,6 +144,7 @@
     <ClInclude Include="Components.h" />
     <ClInclude Include="Cube.h" />
     <ClInclude Include="Curves.h" />
+    <ClInclude Include="Cylinder.h" />
     <ClInclude Include="Resource_manager.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="Sphere.h" />
@@ -165,7 +167,6 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="brickwall.jpg" />
-    <Image Include="cloud.png" />
     <Image Include="cloudlittle.jpg" />
     <Image Include="container2.png" />
     <Image Include="container2_specular.png" />

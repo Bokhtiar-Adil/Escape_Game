@@ -11,12 +11,13 @@
 #include "Cube.h"
 #include "Sphere.h"
 #include "Components.h"
+#include "Curves.h"
 
 class World
 {
 private:
 
-	glm::mat4 identity, model, modelTogether, scale, translate, rotate, spheremodel;
+	glm::mat4 identity, model, model2, modelTogether, scale, translate, rotate, spheremodel;
 	unsigned int dMap, sMap;
 	float shininess = 32.0f;
 	glm::vec3 amb, diff, spec;
@@ -24,8 +25,9 @@ private:
 	Cube cube = Cube();
 	Components component = Components(1200, 700);
 	Sphere sphere = Sphere();
+	Curves hillCurves, hillCurves2;
 
-	float roadLength, roadWidth, garageWidth, garageLength, blockWidth, blockLength, skyLength, skyWidth;
+	float roadLength, roadWidth, garageWidth, garageLength, blockWidth, blockLength, skyLength, skyWidth, baseHeight, baseWidth;
 	unsigned int textureID;
 	int widthtex, heighttex, nrComponents;
 	unsigned char* data;
@@ -67,6 +69,15 @@ private:
 		return textureID;
 	}
 
+	void loadAllCurves()
+	{
+		vector<float> hill1 = { 131, 391, 148, 362, 184, 341, 225, 316, 248, 267, 263, 226, 284, 185, 317, 160, 343, 110, 372, 80, 429, 54, 478, 50, 558, 88, 579, 73, 607, 61 };
+		hillCurves.setControlPointsV2(hill1);
+
+		vector<float> hill2 = {136, 394, 158, 386, 195, 364, 247, 306, 277, 256, 328, 185, 388, 142, 483, 107, 566, 98, 631, 97};
+		hillCurves2.setControlPointsV2(hill2);
+	}
+
 	unsigned int grass, skytex, cloudtex;
 
 	void loadAllTextures()
@@ -83,6 +94,7 @@ public:
 		identity = glm::mat4(1.0f);
 
 		loadAllTextures();
+		loadAllCurves();
 	}
 
 	
@@ -235,6 +247,63 @@ public:
 		sphere.setMaterialisticProperties(this->amb, this->diff, this->spec);
 		sphere.drawSphere(shaderSky, modelTogether);*/
 
+	}
+
+	void hills(Shader& shaderMP, Shader& shaderCurves, bool withTexture, glm::mat4 alTogether = glm::mat4(1.0f))
+	{
+		baseHeight = 4.0f;
+		blockWidth = 3.0f;
+		blockLength = 15.0f;
+		
+		this->amb = glm::vec3(0.45f, 0.347f, 0.265f);
+		this->diff = glm::vec3(0.45f, 0.347f, 0.265f);
+		this->spec = glm::vec3(0.0f, 0.0f, 0.0f);
+
+		shaderCurves.use();
+		shaderCurves.setBool("exposedToSun", true);
+		shaderCurves.setBool("overrideColor", true);
+		shaderCurves.setVec3("color", glm::vec3(0.035f, 0.52f, 0.28f));
+		model = identity;
+		scale = glm::scale(identity, glm::vec3(blockWidth, baseHeight, blockLength * 0.3f));
+		//translate = glm::translate(identity, glm::vec3(0.05f, baseHeight, 0.05f));
+		model = scale;
+		modelTogether = alTogether * model;
+		hillCurves.setModel(modelTogether);
+		hillCurves.drawCurves(shaderCurves, this->amb, this->diff, this->spec);
+		model2 = model;
+
+		model = glm::translate(identity, glm::vec3(0.0f, 0.0f, 2.0f)) * glm::scale(identity, glm::vec3(1.0f, 0.75f, 1.0f)) * model;
+		modelTogether = alTogether * model;
+		hillCurves.setModel(modelTogether);
+		hillCurves.drawCurves(shaderCurves, this->amb, this->diff, this->spec);
+
+		model = glm::translate(identity, glm::vec3(0.0f, 0.0f, -2.0f)) * glm::scale(identity, glm::vec3(1.0f, 0.45f, 1.0f)) * model2;
+		modelTogether = alTogether * model;
+		hillCurves.setModel(modelTogether);
+		hillCurves.drawCurves(shaderCurves, this->amb, this->diff, this->spec);
+	}
+
+	void hillSinglePeak(Shader& shaderMP, Shader& shaderCurves, bool withTexture, glm::mat4 alTogether = glm::mat4(1.0f))
+	{
+		baseHeight = 4.0f;
+		blockWidth = 3.0f;
+		blockLength = 15.0f;
+
+		this->amb = glm::vec3(0.45f, 0.347f, 0.265f);
+		this->diff = glm::vec3(0.45f, 0.347f, 0.265f);
+		this->spec = glm::vec3(0.0f, 0.0f, 0.0f);
+
+		shaderCurves.use();
+		shaderCurves.setBool("exposedToSun", true);
+		shaderCurves.setBool("overrideColor", true);
+		shaderCurves.setVec3("color", glm::vec3(0.035f, 0.52f, 0.28f));
+		model = identity;
+		scale = glm::scale(identity, glm::vec3(blockWidth, baseHeight, blockLength));
+		//translate = glm::translate(identity, glm::vec3(0.05f, baseHeight, 0.05f));
+		model = scale;
+		modelTogether = alTogether * model;
+		hillCurves.setModel(modelTogether);
+		hillCurves.drawCurves(shaderCurves, this->amb, this->diff, this->spec);
 	}
 };
 
