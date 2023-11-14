@@ -1,65 +1,65 @@
 ﻿  Main.cpp
-D:\__Graphics_project_git\Escape_game_v2 - copy\Text.h(113,37): warning C4838: conversion from 'FT_Pos' to 'unsigned int' requires a narrowing conversion
-D:\__Graphics_project_git\Escape_game_v2 - copy\Sphere.h(229,26): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-D:\__Graphics_project_git\Escape_game_v2 - copy\Sphere.h(230,25): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-D:\__Graphics_project_git\Escape_game_v2 - copy\Sphere.h(232,26): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-D:\__Graphics_project_git\Escape_game_v2 - copy\Curves.h(55,25): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
-D:\__Graphics_project_git\Escape_game_v2 - copy\Curves.h(68,25): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
-D:\__Graphics_project_git\Escape_game_v2 - copy\Curves.h(156,19): warning C4244: 'initializing': conversion from 'GLint' to 'float', possible loss of data
-D:\__Graphics_project_git\Escape_game_v2 - copy\Curves.h(156,38): warning C4244: 'initializing': conversion from 'GLint' to 'float', possible loss of data
-D:\__Graphics_project_git\Escape_game_v2 - copy\Curves.h(156,57): warning C4244: 'initializing': conversion from 'GLint' to 'float', possible loss of data
-D:\__Graphics_project_git\Escape_game_v2 - copy\Curves.h(156,76): warning C4244: 'initializing': conversion from 'GLint' to 'float', possible loss of data
-D:\__Graphics_project_git\Escape_game_v2 - copy\Curves.h(215,37): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-D:\__Graphics_project_git\Escape_game_v2 - copy\Curves.h(215,28): warning C4244: 'initializing': conversion from 'double' to 'const float', possible loss of data
-D:\__Graphics_project_git\Escape_game_v2 - copy\Curves.h(218,18): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-D:\__Graphics_project_git\Escape_game_v2 - copy\Curves.h(228,29): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-D:\__Graphics_project_git\Escape_game_v2 - copy\Curves.h(234,23): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-D:\__Graphics_project_git\Escape_game_v2 - copy\Curves.h(235,23): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-D:\__Graphics_project_git\Escape_game_v2 - copy\Cylinder.h(54,26): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-D:\__Graphics_project_git\Escape_game_v2 - copy\Cylinder.h(99,36): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
-D:\__Graphics_project_git\Escape_game_v2 - copy\Main.cpp(228,60): warning C4244: 'argument': conversion from 'float' to '_Ty', possible loss of data
+D:\__Graphics_project_git\Escape_game_v2 - final\Text.h(113,37): warning C4838: conversion from 'FT_Pos' to 'unsigned int' requires a narrowing conversion
+D:\__Graphics_project_git\Escape_game_v2 - final\Sphere.h(229,26): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+D:\__Graphics_project_git\Escape_game_v2 - final\Sphere.h(230,25): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+D:\__Graphics_project_git\Escape_game_v2 - final\Sphere.h(232,26): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+D:\__Graphics_project_git\Escape_game_v2 - final\Curves.h(55,25): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+D:\__Graphics_project_git\Escape_game_v2 - final\Curves.h(68,25): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+D:\__Graphics_project_git\Escape_game_v2 - final\Curves.h(156,19): warning C4244: 'initializing': conversion from 'GLint' to 'float', possible loss of data
+D:\__Graphics_project_git\Escape_game_v2 - final\Curves.h(156,38): warning C4244: 'initializing': conversion from 'GLint' to 'float', possible loss of data
+D:\__Graphics_project_git\Escape_game_v2 - final\Curves.h(156,57): warning C4244: 'initializing': conversion from 'GLint' to 'float', possible loss of data
+D:\__Graphics_project_git\Escape_game_v2 - final\Curves.h(156,76): warning C4244: 'initializing': conversion from 'GLint' to 'float', possible loss of data
+D:\__Graphics_project_git\Escape_game_v2 - final\Curves.h(215,37): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+D:\__Graphics_project_git\Escape_game_v2 - final\Curves.h(215,28): warning C4244: 'initializing': conversion from 'double' to 'const float', possible loss of data
+D:\__Graphics_project_git\Escape_game_v2 - final\Curves.h(218,18): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+D:\__Graphics_project_git\Escape_game_v2 - final\Curves.h(228,29): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+D:\__Graphics_project_git\Escape_game_v2 - final\Curves.h(234,23): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+D:\__Graphics_project_git\Escape_game_v2 - final\Curves.h(235,23): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+D:\__Graphics_project_git\Escape_game_v2 - final\Cylinder.h(54,26): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+D:\__Graphics_project_git\Escape_game_v2 - final\Cylinder.h(99,36): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+D:\__Graphics_project_git\Escape_game_v2 - final\Main.cpp(228,60): warning C4244: 'argument': conversion from 'float' to '_Ty', possible loss of data
           with
           [
               _Ty=int
           ]
-D:\__Graphics_project_git\Escape_game_v2 - copy\Main.cpp(230,38): warning C4244: 'argument': conversion from 'float' to '_Ty', possible loss of data
+D:\__Graphics_project_git\Escape_game_v2 - final\Main.cpp(230,38): warning C4244: 'argument': conversion from 'float' to '_Ty', possible loss of data
           with
           [
               _Ty=int
           ]
-D:\__Graphics_project_git\Escape_game_v2 - copy\Main.cpp(233,33): warning C4244: 'argument': conversion from 'float' to '_Ty', possible loss of data
+D:\__Graphics_project_git\Escape_game_v2 - final\Main.cpp(233,33): warning C4244: 'argument': conversion from 'float' to '_Ty', possible loss of data
           with
           [
               _Ty=int
           ]
-D:\__Graphics_project_git\Escape_game_v2 - copy\Main.cpp(181,43): warning C4101: 'rotate': unreferenced local variable
-D:\__Graphics_project_git\Escape_game_v2 - copy\Main.cpp(181,20): warning C4101: 'altogether': unreferenced local variable
-D:\__Graphics_project_git\Escape_game_v2 - copy\Main.cpp(564,22): warning C4305: '+=': truncation from 'double' to 'float'
-D:\__Graphics_project_git\Escape_game_v2 - copy\Main.cpp(578,22): warning C4305: '+=': truncation from 'double' to 'float'
-D:\__Graphics_project_git\Escape_game_v2 - copy\Main.cpp(961,10): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
-D:\__Graphics_project_git\Escape_game_v2 - copy\Main.cpp(959,12): warning C4101: 'streetlightTogether': unreferenced local variable
-D:\__Graphics_project_git\Escape_game_v2 - copy\Main.cpp(1121,27): warning C4101: 'translate': unreferenced local variable
-D:\__Graphics_project_git\Escape_game_v2 - copy\Main.cpp(1208,27): warning C4101: 'translate': unreferenced local variable
-D:\__Graphics_project_git\Escape_game_v2 - copy\Main.cpp(1254,22): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
-D:\__Graphics_project_git\Escape_game_v2 - copy\Main.cpp(1262,31): warning C4244: '-=': conversion from 'float' to '_Ty', possible loss of data
+D:\__Graphics_project_git\Escape_game_v2 - final\Main.cpp(181,43): warning C4101: 'rotate': unreferenced local variable
+D:\__Graphics_project_git\Escape_game_v2 - final\Main.cpp(181,20): warning C4101: 'altogether': unreferenced local variable
+D:\__Graphics_project_git\Escape_game_v2 - final\Main.cpp(568,22): warning C4305: '+=': truncation from 'double' to 'float'
+D:\__Graphics_project_git\Escape_game_v2 - final\Main.cpp(582,22): warning C4305: '+=': truncation from 'double' to 'float'
+D:\__Graphics_project_git\Escape_game_v2 - final\Main.cpp(965,10): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+D:\__Graphics_project_git\Escape_game_v2 - final\Main.cpp(963,12): warning C4101: 'streetlightTogether': unreferenced local variable
+D:\__Graphics_project_git\Escape_game_v2 - final\Main.cpp(1125,27): warning C4101: 'translate': unreferenced local variable
+D:\__Graphics_project_git\Escape_game_v2 - final\Main.cpp(1212,27): warning C4101: 'translate': unreferenced local variable
+D:\__Graphics_project_git\Escape_game_v2 - final\Main.cpp(1258,22): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+D:\__Graphics_project_git\Escape_game_v2 - final\Main.cpp(1266,31): warning C4244: '-=': conversion from 'float' to '_Ty', possible loss of data
           with
           [
               _Ty=int
           ]
-D:\__Graphics_project_git\Escape_game_v2 - copy\Main.cpp(1264,32): warning C4244: '-=': conversion from 'float' to '_Ty', possible loss of data
+D:\__Graphics_project_git\Escape_game_v2 - final\Main.cpp(1268,32): warning C4244: '-=': conversion from 'float' to '_Ty', possible loss of data
           with
           [
               _Ty=int
           ]
-D:\__Graphics_project_git\Escape_game_v2 - copy\Main.cpp(1286,30): warning C4244: '-=': conversion from 'float' to '_Ty', possible loss of data
+D:\__Graphics_project_git\Escape_game_v2 - final\Main.cpp(1290,30): warning C4244: '-=': conversion from 'float' to '_Ty', possible loss of data
           with
           [
               _Ty=int
           ]
-D:\__Graphics_project_git\Escape_game_v2 - copy\Main.cpp(1249,20): warning C4101: 'translate': unreferenced local variable
-D:\__Graphics_project_git\Escape_game_v2 - copy\Main.cpp(1249,38): warning C4101: 'model': unreferenced local variable
-D:\__Graphics_project_git\Escape_game_v2 - copy\Main.cpp(1249,31): warning C4101: 'scale': unreferenced local variable
-D:\__Graphics_project_git\Escape_game_v2 - copy\Main.cpp(1349,11): warning C4805: '==': unsafe mix of type 'float' and type 'bool' in operation
-D:\__Graphics_project_git\Escape_game_v2 - copy\Main.cpp(1352,11): warning C4805: '==': unsafe mix of type 'float' and type 'bool' in operation
-D:\__Graphics_project_git\Escape_game_v2 - copy\Main.cpp(1371,47): warning C4101: 'rotate': unreferenced local variable
-  Escape_game_v2.vcxproj -> D:\__Graphics_project_git\Escape_game_v2 - copy\x64\Debug\Escape_game_v2.exe
+D:\__Graphics_project_git\Escape_game_v2 - final\Main.cpp(1253,20): warning C4101: 'translate': unreferenced local variable
+D:\__Graphics_project_git\Escape_game_v2 - final\Main.cpp(1253,38): warning C4101: 'model': unreferenced local variable
+D:\__Graphics_project_git\Escape_game_v2 - final\Main.cpp(1253,31): warning C4101: 'scale': unreferenced local variable
+D:\__Graphics_project_git\Escape_game_v2 - final\Main.cpp(1353,11): warning C4805: '==': unsafe mix of type 'float' and type 'bool' in operation
+D:\__Graphics_project_git\Escape_game_v2 - final\Main.cpp(1356,11): warning C4805: '==': unsafe mix of type 'float' and type 'bool' in operation
+D:\__Graphics_project_git\Escape_game_v2 - final\Main.cpp(1375,47): warning C4101: 'rotate': unreferenced local variable
+  Escape_game_v2.vcxproj -> D:\__Graphics_project_git\Escape_game_v2 - final\x64\Debug\Escape_game_v2.exe

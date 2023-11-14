@@ -450,21 +450,23 @@ void processInput(GLFWwindow* window)
 	}
 
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-		if (camera.permissionToMove()) {
+		/*if (camera.permissionToMove()) {
 			camera.ProcessKeyboard(BACKWARD, deltaTime);
 			currentCharacterPos -= 0.05f;
 			protagonistZmove += (camera.MovementSpeed * deltaTime);
 			if (protagonistMovementFormCounter == 0) {
 				protagonistMovementForm = 1;
 			}
-		}
+		}*/
 
 	}
 
 	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-		if (camera.permissionToMove()) {
-			camera.ProcessKeyboard(LEFT, deltaTime);
-			protagonistXmove -= (camera.MovementSpeed * deltaTime);
+		if (camera.permissionToMove()) {			
+			if (protagonistXmove - (camera.MovementSpeed * deltaTime) > -1.7f) {
+				camera.ProcessKeyboard(LEFT, deltaTime);
+				protagonistXmove -= (camera.MovementSpeed * deltaTime);
+			}
 			if (protagonistMovementFormCounter == 0) {
 				protagonistMovementForm = 1;
 			}
@@ -473,9 +475,11 @@ void processInput(GLFWwindow* window)
 	}
 
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-		if (camera.permissionToMove()) {
-			camera.ProcessKeyboard(RIGHT, deltaTime);
-			protagonistXmove += (camera.MovementSpeed * deltaTime);
+		if (camera.permissionToMove()) {			
+			if (protagonistXmove + (camera.MovementSpeed * deltaTime) < 1.6f) {
+				camera.ProcessKeyboard(RIGHT, deltaTime);
+				protagonistXmove += (camera.MovementSpeed * deltaTime);
+			}
 			if (protagonistMovementFormCounter == 0) {
 				protagonistMovementForm = 1;
 			}
@@ -606,10 +610,10 @@ void processInputForGameFinishingMode(GLFWwindow* window)
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
 		glfwSetWindowShouldClose(window, true);
 		if (gameWon) {
-			cout << "Congratulations! You escaped from the big robot! You won!\n\n";
+			cout << "\n\nCongratulations! You escaped from the big robot! You won!\n\n";
 		}
 		else if (gameLost) {
-			cout << "Don't worry! Better luck next time!\n\n";
+			cout << "\n\nDon't worry! Better luck next time!\n\n";
 		}
 	}
 		
