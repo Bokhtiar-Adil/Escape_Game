@@ -68,6 +68,7 @@ void collectorItemsManager(Shader& shader1, Shader& shader2, CollectorItems& ite
 void bonusManager();
 void gameFreezeManager(Shader& shaderTex, Shader& shaderMP, Components& component, Character& antagonist);
 void tree(Shader& shaderMP, Shader& shaderCurves, Curves& treeCurves, bool withTexture, glm::mat4 alTogether = glm::mat4(1.0f));
+void writeWelcomMsgCmd();
 
 
 bool torchOn = false;
@@ -175,7 +176,7 @@ int main()
 	//glEnable(GL_CULL_FACE);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	
+
 
 	glm::mat4 offset, altogether, translate, rotate, scale, identity = glm::mat4(1.0f);
 	float xoffset = 0.0f, yoffset = 0.0f, zoffset = 0.0f;
@@ -195,24 +196,24 @@ int main()
 	}
 
 	glGetIntegerv(GL_VIEWPORT, viewport);
-	cout << viewport[0] << " " << viewport[1] << " " << viewport[2] << " " << viewport[2] << "\n";
+	// cout << viewport[0] << " " << viewport[1] << " " << viewport[2] << " " << viewport[2] << "\n";
 
 	/*text.Load("Antonio-Bold.ttf", 48);
 	text.RenderText("This is a sample text", 0.0f, 0.0f, 1.0f, glm::vec3(0.5, 0.8f, 0.2f));
 	glfwMakeContextCurrent(window);*/
-	
+
 	//curves.setControlPoints();
 
 	hatCurves.setViewport(viewport);
 	treeCurves.setViewport(viewport);
 	/*curves.setProjView(projection, view);*/
-	
-	vector<float> dummycntrlpoints = {223, 65, 232, 90, 232, 145, 219, 191, 210, 245, 232, 278, 268, 300, 309, 307, 351, 307, 384, 304};
+
+	vector<float> dummycntrlpoints = { 223, 65, 232, 90, 232, 145, 219, 191, 210, 245, 232, 278, 268, 300, 309, 307, 351, 307, 384, 304 };
 	vector<float> treeTopPoints = { 632, 48, 612, 38, 595, 24, 575, 18, 552, 20, 531, 29, 507, 51, 498, 79, 499, 104, 514, 123, 524, 135, 506, 147, 486, 155, 461, 160, 433, 174, 419, 192, 404, 221, 399, 247, 419, 266, 442, 280, 474, 298, 485, 313, 465, 319, 443, 334, 418, 354, 395, 375, 364, 400, 351, 434, 347, 478, 364, 516, 394, 541, 425, 557, 481, 575, 521, 587, 566, 572, 592, 548, 620, 509, 631, 493, 647, 460 };
-	vector<float> tree2 = { 540, 39, 483, 100, 452, 164, 424, 247, 402, 316, 393, 393, 421, 447, 473, 485, 529, 492, 583, 480, 615, 431};
-	vector<float> hat = {642, 78, 569, 58, 495, 55, 459, 107, 416, 148, 340, 164, 289, 238, 192, 247, 119, 354, 45, 434};
+	vector<float> tree2 = { 540, 39, 483, 100, 452, 164, 424, 247, 402, 316, 393, 393, 421, 447, 473, 485, 529, 492, 583, 480, 615, 431 };
+	vector<float> hat = { 642, 78, 569, 58, 495, 55, 459, 107, 416, 148, 340, 164, 289, 238, 192, 247, 119, 354, 45, 434 };
 	vector<float> tree3 = { 611, 48, 572, 46, 507, 56, 435, 89, 407, 133, 380, 207, 394, 260, 375, 297, 319, 357, 299, 440, 364, 511, 437, 554, 502, 568, 549, 559, 579, 519 };
- 	//curves.setControlPoints(dummycntrlpoints);
+	//curves.setControlPoints(dummycntrlpoints);
 	hatCurves.setControlPoints(hat);
 	treeCurves.setControlPointsV2(tree3);
 	hatCurves.setWinProperties(1200, 700);
@@ -224,7 +225,7 @@ int main()
 	for (int i = 0; i < 15; i++) {
 		temp = rand() % 5;
 		bonusItemSequence.push_back(temp);
-		bonusItemZPositions.push_back(protagonistZinitial - 2.0f -  i*1.0f);
+		bonusItemZPositions.push_back(protagonistZinitial - 2.0f - i * 1.0f);
 		temp = rand() % 3;
 		bonusItemXPositions.push_back(0.0f + temp);
 		/*temp = rand() % 2;
@@ -234,9 +235,13 @@ int main()
 
 	float prevTime = 0.0f;
 
-	cout << static_cast<float>(glfwGetTime()) << "\n";
+	// cout << static_cast<float>(glfwGetTime()) << "\n";
 
 	//gameStarted = true;
+
+	writeWelcomMsgCmd();
+
+	bool ten = false, twe = false, thi = false, fo = false, fi = false, si = false;
 
 	while (!glfwWindowShouldClose(window)) {
 
@@ -246,6 +251,17 @@ int main()
 
 		// cout << static_cast<float>(glfwGetTime()) << "\n";
 		if (gameStarted) protagonistDelay++;
+
+		if ((floor(currentFrame - gameStartTime) == 10.0f && !ten) || (floor(currentFrame - gameStartTime) == 20.0f && !twe) || (floor(currentFrame - gameStartTime) == 30.0f && !thi) || (floor(currentFrame - gameStartTime) == 40.0f && !fo) || (floor(currentFrame - gameStartTime) == 50.0f && !fi) || (floor(currentFrame - gameStartTime) == 60.0f && !si)) {
+			cout << "Time played: " << floor(currentFrame - gameStartTime) << "s -- Fuel: " << fuel << " -- Coins: " << coins << "\n";
+			if (!ten) ten = true;
+			else if (!twe) twe = true;
+			else if (!thi) thi = true;
+			else if (!fo) fo = true;
+			else if (!fi) fi = true;
+			else if (!si) si = true;
+
+		}
 
 		if (gameStarted && !gameLost && currentFrame - gameStartTime >= 60.0f) {
 			gameWon = true;
@@ -258,14 +274,14 @@ int main()
 			gameFinished = true;
 			if (protagonistDelay >= 50) bigRobotCameo = true;
 		}
-		
+
 		if (!gameStarted) {
 			dayNightSystem = false;
 			processInputForBeforeGameStarts(window);
 		}
 		else if (gameFinished) processInputForGameFinishingMode(window);
 		else processInput(window);
-		
+
 
 		if (gameStarted) prevTime += deltaTime;
 		if (prevTime >= 1.0f) {
@@ -283,15 +299,15 @@ int main()
 		if (jumpCoolDown > 20)
 			jumping = false;
 
-		
-		
+
+
 		/*if (menu) {
 			glDisable(GL_DEPTH_TEST);
 			text.RenderText("This is a sample text", 0.0f, 0.0f, 1.0f, glm::vec3(0.5, 0.8f, 0.2f));
 		}*/
-		
+
 		//glEnable(GL_DEPTH_TEST);
-		
+
 
 		if (dayNightSystem) {
 			if (!nightMode) glClearColor(sunDiff, sunDiff, sunDiff, 1.0f);
@@ -303,9 +319,9 @@ int main()
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		projection = glm::perspective(glm::radians(camera.Zoom), (float)WIN_WIDTH / (float)WIN_HEIGHT, 0.1f, 30.0f);
-		view = camera.GetViewMatrix();		
+		view = camera.GetViewMatrix();
 
-		shaderSetup(lightCubeShader, shaderTex, shaderMP, shaderSky, shaderCurves, projection, view);		
+		shaderSetup(lightCubeShader, shaderTex, shaderMP, shaderSky, shaderCurves, projection, view);
 
 		if (!gameStarted) {
 			gameFreezeManager(shaderTex, shaderMP, component, protagonist);
@@ -317,16 +333,16 @@ int main()
 		else {
 
 		}
-		
+
 		xoffset = 0.5f, yoffset = 0.5f;
 		offset = glm::translate(identity, glm::vec3(xoffset, yoffset, zoffset));
-		
+
 		glm::mat4 rotateXMatrix = glm::rotate(identity, glm::radians(rotate_obj_x), glm::vec3(1.0f, 0.0f, 0.0f));
 		glm::mat4 rotateYMatrix = glm::rotate(identity, glm::radians(rotate_obj_y), glm::vec3(0.0f, 1.0f, 0.0f));
 		glm::mat4 rotateZMatrix = glm::rotate(identity, glm::radians(rotate_obj_z), glm::vec3(0.0f, 0.0f, 1.0f));
 		revolve = rotateZMatrix * rotateYMatrix * rotateXMatrix;
 
-		
+
 		scale = glm::scale(identity, glm::vec3(0.2f, 0.2f, 0.2f));
 		translate = glm::translate(identity, glm::vec3(protagonistXinitial, 0.4f, protagonistZinitial));
 		hatCurves.setModel(glm::translate(identity, glm::vec3(protagonistXmove, protagonistYmove, protagonistZmove)) * translate * scale * revolve);
@@ -341,20 +357,20 @@ int main()
 			currentBlockNumber += 1;
 		}
 		currentBlockBase = -1 * (currentBlockNumber * 30.0f);
-		translate = glm::translate(identity, glm::vec3(0.0f, 0.0f, currentBlockBase + 0.0f)); 
+		translate = glm::translate(identity, glm::vec3(0.0f, 0.0f, currentBlockBase + 0.0f));
 		worldExpansion(shaderTex, shaderMP, shaderCurves, lightCubeShader, world, component, sequence, translate);
 		translate = glm::translate(identity, glm::vec3(0.0f, 0.0f, currentBlockBase - 30.0f));
 		worldExpansion(shaderTex, shaderMP, shaderCurves, lightCubeShader, world, component, sequence, translate);
 		//bonusItemOffset = currentBlockNumber * 30.0f;
 		/**/
 
-		protagonistMoveManager(protagonist, shaderMP, lightCubeShader, revolve);	
+		protagonistMoveManager(protagonist, shaderMP, lightCubeShader, revolve);
 		protagonistXcurrent = protagonistXinitial + protagonistXmove;
 		protagonistYcurrent = protagonistYinitial + protagonistYmove;
 		protagonistZcurrent = protagonistZinitial + protagonistZmove;
 		collectorItemsManager(shaderMP, lightCubeShader, items, world, component);
-		
-		skyManager(shaderTex, shaderMP, shaderSky, world, component, glm::translate(identity, glm::vec3(1.0f, 0.0f, protagonistZmove))); 
+
+		skyManager(shaderTex, shaderMP, shaderSky, world, component, glm::translate(identity, glm::vec3(1.0f, 0.0f, protagonistZmove)));
 		if (dayNightSystem) {
 			if (!nightMode) component.sun(lightCubeShader, glm::translate(identity, glm::vec3(sunX, sunY + 2.0f, protagonistZmove - 20.0f)));
 			if (streetLightOn) component.moon(lightCubeShader, glm::translate(identity, glm::vec3(moonX, moonY + 2.0f, protagonistZmove - 20.0f)));
@@ -386,16 +402,16 @@ int main()
 		pz = camera.Position.z;
 
 		/*text.RenderText(shader, "This is sample text", 25.0f, 25.0f, 1.0f,
-			glm::vec3(0.5, 0.8f, 0.2f));*/	
-		
+			glm::vec3(0.5, 0.8f, 0.2f));*/
+
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 
 		//glDisable(GL_DEPTH_TEST);
-		
+
 	}
-	
+
 	shader.deleteProgram();
 
 	glfwTerminate();
@@ -430,9 +446,9 @@ void processInput(GLFWwindow* window)
 			}
 			protagonistDelay = 0;
 		}
-		
+
 	}
-		
+
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
 		if (camera.permissionToMove()) {
 			camera.ProcessKeyboard(BACKWARD, deltaTime);
@@ -442,9 +458,9 @@ void processInput(GLFWwindow* window)
 				protagonistMovementForm = 1;
 			}
 		}
-		
+
 	}
-		
+
 	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
 		if (camera.permissionToMove()) {
 			camera.ProcessKeyboard(LEFT, deltaTime);
@@ -453,9 +469,9 @@ void processInput(GLFWwindow* window)
 				protagonistMovementForm = 1;
 			}
 		}
-		
+
 	}
-		
+
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
 		if (camera.permissionToMove()) {
 			camera.ProcessKeyboard(RIGHT, deltaTime);
@@ -464,7 +480,7 @@ void processInput(GLFWwindow* window)
 				protagonistMovementForm = 1;
 			}
 		}
-		
+
 	}
 	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
 		if (camera.permissionToMove()) {
@@ -477,7 +493,7 @@ void processInput(GLFWwindow* window)
 				jumping = true;
 			}
 		}
-		
+
 	}
 	// camera movement control
 	if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
@@ -513,8 +529,8 @@ void processInput(GLFWwindow* window)
 	if (glfwGetKey(window, GLFW_KEY_T) == GLFW_PRESS) {
 		torchOn = !torchOn;
 	}
-	 // nightmode contol
-	if (glfwGetKey(window, GLFW_KEY_N) == GLFW_PRESS) {		
+	// nightmode contol
+	if (glfwGetKey(window, GLFW_KEY_N) == GLFW_PRESS) {
 		if (nightMode == false) {
 			dayNightCycleMode = false;
 			nightMode = true;
@@ -587,8 +603,16 @@ void processInput(GLFWwindow* window)
 
 void processInputForGameFinishingMode(GLFWwindow* window)
 {
-	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
 		glfwSetWindowShouldClose(window, true);
+		if (gameWon) {
+			cout << "Congratulations! You escaped from the big robot! You won!\n\n";
+		}
+		else if (gameLost) {
+			cout << "Don't worry! Better luck next time!\n\n";
+		}
+	}
+		
 }
 
 void processInputForBeforeGameStarts(GLFWwindow* window)
@@ -600,7 +624,7 @@ void processInputForBeforeGameStarts(GLFWwindow* window)
 		dayNightSystem = true;
 		gameStartTime = static_cast<float>(glfwGetTime());
 	}
-		
+
 }
 
 void mouse_callback(GLFWwindow* window, double xposIn, double yposIn)
@@ -692,7 +716,7 @@ void dayNightControl()
 				streetLightOn = false;
 			}
 		}
-		
+
 	}
 }
 
@@ -700,7 +724,7 @@ void shaderSetup(Shader& lightCubeShader, Shader& shaderTex, Shader& shaderMP, S
 {
 	lightCubeShader.use();
 	lightCubeShader.setMat4("projection", projection);
-	lightCubeShader.setMat4("view", view);	
+	lightCubeShader.setMat4("view", view);
 
 	// light properties
 	dayNightControl();
@@ -743,14 +767,14 @@ void shaderSetup(Shader& lightCubeShader, Shader& shaderTex, Shader& shaderMP, S
 
 	// shaderTex
 
-	shaderTex.use(); 
-	shaderTex.setMat4("projection", projection); 
-	shaderTex.setMat4("view", view); 
-	if (nightMode) shaderTex.setBool("nightMode", true); 
-	else shaderTex.setBool("nightMode", false); 
-	shaderTex.setBool("flashlightOn", false); 
-	shaderTex.setInt("numberofPointlights", 0); 
-	shaderTex.setVec3("viewPos", camera.Position); 
+	shaderTex.use();
+	shaderTex.setMat4("projection", projection);
+	shaderTex.setMat4("view", view);
+	if (nightMode) shaderTex.setBool("nightMode", true);
+	else shaderTex.setBool("nightMode", false);
+	shaderTex.setBool("flashlightOn", false);
+	shaderTex.setInt("numberofPointlights", 0);
+	shaderTex.setVec3("viewPos", camera.Position);
 
 	// directional light
 	/*shaderTex.setVec3("dirLight.direction", 1.0f, -3.0f, -3.0f);
@@ -779,7 +803,7 @@ void shaderSetup(Shader& lightCubeShader, Shader& shaderTex, Shader& shaderMP, S
 	shaderTex.setBool("flashlightOn", torchOn);
 
 	streetlightSetup(shaderTex, protagonistZmove);
-	
+
 	// shaderMP
 
 	shaderMP.use();
@@ -872,7 +896,7 @@ void shaderSetup(Shader& lightCubeShader, Shader& shaderTex, Shader& shaderMP, S
 	shaderCurves.setBool("nightMode", nightMode);
 
 	shaderCurves.setVec3("dirLight2.direction", -sunX, -sunY, sunZ);
-	shaderCurves.setVec3("dirLight2.ambient", sunAmb*0.5f, sunAmb*0.5f, sunAmb*0.5f);
+	shaderCurves.setVec3("dirLight2.ambient", sunAmb * 0.5f, sunAmb * 0.5f, sunAmb * 0.5f);
 	shaderCurves.setVec3("dirLight2.diffuse", sunDiff * 0.5f, sunDiff * 0.5f, sunDiff * 0.5f);
 	shaderCurves.setVec3("dirLight2.specular", sunSpec * 0.5f, sunSpec * 0.5f, sunSpec * 0.5f);
 	shaderCurves.setBool("nightMode", nightMode);
@@ -924,7 +948,7 @@ void shaderSetup(Shader& lightCubeShader, Shader& shaderTex, Shader& shaderMP, S
 		dayNightSystem = true;
 		glClearColor(sunDiff, sunDiff, sunDiff, 1.0f);
 	}
-	
+
 }
 
 void streetlightSetup(Shader& shader, float moveZ, float slAmb, float slDiff, float slSpec, float slConst, float slLin, float slQuad)
@@ -937,12 +961,12 @@ void streetlightSetup(Shader& shader, float moveZ, float slAmb, float slDiff, fl
 	int gap = -4.0f, index = 0;
 
 	//float slAmb = 0.1f, slDiff = 0.5f, slSpec = 0.5f, slConst = 1.0f, slLin = 0.09f, slQuad = 0.032f;
-	
+
 
 	shader.use();
 	shader.setInt("numberofStreetlights", 14);
 	shader.setBool("streetLightOn", streetLightOn);
-	shader.setVec3("streetLights[0].position", firstStreetlightXLeft, firstStreetlightY, firstStreetlightZ + index*gap);
+	shader.setVec3("streetLights[0].position", firstStreetlightXLeft, firstStreetlightY, firstStreetlightZ + index * gap);
 	shader.setVec3("streetLights[0].ambient", slAmb, slAmb, slAmb);
 	shader.setVec3("streetLights[0].diffuse", slDiff, slDiff, slDiff);
 	shader.setVec3("streetLights[0].specular", slSpec, slSpec, slSpec);
@@ -952,7 +976,7 @@ void streetlightSetup(Shader& shader, float moveZ, float slAmb, float slDiff, fl
 	shader.setBool("streetLightStatus[0]", true);
 	index++;
 
-	shader.setVec3("streetLights[1].position", firstStreetlightXLeft, firstStreetlightY, firstStreetlightZ + index*gap);
+	shader.setVec3("streetLights[1].position", firstStreetlightXLeft, firstStreetlightY, firstStreetlightZ + index * gap);
 	shader.setVec3("streetLights[1].ambient", slAmb, slAmb, slAmb);
 	shader.setVec3("streetLights[1].diffuse", slDiff, slDiff, slDiff);
 	shader.setVec3("streetLights[1].specular", slSpec, slSpec, slSpec);
@@ -962,7 +986,7 @@ void streetlightSetup(Shader& shader, float moveZ, float slAmb, float slDiff, fl
 	shader.setBool("streetLightStatus[1]", true);
 	index++;
 
-	shader.setVec3("streetLights[2].position", firstStreetlightXLeft, firstStreetlightY, firstStreetlightZ + index*gap);
+	shader.setVec3("streetLights[2].position", firstStreetlightXLeft, firstStreetlightY, firstStreetlightZ + index * gap);
 	shader.setVec3("streetLights[2].ambient", slAmb, slAmb, slAmb);
 	shader.setVec3("streetLights[2].diffuse", slDiff, slDiff, slDiff);
 	shader.setVec3("streetLights[2].specular", slSpec, slSpec, slSpec);
@@ -972,7 +996,7 @@ void streetlightSetup(Shader& shader, float moveZ, float slAmb, float slDiff, fl
 	shader.setBool("streetLightStatus[2]", true);
 	index++;
 
-	shader.setVec3("streetLights[3].position", firstStreetlightXLeft, firstStreetlightY, firstStreetlightZ + index*gap);
+	shader.setVec3("streetLights[3].position", firstStreetlightXLeft, firstStreetlightY, firstStreetlightZ + index * gap);
 	shader.setVec3("streetLights[3].ambient", slAmb, slAmb, slAmb);
 	shader.setVec3("streetLights[3].diffuse", slDiff, slDiff, slDiff);
 	shader.setVec3("streetLights[3].specular", slSpec, slSpec, slSpec);
@@ -982,7 +1006,7 @@ void streetlightSetup(Shader& shader, float moveZ, float slAmb, float slDiff, fl
 	shader.setBool("streetLightStatus[3]", true);
 	index++;
 
-	shader.setVec3("streetLights[4].position", firstStreetlightXLeft, firstStreetlightY, firstStreetlightZ + index*gap);
+	shader.setVec3("streetLights[4].position", firstStreetlightXLeft, firstStreetlightY, firstStreetlightZ + index * gap);
 	shader.setVec3("streetLights[4].ambient", slAmb, slAmb, slAmb);
 	shader.setVec3("streetLights[4].diffuse", slDiff, slDiff, slDiff);
 	shader.setVec3("streetLights[4].specular", slSpec, slSpec, slSpec);
@@ -992,7 +1016,7 @@ void streetlightSetup(Shader& shader, float moveZ, float slAmb, float slDiff, fl
 	shader.setBool("streetLightStatus[4]", true);
 	index++;
 
-	shader.setVec3("streetLights[5].position", firstStreetlightXLeft, firstStreetlightY, firstStreetlightZ + index*gap);
+	shader.setVec3("streetLights[5].position", firstStreetlightXLeft, firstStreetlightY, firstStreetlightZ + index * gap);
 	shader.setVec3("streetLights[5].ambient", slAmb, slAmb, slAmb);
 	shader.setVec3("streetLights[5].diffuse", slDiff, slDiff, slDiff);
 	shader.setVec3("streetLights[5].specular", slSpec, slSpec, slSpec);
@@ -1002,7 +1026,7 @@ void streetlightSetup(Shader& shader, float moveZ, float slAmb, float slDiff, fl
 	shader.setBool("streetLightStatus[5]", true);
 	index++;
 
-	shader.setVec3("streetLights[6].position", firstStreetlightXLeft, firstStreetlightY, firstStreetlightZ + index*gap);
+	shader.setVec3("streetLights[6].position", firstStreetlightXLeft, firstStreetlightY, firstStreetlightZ + index * gap);
 	shader.setVec3("streetLights[6].ambient", slAmb, slAmb, slAmb);
 	shader.setVec3("streetLights[6].diffuse", slDiff, slDiff, slDiff);
 	shader.setVec3("streetLights[6].specular", slSpec, slSpec, slSpec);
@@ -1010,10 +1034,10 @@ void streetlightSetup(Shader& shader, float moveZ, float slAmb, float slDiff, fl
 	shader.setFloat("streetLights[6].linear", slLin);
 	shader.setFloat("streetLights[6].quadratic", slQuad);
 	shader.setBool("streetLightStatus[6]", true);
-	
+
 	index = 0;
 
-	shader.setVec3("streetLights[7].position", firstStreetlightXRight, firstStreetlightY, firstStreetlightZ + index*gap);
+	shader.setVec3("streetLights[7].position", firstStreetlightXRight, firstStreetlightY, firstStreetlightZ + index * gap);
 	shader.setVec3("streetLights[7].ambient", slAmb, slAmb, slAmb);
 	shader.setVec3("streetLights[7].diffuse", slDiff, slDiff, slDiff);
 	shader.setVec3("streetLights[7].specular", slSpec, slSpec, slSpec);
@@ -1023,7 +1047,7 @@ void streetlightSetup(Shader& shader, float moveZ, float slAmb, float slDiff, fl
 	shader.setBool("streetLightStatus[7]", true);
 	index++;
 
-	shader.setVec3("streetLights[8].position", firstStreetlightXRight, firstStreetlightY, firstStreetlightZ + index*gap);
+	shader.setVec3("streetLights[8].position", firstStreetlightXRight, firstStreetlightY, firstStreetlightZ + index * gap);
 	shader.setVec3("streetLights[8].ambient", slAmb, slAmb, slAmb);
 	shader.setVec3("streetLights[8].diffuse", slDiff, slDiff, slDiff);
 	shader.setVec3("streetLights[8].specular", slSpec, slSpec, slSpec);
@@ -1033,7 +1057,7 @@ void streetlightSetup(Shader& shader, float moveZ, float slAmb, float slDiff, fl
 	shader.setBool("streetLightStatus[8]", true);
 	index++;
 
-	shader.setVec3("streetLights[9].position", firstStreetlightXRight, firstStreetlightY, firstStreetlightZ + index*gap);
+	shader.setVec3("streetLights[9].position", firstStreetlightXRight, firstStreetlightY, firstStreetlightZ + index * gap);
 	shader.setVec3("streetLights[9].ambient", slAmb, slAmb, slAmb);
 	shader.setVec3("streetLights[9].diffuse", slDiff, slDiff, slDiff);
 	shader.setVec3("streetLights[9].specular", slSpec, slSpec, slSpec);
@@ -1043,7 +1067,7 @@ void streetlightSetup(Shader& shader, float moveZ, float slAmb, float slDiff, fl
 	shader.setBool("streetLightStatus[9]", true);
 	index++;
 
-	shader.setVec3("streetLights[10].position", firstStreetlightXRight, firstStreetlightY, firstStreetlightZ + index*gap);
+	shader.setVec3("streetLights[10].position", firstStreetlightXRight, firstStreetlightY, firstStreetlightZ + index * gap);
 	shader.setVec3("streetLights[10].ambient", slAmb, slAmb, slAmb);
 	shader.setVec3("streetLights[10].diffuse", slDiff, slDiff, slDiff);
 	shader.setVec3("streetLights[10].specular", slSpec, slSpec, slSpec);
@@ -1053,7 +1077,7 @@ void streetlightSetup(Shader& shader, float moveZ, float slAmb, float slDiff, fl
 	shader.setBool("streetLightStatus[10]", true);
 	index++;
 
-	shader.setVec3("streetLights[11].position", firstStreetlightXRight, firstStreetlightY, firstStreetlightZ + index*gap);
+	shader.setVec3("streetLights[11].position", firstStreetlightXRight, firstStreetlightY, firstStreetlightZ + index * gap);
 	shader.setVec3("streetLights[11].ambient", slAmb, slAmb, slAmb);
 	shader.setVec3("streetLights[11].diffuse", slDiff, slDiff, slDiff);
 	shader.setVec3("streetLights[11].specular", slSpec, slSpec, slSpec);
@@ -1063,7 +1087,7 @@ void streetlightSetup(Shader& shader, float moveZ, float slAmb, float slDiff, fl
 	shader.setBool("streetLightStatus[11]", true);
 	index++;
 
-	shader.setVec3("streetLights[12].position", firstStreetlightXRight, firstStreetlightY, firstStreetlightZ + index*gap);
+	shader.setVec3("streetLights[12].position", firstStreetlightXRight, firstStreetlightY, firstStreetlightZ + index * gap);
 	shader.setVec3("streetLights[12].ambient", slAmb, slAmb, slAmb);
 	shader.setVec3("streetLights[12].diffuse", slDiff, slDiff, slDiff);
 	shader.setVec3("streetLights[12].specular", slSpec, slSpec, slSpec);
@@ -1073,7 +1097,7 @@ void streetlightSetup(Shader& shader, float moveZ, float slAmb, float slDiff, fl
 	shader.setBool("streetLightStatus[12]", true);
 	index++;
 
-	shader.setVec3("streetLights[13].position", firstStreetlightXRight, firstStreetlightY, firstStreetlightZ + index*gap);
+	shader.setVec3("streetLights[13].position", firstStreetlightXRight, firstStreetlightY, firstStreetlightZ + index * gap);
 	shader.setVec3("streetLights[13].ambient", slAmb, slAmb, slAmb);
 	shader.setVec3("streetLights[13].diffuse", slDiff, slDiff, slDiff);
 	shader.setVec3("streetLights[13].specular", slSpec, slSpec, slSpec);
@@ -1101,17 +1125,17 @@ void worldExpansion(Shader& shaderTex, Shader& shaderMP, Shader& shaderCurves, S
 
 	scale = glm::scale(identity, glm::vec3(0.8f, 0.5f, 0.5f));
 	rotate = glm::rotate(identity, glm::radians(-90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-	component.billboard_noexit(shaderTex, shaderMP, alTogether * glm::translate(identity, glm::vec3(3.0f, -0.5f, 7.0f)) * rotate *scale);
+	component.billboard_noexit(shaderTex, shaderMP, alTogether * glm::translate(identity, glm::vec3(3.0f, -0.5f, 7.0f)) * rotate * scale);
 	rotate = glm::rotate(identity, glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 	component.billboard_noexit(shaderTex, shaderMP, alTogether * glm::translate(identity, glm::vec3(-1.0f, -0.5f, 7.0f)) * rotate * scale);
 
 	for (int i = 0; i < numOfResidential; i++) {
-		world.residential(shaderTex, true, true, alTogether * glm::translate(identity, glm::vec3(-4.0f, -0.5f, -6.0f - i*15.0f)));
-		world.residential(shaderTex, true, false, alTogether * glm::translate(identity, glm::vec3(3.0f, -0.5f, -6.0f - i*15.0f)));
-	}	
+		world.residential(shaderTex, true, true, alTogether * glm::translate(identity, glm::vec3(-4.0f, -0.5f, -6.0f - i * 15.0f)));
+		world.residential(shaderTex, true, false, alTogether * glm::translate(identity, glm::vec3(3.0f, -0.5f, -6.0f - i * 15.0f)));
+	}
 
 	scale = glm::scale(identity, glm::vec3(1.0f, 1.5f, 1.0f));
-	rotate = glm::rotate(identity, glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));	
+	rotate = glm::rotate(identity, glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 	rotateMosque = glm::rotate(identity, glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
 	for (int i = 0; i < numOfBlockComponent; i++) {
@@ -1135,16 +1159,16 @@ void worldExpansion(Shader& shaderTex, Shader& shaderMP, Shader& shaderCurves, S
 			component.building(shaderTex, true, alTogether * glm::translate(identity, glm::vec3(-3.5f, -0.5f, 7.0f - 4.0f * i)) * rotate * scale);
 			component.building(shaderTex, true, alTogether * glm::translate(identity, glm::vec3(3.5f, -0.5f, 7.0f - 4.0f * i)) * rotate * scale);
 		}
-		else if (sequence[i] == 1) { 
-			component.waterTank(shaderMP, false, alTogether * glm::translate(identity, glm::vec3(-2.8f, -0.5f, 7.0f - 4.5f * i))); 
-			component.waterTank(shaderMP, false, alTogether * glm::translate(identity, glm::vec3(3.8f, -0.5f, 7.0f - 4.5f * i))); 
+		else if (sequence[i] == 1) {
+			component.waterTank(shaderMP, false, alTogether * glm::translate(identity, glm::vec3(-2.8f, -0.5f, 7.0f - 4.5f * i)));
+			component.waterTank(shaderMP, false, alTogether * glm::translate(identity, glm::vec3(3.8f, -0.5f, 7.0f - 4.5f * i)));
 		}*/
 		/*else if (sequence[i] == 3) {
 			scale = glm::scale(identity, glm::vec3(0.8f, 0.5f, 0.5f));
 			rotate = glm::rotate(identity, glm::radians(-90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 			component.billboard(shaderTex, shaderMP, glm::translate(identity, glm::vec3(0.0f, 0.0f, 3.0f)) * scale);
 		}*/
-		
+
 	}
 
 	for (int i = 0; i < 2; i++) {
@@ -1158,12 +1182,12 @@ void worldExpansion(Shader& shaderTex, Shader& shaderMP, Shader& shaderCurves, S
 		}
 		world.residential(shaderTex, true, true, alTogether * glm::translate(identity, glm::vec3(-6.0f, -0.5f, -6.0f - i * 15.0f)));
 		world.residential(shaderTex, true, false, alTogether * glm::translate(identity, glm::vec3(6.0f, -0.5f, -6.0f - i * 15.0f)));
-		
-	}
-	
-	shaderMP.use();	
 
-	world.road(shaderMP, alTogether * glm::translate(identity, glm::vec3(-1.0f, -0.5f, -21.0f)));	
+	}
+
+	shaderMP.use();
+
+	world.road(shaderMP, alTogether * glm::translate(identity, glm::vec3(-1.0f, -0.5f, -21.0f)));
 	rotate = glm::rotate(identity, glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 	for (int i = 0; i < numOfStreetLight; i++) {
 		// left side of the road
@@ -1210,7 +1234,7 @@ void protagonistMoveManager(Character& protagonist, Shader& shaderMP, Shader& li
 		if (!gameWon) protagonist.drawAntagonist(shaderMP, lightCubeShader, antagonistAlTogether, "left");
 	}
 
-	if (jumpCoolDown==15) protagonistYmove = 0.0f;
+	if (jumpCoolDown == 15) protagonistYmove = 0.0f;
 
 	if (protagonistMovementForm != 0) protagonistMovementFormCounter++;
 	if (protagonistMovementFormCounter > 20 && protagonistMovementFormCounter < 40) protagonistMovementForm = 2;
@@ -1225,10 +1249,10 @@ void collectorItemsManager(Shader& shader1, Shader& shader2, CollectorItems& ite
 	glm::mat4 rotate, translate, scale, model, identity = glm::mat4(1.0f);
 	rotate = glm::rotate(identity, glm::radians(itemAngleChange), glm::vec3(0.0f, 1.0f, 0.0f));
 	float firstItemZ = protagonistZinitial - 3.0f;
-	
+
 	// 0 = boost, 1 = coin, 2 = fuel, 3 = dark, 4 = slow
 	int numOfBonusItems = bonusItemSequence.size();
-	
+
 	for (int i = 0; i < numOfBonusItems; i++) {
 		/*if (protagonistZinitial + protagonistZmove == bonusItemZPositions[i] && protagonistXinitial + protagonistXmove == bonusItemXPositions[i] && protagonistYinitial + protagonistYmove == bonusItemYPositions[i]) {
 			bonusItemZPositions[i] -= bonusItemOffset;
@@ -1255,15 +1279,15 @@ void collectorItemsManager(Shader& shader1, Shader& shader2, CollectorItems& ite
 					if (bonusItemSequence[i] == 4) {
 						if (!slowBonusAchieved && !boostBonusAchieved) slowBonusAchieved = true;
 					}
-				}				
-			}			
+				}
+			}
 		}
 		else if (camera.Position.z < bonusItemZPositions[i]) {
 			bonusItemZPositions[i] -= bonusItemOffset;
 		}
-	}	
+	}
 	// && protagonistYinitial + protagonistYmove + 0.5f >= bonusItemYPositions[i]
-	
+
 	for (int i = 0; i < numOfBonusItems; i++) {
 		if (bonusItemSequence[i] == 0) items.boostBonusItem(shader1, shader2, 2, glm::translate(identity, glm::vec3(bonusItemXPositions[i], bonusItemYPositions[i], bonusItemZPositions[i])) * rotate);
 		else if (bonusItemSequence[i] == 1) items.coinBonusItem(shader1, shader2, 2, glm::translate(identity, glm::vec3(bonusItemXPositions[i], bonusItemYPositions[i], bonusItemZPositions[i])) * rotate);
@@ -1281,14 +1305,14 @@ void collectorItemsManager(Shader& shader1, Shader& shader2, CollectorItems& ite
 void bonusManager()
 {
 	if (boostBonusAchieved) {
-		boostBonusEffectDuration++;		
+		boostBonusEffectDuration++;
 		if (boostFactor < 2) boostFactor++;
 		else boostFactor = 2;
 		if (boostBonusEffectDuration > maxBoostBonusEffectDuration) {
 			boostBonusAchieved = false;
 			boostBonusEffectDuration = 0;
 			boostFactor = 1;
-		}		
+		}
 	}
 
 	if (slowBonusAchieved) {
@@ -1322,7 +1346,7 @@ void gameFreezeManager(Shader& shaderTex, Shader& shaderMP, Components& componen
 	if (!gameFinished) {
 		component.startMsg(shaderTex, identity * glm::translate(identity, glm::vec3(0.0f, 0.0f, protagonistZinitial - 2.0f)));
 	}
-	else if (gameWon == true) {		
+	else if (gameWon == true) {
 		component.winMsg(shaderTex, identity * glm::translate(identity, glm::vec3(0.0f, 0.0f, protagonistZmove - 0.2f)));
 	}
 	else if (gameLost == true) {
@@ -1371,3 +1395,45 @@ void tree(Shader& shaderMP, Shader& shaderCurves, Curves& treeCurves, bool withT
 
 }
 
+void writeWelcomMsgCmd()
+{
+	cout << "<====================== ESCAPE GAME ======================>\n";
+	cout << "\n";
+	cout << "Welcome !\n";
+	cout << "You have a robot. You need it to survive for 1 minute to escape from the big robot behind you and win. You will lose if - \n";
+	cout << "1. You stand still for too long.\n";
+	cout << "2. Your fuel becomes zero. Fuel - \n";
+	cout << "	a)	Refuels if you collect blue items.\n";
+	cout << "	b)	Drowns out each frame automatically.\n";
+	cout << "	c)	Once it gets too low, coins are used to refuel fuel until coins become zero.\n";
+	cout << "\n";
+	cout << "<--- Bonus Items --->\n";
+	cout << "\n";
+	cout << "Green item		: Boosts your fuel and coin collection twofold.\n";
+	cout << "Gold item		: Gives you coin. If your fuel gets too low, these coins will refill them.\n";
+	cout << "Blue item		: Gives you fuel.\n";
+	cout << "Red item			: Slows your fuel and coin collection, like a reverse boost.\n";
+	cout << "Black item		: Switches off all the light except the torch for a certain time.\n";
+	cout << "\n";
+	cout << "<--- Controls --->\n";
+	cout << "\n";
+	cout << "Enter			: Starts the game\n";
+	cout << "Escape		: Closes the game\n";
+	cout << "W, S, A, D	: Forward, Backward, Left, Right\n";
+	cout << "Space			: Jump\n";
+	cout << "E, R				: Camera up and down\n";
+	cout << "X, Y, Z			: Pitch, Yaw, Roll\n";
+	cout << "N				: Nightmode\n";
+	cout << "B					: Camera wide view\n";
+	cout << "H				: Camera reset\n";
+	cout << "T					: Toggle torch\n";
+	cout << "\n";
+	cout << "<--- Indicators over robot head --->\n";
+	cout << "\n";
+	cout << "The three bars over robot head indicates coins, fuel and boost duration. As you collect more of them, color will gradually change to green from red. If you lose too much, it will turn bright red.\n";
+	cout << "Left gradient bar				: Shows how much coin you have.\n";
+	cout << "Middle gradient bar		: Shows how much fuel you have.\n";
+	cout << "Right gradient bar			: Shows how much boost duration you have left.\n";
+	cout << "\n";
+	cout << "<====================== HAVE FUN !! ======================>\n";
+}

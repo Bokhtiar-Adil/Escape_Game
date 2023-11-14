@@ -117,7 +117,7 @@ public:
                 Position_init += Front_init * velocity;
             }
         }
-            
+
         if (direction == BACKWARD) {
             Position -= Front * velocity;
             if (!safeToRotate) {
@@ -128,7 +128,7 @@ public:
                 Position_init -= Front_init * velocity;
             }
         }
-            
+
         if (direction == LEFT) {
             Position -= Right * velocity;
             if (!safeToRotate) {
@@ -139,7 +139,7 @@ public:
                 Position_init -= Right * velocity;
             }
         }
-            
+
         if (direction == RIGHT) {
             Position += Right * velocity;
             if (!safeToRotate) {
@@ -156,7 +156,7 @@ public:
         if (direction == DOWN)
             Position.y -= 1.0f * velocity;
 
-        
+
 
     }
 
