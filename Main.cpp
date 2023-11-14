@@ -66,7 +66,7 @@ void dayNightControl();
 void skyManager(Shader& shaderTex, Shader& shaderMP, Shader& shaderSky, World& world, Components& component, glm::mat4 alTogether);
 void collectorItemsManager(Shader& shader1, Shader& shader2, CollectorItems& items, World& world, Components& component);
 void bonusManager();
-void gameFreezeManager(Shader& shaderTex, Components& component);
+void gameFreezeManager(Shader& shaderTex, Shader& shaderMP, Components& component, Character& antagonist);
 void tree(Shader& shaderMP, Shader& shaderCurves, Curves& treeCurves, bool withTexture, glm::mat4 alTogether = glm::mat4(1.0f));
 
 
@@ -130,7 +130,8 @@ int fuel = 15, coins = 0, boostFactor = 1;
 float gameStarted = false, gameFinished = false, gameWon = false, gameLost = false;
 float gameStartTime = 0.0f;
 
-
+int protagonistDelay = 0;
+bool bigRobotCameo = false;
 
 int main()
 {
@@ -242,16 +243,18 @@ int main()
 		lastFrame = currentFrame;
 
 		// cout << static_cast<float>(glfwGetTime()) << "\n";
+		if (gameStarted) protagonistDelay++;
 
 		if (gameStarted && currentFrame - gameStartTime >= 60.0f) {
 			gameWon = true;
 			gameLost = false;
 			gameFinished = true;
 		}
-		else if (gameStarted && fuel == 0) {
+		else if (gameStarted && (fuel == 0 || protagonistDelay >= 100)) {
 			gameLost = true;
 			gameWon = false;
 			gameFinished = true;
+			if (protagonistDelay >= 50) bigRobotCameo = true;
 		}
 		
 		if (!gameStarted) {
@@ -303,10 +306,10 @@ int main()
 		shaderSetup(lightCubeShader, shaderTex, shaderMP, shaderSky, shaderCurves, projection, view);		
 
 		if (!gameStarted) {
-			gameFreezeManager(shaderTex, component);
+			gameFreezeManager(shaderTex, shaderMP, component, protagonist);
 		}
 		else if (gameFinished) {
-			gameFreezeManager(shaderTex, component);
+			gameFreezeManager(shaderTex, shaderMP, component, protagonist);
 			// break;
 		}
 		else {
@@ -422,6 +425,7 @@ void processInput(GLFWwindow* window)
 		if (protagonistMovementFormCounter == 0) {
 			protagonistMovementForm = 1;
 		}
+		protagonistDelay = 0;
 	}
 		
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
@@ -1124,17 +1128,17 @@ void worldExpansion(Shader& shaderTex, Shader& shaderMP, Shader& shaderCurves, S
 
 	for (int i = 0; i < 2; i++) {
 		if (i == 0) {
-			world.hills(shaderTex, shaderCurves, false, alTogether * glm::translate(identity, glm::vec3(9.0f, -0.5f, 0.0f - 15.0f * i)) * glm::scale(identity, glm::vec3(1.0f, 3.0f, 2.0f)));
-			world.hillSinglePeak(shaderTex, shaderCurves, false, alTogether * glm::translate(identity, glm::vec3(-7.0f, -0.5f, 0.0f - 15.0f * i)) * glm::scale(identity, glm::vec3(1.0f, 3.0f, 1.5f)));
+			world.hills(shaderTex, shaderCurves, false, alTogether * glm::translate(identity, glm::vec3(10.7f, -0.5f, 0.0f - 15.0f * i)) * glm::scale(identity, glm::vec3(2.0f, 3.0f, 2.0f)));
+			world.hillSinglePeak(shaderTex, shaderCurves, false, alTogether * glm::translate(identity, glm::vec3(-8.7f, -0.5f, 0.0f - 15.0f * i)) * glm::scale(identity, glm::vec3(2.0f, 3.0f, 1.5f)));
 		}
 		else {
-			world.hillSinglePeak(shaderTex, shaderCurves, false, alTogether * glm::translate(identity, glm::vec3(9.0f, -0.5f, 0.0f - 15.0f * i)) * glm::scale(identity, glm::vec3(1.0f, 3.0f, 1.5f)));
-			world.hills(shaderTex, shaderCurves, false, alTogether * glm::translate(identity, glm::vec3(-7.0f, -0.5f, 0.0f - 15.0f * i)) * glm::scale(identity, glm::vec3(1.0f, 3.0f, 2.0f)));
+			world.hillSinglePeak(shaderTex, shaderCurves, false, alTogether * glm::translate(identity, glm::vec3(10.7f, -0.5f, 0.0f - 15.0f * i)) * glm::scale(identity, glm::vec3(1.0f, 3.0f, 1.5f)));
+			world.hills(shaderTex, shaderCurves, false, alTogether * glm::translate(identity, glm::vec3(-8.7f, -0.5f, 0.0f - 15.0f * i)) * glm::scale(identity, glm::vec3(1.0f, 3.0f, 2.0f)));
 		}
+		world.residential(shaderTex, true, true, alTogether * glm::translate(identity, glm::vec3(-6.0f, -0.5f, -6.0f - i * 15.0f)));
+		world.residential(shaderTex, true, false, alTogether * glm::translate(identity, glm::vec3(6.0f, -0.5f, -6.0f - i * 15.0f)));
 		
 	}
-	
-
 	
 	shaderMP.use();	
 
@@ -1156,20 +1160,34 @@ void worldExpansion(Shader& shaderTex, Shader& shaderMP, Shader& shaderCurves, S
 
 void protagonistMoveManager(Character& protagonist, Shader& shaderMP, Shader& lightCubeShader, glm::mat4 revolve)
 {
-	glm::mat4 rotate, scale, translate, identity = glm::mat4(1.0f), protagonistInitial, protagonistMove, protagonistAlTogether;
+	glm::mat4 rotate, scale, translate, identity = glm::mat4(1.0f), protagonistInitial, protagonistMove, protagonistAlTogether, antagonistMove, antagonistAlTogether;
 
 	rotate = glm::rotate(identity, glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 	scale = glm::scale(identity, glm::vec3(0.5f, 0.5f, 0.5f));
 	protagonistInitial = glm::translate(identity, glm::vec3(protagonistXinitial, protagonistYinitial, protagonistZinitial));
 	protagonistMove = glm::translate(identity, glm::vec3(protagonistXmove, protagonistYmove, protagonistZmove));
 	protagonistAlTogether = protagonistMove * protagonistInitial * rotate * scale * revolve;
+	if (bigRobotCameo == false) antagonistMove = glm::translate(identity, glm::vec3(protagonistXmove, protagonistYmove, protagonistZmove + 6.0f));
+	else {
+		antagonistMove = glm::translate(identity, glm::vec3(protagonistXmove + 0.5f, protagonistYmove, protagonistZmove + 0.5f));
+	}
+	antagonistAlTogether = antagonistMove * protagonistInitial * rotate * scale * revolve;
 
 	float fcoins = coins / 20.0f;
 	float ffuel = fuel / 20.0f;
 	float fboost = boostBonusEffectDuration / (maxBoostBonusEffectDuration * 1.0f);
-	if (protagonistMovementForm == 0) protagonist.drawProtagonist(shaderMP, lightCubeShader, protagonistAlTogether, "still", fcoins, ffuel, fboost);
-	else if (protagonistMovementForm == 1) protagonist.drawProtagonist(shaderMP, lightCubeShader, protagonistAlTogether, "right", fcoins, ffuel, fboost); 
-	else if (protagonistMovementForm == 2) protagonist.drawProtagonist(shaderMP, lightCubeShader, protagonistAlTogether, "left", fcoins, ffuel, fboost); 
+	if (protagonistMovementForm == 0) {
+		protagonist.drawProtagonist(shaderMP, lightCubeShader, protagonistAlTogether, "still", fcoins, ffuel, fboost);
+		protagonist.drawAntagonist(shaderMP, lightCubeShader, antagonistAlTogether, "still");
+	}
+	else if (protagonistMovementForm == 1) {
+		protagonist.drawProtagonist(shaderMP, lightCubeShader, protagonistAlTogether, "right", fcoins, ffuel, fboost);
+		protagonist.drawAntagonist(shaderMP, lightCubeShader, antagonistAlTogether, "right");
+	}
+	else if (protagonistMovementForm == 2) {
+		protagonist.drawProtagonist(shaderMP, lightCubeShader, protagonistAlTogether, "left", fcoins, ffuel, fboost);
+		protagonist.drawAntagonist(shaderMP, lightCubeShader, antagonistAlTogether, "left");
+	}
 
 	if (jumpCoolDown==15) protagonistYmove = 0.0f;
 
@@ -1271,7 +1289,7 @@ void bonusManager()
 	}
 }
 
-void gameFreezeManager(Shader& shaderTex, Components& component)
+void gameFreezeManager(Shader& shaderTex, Shader& shaderMP, Components& component, Character& antagonist)
 {
 	glm::mat4 identity = glm::mat4(1.0f);
 
@@ -1285,6 +1303,9 @@ void gameFreezeManager(Shader& shaderTex, Components& component)
 		component.winMsg(shaderTex, identity * glm::translate(identity, glm::vec3(0.0f, 0.0f, protagonistZmove - 0.2f)));
 	}
 	else if (gameLost == true) {
+		/*if (bigRobotCameo == true) {
+			antagonist.drawAntagonist(shaderMP, shaderMP, glm::translate(identity, glm::vec3(protagonistXmove + 1.5f, protagonistYmove, protagonistZmove)));
+		}*/
 		component.loseMsg(shaderTex, identity * glm::translate(identity, glm::vec3(0.0f, 0.0f, protagonistZmove - 0.2f)));
 	}
 }
