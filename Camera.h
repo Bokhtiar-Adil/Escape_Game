@@ -28,6 +28,9 @@ const float SPEED = 2.5f;
 const float SENSITIVITY = 0.05f;
 const float ZOOM = 45.0f;
 bool isOrbiting = false;
+bool safeToRotate = false;
+bool dontRotate = false;
+bool wideViewMode = false;
 
 
 // An abstract camera class that processes input and calculates the corresponding Euler Angles, Vectors and Matrices for use in OpenGL
@@ -83,43 +86,105 @@ public:
         return glm::lookAt(Position, Position + Front, Up);
     }
 
+    bool permissionToMove() {
+        return !dontRotate;
+    }
+
+    void wideView() {
+        if (!safeToRotate) {
+            Front_init = Front;
+            Position_init = Position;
+            safeToRotate = true;
+        }
+        wideViewMode = true;
+        Position.z = Position_init.z + 6.0f;
+        Position.y = Position_init.y + 0.6f;
+        Position.x = Position_init.x + 0.5f;
+    }
+
     // processes input received from any keyboard-like input system. Accepts input parameter in the form of camera defined ENUM (to abstract it from windowing systems)
     void ProcessKeyboard(Camera_Movement direction, float deltaTime)
     {
+        if (dontRotate) return;
         float velocity = MovementSpeed * deltaTime;
-        if (direction == FORWARD)
+        if (direction == FORWARD) {
             Position += Front * velocity;
-        if (direction == BACKWARD)
+            if (!safeToRotate) {
+                Front_init = Front;
+                Position_init = Position;
+            }
+            if (wideViewMode) {
+                Position_init += Front_init * velocity;
+            }
+        }
+            
+        if (direction == BACKWARD) {
             Position -= Front * velocity;
-        if (direction == LEFT)
+            if (!safeToRotate) {
+                Front_init = Front;
+                Position_init = Position;
+            }
+            if (wideViewMode) {
+                Position_init -= Front_init * velocity;
+            }
+        }
+            
+        if (direction == LEFT) {
             Position -= Right * velocity;
-        if (direction == RIGHT)
+            if (!safeToRotate) {
+                Front_init = Front;
+                Position_init = Position;
+            }
+            if (wideViewMode) {
+                Position_init -= Right * velocity;
+            }
+        }
+            
+        if (direction == RIGHT) {
             Position += Right * velocity;
+            if (!safeToRotate) {
+                Front_init = Front;
+                Position_init = Position;
+            }
+            if (wideViewMode) {
+                Position_init += Right * velocity;
+            }
+        }
+
         if (direction == UP)
             Position.y += 1.0f * velocity;
         if (direction == DOWN)
             Position.y -= 1.0f * velocity;
 
+        
+
     }
 
     void RotateAroundAxis(int axis, float angle)
     {
+        dontRotate = true;
+        float factor = 3.0f;
+        if (!safeToRotate) {
+            Position_init = Position;
+            Front_init = Front;
+            safeToRotate = true;
+        }
         glm::vec3 front;
         // along x-axis - pitch
         if (axis == 1) {
-            Pitch2 += (angle * MouseSensitivity);
+            Pitch2 += (angle * MouseSensitivity * factor);
             Yaw2 = YAW;
             Roll2 = ROLL;
         }
         else if (axis == 2) {
-            Roll2 += (angle * MouseSensitivity);
+            Roll2 += (angle * MouseSensitivity * factor);
             Pitch2 = PITCH;
             Yaw2 = YAW;
         }
         else if (axis == 3) {
-            Roll2 += (angle * MouseSensitivity);
-            Pitch2 += (angle * MouseSensitivity);
-            Yaw2 += (angle * MouseSensitivity);
+            Roll2 += (angle * MouseSensitivity * factor);
+            Pitch2 += (angle * MouseSensitivity * factor);
+            Yaw2 += (angle * MouseSensitivity * factor);
             if (Pitch > 89.0f)
                 Pitch = 89.0f;
             if (Pitch < -89.0f)
@@ -183,16 +248,19 @@ public:
 
     }
 
-    void ResetPosition(float zVal)
+    void ResetPosition()
     {
         isOrbiting = false;
         Position = Position_init;
-        Position.z = zVal + 3.0f;
+        // Position.z = zVal + 3.0f;
         Front = Front_init;
-        Front.z = zVal+1.0f;
+        // Front.z = zVal+1.0f;
         Right = glm::normalize(glm::cross(Front, WorldUp));
         Up = glm::normalize(glm::cross(Right, Front));
         updateCameraVectors();
+        safeToRotate = false;
+        dontRotate = false;
+        wideViewMode = false;
     }
 
     // processes input received from a mouse input system. Expects the offset value in both the x and y direction.
@@ -243,6 +311,10 @@ private:
         // also re-calculate the Right and Up vector
         Right = glm::normalize(glm::cross(Front, WorldUp));  // normalize the vectors, because their length gets closer to 0 the more you look up or down which results in slower movement.
         Up = glm::normalize(glm::cross(Right, Front));
+        if (!safeToRotate) {
+            Front_init = Front;
+            Position_init = Position;
+        }
     }
 };
 #endif

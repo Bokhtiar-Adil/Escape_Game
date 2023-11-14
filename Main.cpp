@@ -133,6 +133,8 @@ float gameStartTime = 0.0f;
 int protagonistDelay = 0;
 bool bigRobotCameo = false;
 
+float wideView = false;
+
 int main()
 {
 	glfwInit();
@@ -245,12 +247,12 @@ int main()
 		// cout << static_cast<float>(glfwGetTime()) << "\n";
 		if (gameStarted) protagonistDelay++;
 
-		if (gameStarted && currentFrame - gameStartTime >= 60.0f) {
+		if (gameStarted && !gameLost && currentFrame - gameStartTime >= 60.0f) {
 			gameWon = true;
 			gameLost = false;
 			gameFinished = true;
 		}
-		else if (gameStarted && (fuel == 0 || protagonistDelay >= 100)) {
+		else if (gameStarted && !gameWon && (fuel == 0 || protagonistDelay >= 100)) {
 			gameLost = true;
 			gameWon = false;
 			gameFinished = true;
@@ -419,48 +421,63 @@ void processInput(GLFWwindow* window)
 	float cameraSpeed = static_cast<float>(2.5 * deltaTime);
 
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-		camera.ProcessKeyboard(FORWARD, deltaTime);
-		currentCharacterPos += 0.05f;
-		protagonistZmove -= (camera.MovementSpeed * deltaTime);
-		if (protagonistMovementFormCounter == 0) {
-			protagonistMovementForm = 1;
+		if (camera.permissionToMove()) {
+			camera.ProcessKeyboard(FORWARD, deltaTime);
+			currentCharacterPos += 0.05f;
+			protagonistZmove -= (camera.MovementSpeed * deltaTime);
+			if (protagonistMovementFormCounter == 0) {
+				protagonistMovementForm = 1;
+			}
+			protagonistDelay = 0;
 		}
-		protagonistDelay = 0;
+		
 	}
 		
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-		camera.ProcessKeyboard(BACKWARD, deltaTime);
-		currentCharacterPos -= 0.05f;
-		protagonistZmove += (camera.MovementSpeed * deltaTime);
-		if (protagonistMovementFormCounter == 0) {
-			protagonistMovementForm = 1;
+		if (camera.permissionToMove()) {
+			camera.ProcessKeyboard(BACKWARD, deltaTime);
+			currentCharacterPos -= 0.05f;
+			protagonistZmove += (camera.MovementSpeed * deltaTime);
+			if (protagonistMovementFormCounter == 0) {
+				protagonistMovementForm = 1;
+			}
 		}
+		
 	}
 		
 	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-		camera.ProcessKeyboard(LEFT, deltaTime);
-		protagonistXmove -= (camera.MovementSpeed * deltaTime);
-		if (protagonistMovementFormCounter == 0) {
-			protagonistMovementForm = 1;
+		if (camera.permissionToMove()) {
+			camera.ProcessKeyboard(LEFT, deltaTime);
+			protagonistXmove -= (camera.MovementSpeed * deltaTime);
+			if (protagonistMovementFormCounter == 0) {
+				protagonistMovementForm = 1;
+			}
 		}
+		
 	}
 		
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-		camera.ProcessKeyboard(RIGHT, deltaTime);
-		protagonistXmove += (camera.MovementSpeed * deltaTime);
-		if (protagonistMovementFormCounter == 0) {
-			protagonistMovementForm = 1;
+		if (camera.permissionToMove()) {
+			camera.ProcessKeyboard(RIGHT, deltaTime);
+			protagonistXmove += (camera.MovementSpeed * deltaTime);
+			if (protagonistMovementFormCounter == 0) {
+				protagonistMovementForm = 1;
+			}
 		}
+		
 	}
 	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
-		camera.ProcessKeyboard(FORWARD, deltaTime);
-		currentCharacterPos += 0.05f;
-		protagonistZmove -= (camera.MovementSpeed * deltaTime);
-		if (jumpCoolDown >= 20) {
-			protagonistYmove = (25.0f * camera.MovementSpeed * deltaTime);
-			jumpCoolDown = 0;
-			jumping = true;
+		if (camera.permissionToMove()) {
+			camera.ProcessKeyboard(FORWARD, deltaTime);
+			currentCharacterPos += 0.05f;
+			protagonistZmove -= (camera.MovementSpeed * deltaTime);
+			if (jumpCoolDown >= 20) {
+				protagonistYmove = (25.0f * camera.MovementSpeed * deltaTime);
+				jumpCoolDown = 0;
+				jumping = true;
+			}
 		}
+		
 	}
 	// camera movement control
 	if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
@@ -487,8 +504,12 @@ void processInput(GLFWwindow* window)
 		glm::vec4 protagonistInitial = glm::vec4(protagonistXinitial, protagonistYinitial, protagonistZinitial, 1.0f);
 		glm::vec4 protagonistMove = glm::vec4(protagonistXmove, protagonistYmove, protagonistZmove, 1.0f);
 		glm::vec4 pos = protagonistMove * protagonistInitial;
-		camera.ResetPosition(pos.z);
+		camera.ResetPosition();
 	}
+	if (glfwGetKey(window, GLFW_KEY_B) == GLFW_PRESS) {
+		camera.wideView();
+	}
+	/**/
 	if (glfwGetKey(window, GLFW_KEY_T) == GLFW_PRESS) {
 		torchOn = !torchOn;
 	}
@@ -1178,15 +1199,15 @@ void protagonistMoveManager(Character& protagonist, Shader& shaderMP, Shader& li
 	float fboost = boostBonusEffectDuration / (maxBoostBonusEffectDuration * 1.0f);
 	if (protagonistMovementForm == 0) {
 		protagonist.drawProtagonist(shaderMP, lightCubeShader, protagonistAlTogether, "still", fcoins, ffuel, fboost);
-		protagonist.drawAntagonist(shaderMP, lightCubeShader, antagonistAlTogether, "still");
+		if (!gameWon) protagonist.drawAntagonist(shaderMP, lightCubeShader, antagonistAlTogether, "still");
 	}
 	else if (protagonistMovementForm == 1) {
 		protagonist.drawProtagonist(shaderMP, lightCubeShader, protagonistAlTogether, "right", fcoins, ffuel, fboost);
-		protagonist.drawAntagonist(shaderMP, lightCubeShader, antagonistAlTogether, "right");
+		if (!gameWon) protagonist.drawAntagonist(shaderMP, lightCubeShader, antagonistAlTogether, "right");
 	}
 	else if (protagonistMovementForm == 2) {
 		protagonist.drawProtagonist(shaderMP, lightCubeShader, protagonistAlTogether, "left", fcoins, ffuel, fboost);
-		protagonist.drawAntagonist(shaderMP, lightCubeShader, antagonistAlTogether, "left");
+		if (!gameWon) protagonist.drawAntagonist(shaderMP, lightCubeShader, antagonistAlTogether, "left");
 	}
 
 	if (jumpCoolDown==15) protagonistYmove = 0.0f;
@@ -1292,6 +1313,8 @@ void bonusManager()
 void gameFreezeManager(Shader& shaderTex, Shader& shaderMP, Components& component, Character& antagonist)
 {
 	glm::mat4 identity = glm::mat4(1.0f);
+
+	camera.ResetPosition();
 
 	darkBonusAchieved = false;
 	dayNightSystem = false;
