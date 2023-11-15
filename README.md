@@ -2,9 +2,9 @@
 
 Escape game is a chaser/collector type game built with OpenGL 3.3 (core profile). It's a simple, short and basic game inspired by the widely popular game 'Temple Run'. Player will have to control a robot chased by another big robot and escape to safety.
 
-![image](https://github.com/Bokhtiar-Adil/Escape_game_v2/assets/103052177/045632e6-8971-4477-bb03-a4669a0dd119)
+![Screenshot (211)](https://github.com/Bokhtiar-Adil/Escape_game_v2/assets/103052177/9653ae3d-f4e8-468b-9c61-203ca1deccb0)
 
-![image](https://github.com/Bokhtiar-Adil/Escape_game_v2/assets/103052177/743b09b3-0c05-47e1-a9b1-5f5fc7090c47)
+![Screenshot (220)](https://github.com/Bokhtiar-Adil/Escape_game_v2/assets/103052177/bfe23d5a-96be-4cfc-b071-b94a6d8854ec)
 
 ## Installation
 You need to install the following things -
@@ -57,9 +57,10 @@ T			      : Toggle torch
 7           : Ghost mode, pauses game to move the camera as you want without moving the robot, H resets it
 Command prompt will always show these directives during the gameplay.
 
-![image](https://github.com/Bokhtiar-Adil/Escape_game_v2/assets/103052177/4534a459-3468-49c6-a914-85092bdc7c40)
+![Screenshot (216)](https://github.com/Bokhtiar-Adil/Escape_game_v2/assets/103052177/c9ba36a1-8264-4b2e-b03b-4941df0e34c1)
 
-![image](https://github.com/Bokhtiar-Adil/Escape_game_v2/assets/103052177/c65a0f4d-29c4-4ba2-9cfd-4c9a99d4da38)
+![Screenshot (214)](https://github.com/Bokhtiar-Adil/Escape_game_v2/assets/103052177/35f15ced-f66e-4e0d-a0f2-7a9b986065eb)
+
 
 
 
