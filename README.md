@@ -38,7 +38,7 @@ Player will have to collect the game items spreading in front of him. There are 
 
 Fuel will automatically run out in each frame. Collecting the blue item refuels it. If the fuel gets too low, coins will be automatically spent to refuel it until it reaches zero. Boosting doubles fuel and coin bonus. <br/>
 
-There are thre indicator bars over the robot's head. They show corresponding resource status in color gradient. Color changes from red to green if the corresponding resource increases and from green to red if the corresponding resource decreases. <br/>
+There are three indicator bars over the robot's head. They show corresponding resource status in color gradient. Color changes from red to green if the corresponding resource increases and from green to red if the corresponding resource decreases. <br/>
 1. Left gradient bar	  : Shows how much coin you have
 2. Middle gradient bar	: Shows how much fuel you have
 3. Right gradient bar	  : Shows remaining boost duration 
