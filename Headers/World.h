@@ -1,3 +1,11 @@
+/*
+	Developed by -
+	Bokhtiar Adil Prottoy,
+	Department of Computer Science and Engineering,
+	Khulna University of Engineering & Technology,
+	Khulna, Bangladesh
+*/
+
 #ifndef world_h 
 #define world_h  
 
@@ -82,9 +90,7 @@ private:
 
 	void loadAllTextures()
 	{
-		grass = loadTexture("grass.jpg");
-		skytex= loadTexture("sky1.jpg");
-		cloudtex = loadTexture("cloudlittle.jpg");
+		grass = loadTexture("Resources/grass.jpg");
 	}
 
 public:
@@ -148,10 +154,6 @@ public:
 			modelTogether = alTogether * model;
 			cube.drawCubeWithMaterialisticProperty(shader, this->amb, this->diff, this->spec, this->shininess, modelTogether);
 		}
-
-		/*translate = glm::translate(identity, glm::vec3(4.0f, 0.0f, 10.0f));
-		modelTogether = alTogether * translate * identity;
-		component.tree(shader, shaderCurves, false, modelTogether);*/
 	}
 
 	void garage(Shader& shader, glm::mat4 alTogether = glm::mat4(1.0f))
@@ -206,49 +208,6 @@ public:
 		
 	}
 
-	void sky(Shader& shaderTex, Shader& shaderMP, Shader& shaderSky, float amb, float diff, float spec, glm::mat4 alTogether = glm::mat4(1.0f))
-	{
-		/*skyWidth = 1.0f;
-		skyLength = 1.0f;
-		
-		this->dMap = cloudtex;
-
-		shaderSky.use();
-		shaderSky.setBool("exposedToSun", true);
-
-		model = identity;
-		scale = glm::scale(identity, glm::vec3(skyWidth, 0.01f, skyLength));
-		rotate = glm::rotate(identity, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-		model = rotate * scale * model;
-		modelTogether = alTogether * model;
-		cube.drawCubeWithTexture(shaderSky, dMap, dMap, shininess, modelTogether);*/
-
-		/*model = identity;
-		scale = glm::scale(identity, glm::vec3(skyWidth, 10.0f, 0.1));	
-		
-		model = scale * model;
-		modelTogether = alTogether * model;
-		cube.drawCubeWithTexture(shaderTex, dMap, dMap, shininess, modelTogether);*/
-
-		/*shaderSky.use();
-		shaderSky.setBool("exposedToSun", true);*/
-
-		/*this->amb = glm::vec3(0.0f, 0.0f, 0.1f);
-		this->diff = glm::vec3(0.0f, 0.0f, 0.8f);
-		this->spec = glm::vec3(0.0, 0.0, 1.0);*/
-
-		/*this->amb = glm::vec3(amb, amb, amb);
-		this->diff = glm::vec3(diff, diff, diff);
-		this->spec = glm::vec3(spec, spec, spec);
-
-		scale = glm::scale(identity, glm::vec3(30.0f, 30.0f, 20.0f));
-		spheremodel = scale * identity;
-		modelTogether = alTogether * spheremodel;
-		sphere.setMaterialisticProperties(this->amb, this->diff, this->spec);
-		sphere.drawSphere(shaderSky, modelTogether);*/
-
-	}
-
 	void hills(Shader& shaderMP, Shader& shaderCurves, bool withTexture, glm::mat4 alTogether = glm::mat4(1.0f))
 	{
 		baseHeight = 4.0f;
@@ -264,8 +223,7 @@ public:
 		shaderCurves.setBool("overrideColor", true);
 		shaderCurves.setVec3("color", glm::vec3(0.035f, 0.52f, 0.28f));
 		model = identity;
-		scale = glm::scale(identity, glm::vec3(blockWidth, baseHeight, blockLength * 0.3f));
-		//translate = glm::translate(identity, glm::vec3(0.05f, baseHeight, 0.05f));
+		scale = glm::scale(identity, glm::vec3(blockWidth, baseHeight, blockLength * 0.3f));		
 		model = scale;
 		modelTogether = alTogether * model;
 		hillCurves.setModel(modelTogether);
@@ -298,8 +256,7 @@ public:
 		shaderCurves.setBool("overrideColor", true);
 		shaderCurves.setVec3("color", glm::vec3(0.035f, 0.52f, 0.28f));
 		model = identity;
-		scale = glm::scale(identity, glm::vec3(blockWidth, baseHeight, blockLength));
-		//translate = glm::translate(identity, glm::vec3(0.05f, baseHeight, 0.05f));
+		scale = glm::scale(identity, glm::vec3(blockWidth, baseHeight, blockLength));		
 		model = scale;
 		modelTogether = alTogether * model;
 		hillCurves.setModel(modelTogether);

@@ -24,153 +24,6 @@
     <ClCompile Include="..\..\CMake\Opengl\glad.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Cylinder.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="Camera.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Shader.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Cube.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Components.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="World.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Curves.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Sphere.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Character.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Text.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource_manager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CollectorItems.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Cylinder.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="fsSrcTex.fs">
-      <Filter>Source Files</Filter>
-    </None>
-    <None Include="lightCube.fs">
-      <Filter>Source Files</Filter>
-    </None>
-    <None Include="lightCube.vs">
-      <Filter>Source Files</Filter>
-    </None>
-    <None Include="vsSrc.vs">
-      <Filter>Source Files</Filter>
-    </None>
-    <None Include="fsSrcMatProp.fs">
-      <Filter>Source Files</Filter>
-    </None>
-    <None Include="fsSrcPrimary.fs">
-      <Filter>Source Files</Filter>
-    </None>
-    <None Include="vsSrcPrimary.vs">
-      <Filter>Source Files</Filter>
-    </None>
-    <None Include="fsSrcBoth.fs">
-      <Filter>Source Files</Filter>
-    </None>
-    <None Include="vsSrcCurves.vs">
-      <Filter>Source Files</Filter>
-    </None>
-    <None Include="text_2d.fs">
-      <Filter>Source Files</Filter>
-    </None>
-    <None Include="text_2d.vs">
-      <Filter>Source Files</Filter>
-    </None>
-    <None Include="fsSrcCurves.fs">
-      <Filter>Source Files</Filter>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="roadLined.jpg">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="woodenSurface.jpg">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="container2.png">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="container2_specular.png">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="designedTiles.jpg">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="whitewall2.jpg">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="palestine.jpg">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="woodCypress.jpg">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="woodenDoor.jpg">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="brickwall.jpg">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="grass.jpg">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="windows.jpg">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="no_exit.jpg">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="seventyone.jpg">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="seventyone1.jpg">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="sky1.jpg">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="mosque_wall.jpg">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="door2.jpg">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="cloudlittle.jpg">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="win.jpg">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="lose2.png">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="startlogo.png">
-      <Filter>Resource Files</Filter>
-    </Image>
   </ItemGroup>
   <ItemGroup>
     <Text Include="commented_out_parts.txt">
@@ -178,17 +31,126 @@
     </Text>
   </ItemGroup>
   <ItemGroup>
-    <Font Include="Antonio-Bold.ttf">
+    <Image Include="Resources\brickwall.jpg">
       <Filter>Resource Files</Filter>
-    </Font>
-    <Font Include="Antonio-Light.ttf">
+    </Image>
+    <Image Include="Resources\door2.jpg">
       <Filter>Resource Files</Filter>
-    </Font>
-    <Font Include="Antonio-Regular.ttf">
+    </Image>
+    <Image Include="Resources\grass.jpg">
       <Filter>Resource Files</Filter>
-    </Font>
-    <Font Include="OCRAEXT.TTF">
+    </Image>
+    <Image Include="Resources\lose.jpg">
       <Filter>Resource Files</Filter>
-    </Font>
+    </Image>
+    <Image Include="Resources\lose2.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Resources\mosque_wall.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Resources\no_exit.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Resources\palestine.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Resources\startlogo.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Resources\whitewall2.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Resources\win.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Resources\windows.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Resources\woodCypress.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Resources\woodenDooOr.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Resources\woodenDoor.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Resources\woodenSurface.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Shaders\fsSrcBoth.fs">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="Shaders\fsSrcCurves.fs">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="Shaders\fsSrcMatProp.fs">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="Shaders\fsSrcPrimary.fs">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="Shaders\fsSrcTex.fs">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="Shaders\lightCube.fs">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="Shaders\lightCube.vs">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="Shaders\text_2d.fs">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="Shaders\text_2d.vs">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="Shaders\vsSrc.vs">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="Shaders\vsSrcCurves.vs">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="Shaders\vsSrcPrimary.vs">
+      <Filter>Source Files</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Headers\Camera.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Headers\Character.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Headers\CollectorItems.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Headers\Components.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Headers\Cube.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Headers\Curves.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Headers\Cylinder.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Headers\Shader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Headers\Sphere.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Headers\Text.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Headers\World.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

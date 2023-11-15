@@ -384,3 +384,19 @@
 //	drawCube(VAO, shader, door);
 //}
 //
+
+
+// world.hillSinglePeak(shaderTex, shaderCurves, false, glm::translate(identity, glm::vec3(0.0f, 3.0f, 0.0f)) * revolve);
+		//world.hills(shaderTex, shaderCurves, false, glm::translate(identity, glm::vec3(2.0f, 3.0f, 0.0f)) * glm::scale(identity, glm::vec3(1.0f, 0.75f, 1.0f)));
+		//world.hills(shaderTex, shaderCurves, false, glm::translate(identity, glm::vec3(-2.0f, 3.0f, 0.0f)) * glm::scale(identity, glm::vec3(1.0f, 0.45f, 1.0f)));
+		//if (gameWon) component.winMsg(shaderTex, identity * glm::translate(identity, glm::vec3(0.0f, 0.0f, protagonistZmove - 2.0f)));
+		// component.winMsg(shaderTex, glm::translate(identity, glm::vec3(0.0f, 0.0f, 3.0f)) * revolve);
+		//component.tree(shaderMP, shaderCurves, false,  glm::translate(identity, glm::vec3(0.0f, 0.0f, 3.0f)) * revolve);
+		//tree(shaderMP, shaderCurves, treeCurves, false,  glm::translate(identity, glm::vec3(0.0f, 0.0f, 3.0f)) * revolve);
+		//shaderTex.use();
+		//component.texturedSphere(shaderTex, glm::translate(identity, glm::vec3(0.0f, 2.0f, 3.0f)) * revolve);
+		// 
+		//component.waterTank(shaderMP, false, glm::translate(identity, glm::vec3(0.0f, 0.0f, 2.0f)) * revolve);
+		/*scale = glm::scale(identity, glm::vec3(0.8f, 0.5f, 0.5f));
+		rotate = glm::rotate(identity, glm::radians(-90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+		component.billboard_seventyone(shaderTex, shaderMP, glm::translate(identity, glm::vec3(0.0f, -0.5f, 1.0f)) * scale);*/

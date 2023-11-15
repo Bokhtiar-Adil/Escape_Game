@@ -1,3 +1,11 @@
+/*
+	Developed by -
+	Bokhtiar Adil Prottoy,
+	Department of Computer Science and Engineering,
+	Khulna University of Engineering & Technology,
+	Khulna, Bangladesh
+*/
+
 #ifndef components_h
 #define components_h
 
@@ -208,25 +216,21 @@ private:
 	Cylinder cyl1;
 
 	void loadAllTextures()
-	{
-		boxtex = loadTexture("container2.png");
-		walldmp = loadTexture("brickwall.jpg");
-		wallsmp = loadTexture("brickwall.jpg");
-		tabledmp = loadTexture("woodenSurface.jpg");
-		doordmp = loadTexture("woodenDoor.jpg");
-		walldmp2 = loadTexture("whitewall2.jpg");
-		windowsdmp = loadTexture("windows.jpg");
-		grass = loadTexture("grass.jpg");
-		grass2 = loadTextureV2("grass.jpg");
-		//palestine1 = loadTexture("palestine.jpg");
-		noexit = loadTexture("no_exit.jpg");
-		seventyone = loadTexture("seventyone1.jpg");
-		mosqueWall = loadTexture("mosque_wall.jpg");
-		door2 = loadTexture("door2.jpg");
-		wintex = loadTexture("win.jpg");
-		losetex = loadTexture("lose2.png");
-		startlogotex = loadTexture("startlogo.png");
-		//entertostarttex = loadTexture("entertoplay2.jpg");
+	{		
+		walldmp = loadTexture("Resources/brickwall.jpg");
+		wallsmp = loadTexture("Resources/brickwall.jpg");
+		tabledmp = loadTexture("Resources/woodenSurface.jpg");
+		doordmp = loadTexture("Resources/woodenDoor.jpg");
+		walldmp2 = loadTexture("Resources/whitewall2.jpg");
+		windowsdmp = loadTexture("Resources/windows.jpg");
+		grass = loadTexture("Resources/grass.jpg");
+		grass2 = loadTextureV2("Resources/grass.jpg");		
+		noexit = loadTexture("Resources/no_exit.jpg");
+		mosqueWall = loadTexture("Resources/mosque_wall.jpg");
+		door2 = loadTexture("Resources/door2.jpg");
+		wintex = loadTexture("Resources/win.jpg");
+		losetex = loadTexture("Resources/lose2.png");
+		startlogotex = loadTexture("Resources/startlogo.png");		
 	}
 
 	void loadAllCurves()
@@ -777,6 +781,7 @@ public:
 		cube.drawCubeWithMaterialisticProperty(shader, this->amb, this->diff, this->spec, this->shininess, modelTogether);
 	}
 
+	// no texture loaded -- download a photo - add to project - load texture
 	void box(Shader& shader, bool withTexture, glm::mat4 alTogether = glm::mat4(1.0f))
 	{
 		boxWidth = 0.5f;
@@ -1235,18 +1240,6 @@ public:
 
 	}
 
-	void texturedSphere(Shader& shader, glm::mat4 alTogether = glm::mat4(1.0f))
-	{
-		//translate = glm::translate(identity, glm::vec3(0.17f, 0.0f, 0.0f));
-		
-		this->dMap = grass;
-		this->sMap = grass;
-
-		spheremodel = translate * identity;
-		modelTogether = alTogether * spheremodel;
-		sphere.drawSphereWIthTexture(shader, this->dMap, this->sMap, modelTogether);
-	}
-
 	void billboard_noexit(Shader& shaderTex, Shader& shaderMP, glm::mat4 alTogether = glm::mat4(1.0f))
 	{
 		baseHeight = 1.0f;
@@ -1284,47 +1277,6 @@ public:
 		model = translate * scale * model;
 		modelTogether = alTogether * model;
 		cube.drawCubeWithTexture(shaderTex, dMap, dMap, this->shininess, modelTogether);
-
-	}
-
-	void billboard_seventyone(Shader& shaderTex, Shader& shaderMP, glm::mat4 alTogether = glm::mat4(1.0f))
-	{
-		baseHeight = 1.0f;
-		baseWidth = 0.1f;
-
-		this->amb = glm::vec3(0.45f, 0.36f, 0.26f);
-		this->diff = glm::vec3(0.45f, 0.36f, 0.26f);
-		this->spec = glm::vec3(0.0f, 0.0f, 0.0f);
-
-		shaderMP.use();
-		shaderMP.setBool("exposedToSun", true);
-
-		// stands
-
-		model = identity;
-		scale = glm::scale(identity, glm::vec3(baseWidth, baseHeight, baseWidth));
-		translate = glm::translate(identity, glm::vec3(0.0f, 0.0f, 0.0f));
-		model = translate * scale * model;
-		modelTogether = alTogether * model;
-		cube.drawCubeWithMaterialisticProperty(shaderMP, this->amb, this->diff, this->spec, this->shininess, modelTogether);
-
-		translate = glm::translate(identity, glm::vec3(1.0f, 0.0f, 0.0f));
-		model = translate * model;
-		modelTogether = alTogether * model;
-		cube.drawCubeWithMaterialisticProperty(shaderMP, this->amb, this->diff, this->spec, this->shininess, modelTogether);
-
-		shaderTex.use();
-		shaderTex.setBool("exposedToSun", true);
-
-		this->dMap = seventyone;
-
-		model = identity;
-		scale = glm::scale(identity, glm::vec3(1.3f, 1.0f, 0.02f));
-		translate = glm::translate(identity, glm::vec3(-0.1f, 0.8f, 0.11f));
-		model = translate * scale * model;
-		modelTogether = alTogether * model;
-		cube.drawCubeWithTexture(shaderTex, dMap, dMap, this->shininess, modelTogether);
-
 
 	}
 
@@ -1485,18 +1437,6 @@ public:
 		model = translate * scale * model;
 		modelTogether = alTogether * model;
 		cube.drawCubeWithTexture(shaderTex, dMap, dMap, this->shininess, modelTogether);*/
-	}
-
-	void cloud(Shader& shaderTex, glm::mat4 alTogether = glm::mat4(1.0f))
-	{
-		baseWidth = 1.0f;
-		
-		scale = glm::scale(identity, glm::vec3(2.0f, 0.6f, 0.1f));
-		rotate = glm::rotate(identity, glm::radians(25.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-		//translate = glm::translate(identity, glm::vec3(0.0f, 0.0f, 0.0f));
-		model = rotate * scale;
-		modelTogether = alTogether * model;
-		cyl1.drawCylinder(shaderTex, modelTogether);
 	}
 
 };

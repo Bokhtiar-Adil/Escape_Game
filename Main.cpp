@@ -1,3 +1,11 @@
+/*
+	Developed by -
+	Bokhtiar Adil Prottoy, 
+	Department of Computer Science and Engineering,
+	Khulna University of Engineering & Technology, 
+	Khulna, Bangladesh
+*/
+
 #include <iostream>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -10,14 +18,14 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include "Shader.h"
-#include "Camera.h"
-#include "Text.h"
-#include "Components.h"
-#include "World.h"
-#include "Character.h"
-#include "Curves.h"
-#include "CollectorItems.h"
+#include "Headers/Shader.h"
+#include "Headers/Camera.h"
+//#include "Text.h"
+#include "Headers/Components.h"
+#include "Headers/World.h"
+#include "Headers/Character.h"
+#include "Headers/Curves.h"
+#include "Headers/CollectorItems.h"
 
 using namespace std;
 
@@ -45,8 +53,6 @@ void processInput(GLFWwindow* window);
 void processInputForBeforeGameStarts(GLFWwindow* window);
 void processInputForGameFinishingMode(GLFWwindow* window);
 void processInputForGhostMode(GLFWwindow* window);
-//unsigned int loadTexture(char const* path);
-//void drawCube(unsigned int& cubeVAO, Shader& shader, glm::mat4 model);
 
 unsigned int dummyVAO = NULL;
 Shader dummyShader;
@@ -64,11 +70,9 @@ void worldExpansion(Shader& shaderTex, Shader& shaderMP, Shader& shaderCurves, S
 void protagonistMoveManager(Character& protagonist, Shader& shaderMP, Shader& lightCubeShader, glm::mat4 revolve);
 void streetlightSetup(Shader& shader, float moveZ, float slAmb = 0.1f, float slDiff = 0.5f, float slSpec = 0.5f, float slConst = 1.0f, float slLin = 0.09f, float slQuad = 0.032f);
 void dayNightControl();
-void skyManager(Shader& shaderTex, Shader& shaderMP, Shader& shaderSky, World& world, Components& component, glm::mat4 alTogether);
 void collectorItemsManager(Shader& shader1, Shader& shader2, CollectorItems& items, World& world, Components& component);
 void bonusManager();
 void gameFreezeManager(Shader& shaderTex, Shader& shaderMP, Components& component, Character& antagonist);
-void tree(Shader& shaderMP, Shader& shaderCurves, Curves& treeCurves, bool withTexture, glm::mat4 alTogether = glm::mat4(1.0f));
 void writeWelcomMsgCmd();
 
 
@@ -166,13 +170,13 @@ int main()
 
 	// shader creation
 
-	Shader shaderMP("vsSrc.vs", "fsSrcMatProp.fs");
-	Shader shaderTex("vsSrc.vs", "fsSrcTex.fs");
-	Shader shaderSky("vsSrc.vs", "fsSrcTex.fs");
-	Shader shader("vsSrc.vs", "fsSrcBoth.fs");
-	Shader lightCubeShader("lightCube.vs", "lightCube.fs");
-	Shader textShader("text_2d.vs", "text_2d.fs");
-	Shader shaderCurves("vsSrcCurves.vs", "fsSrcCurves.fs");
+	Shader shaderMP("Shaders/vsSrc.vs", "Shaders/fsSrcMatProp.fs");
+	Shader shaderTex("Shaders/vsSrc.vs", "Shaders/fsSrcTex.fs");
+	Shader shaderSky("Shaders/vsSrc.vs", "Shaders/fsSrcTex.fs");
+	Shader shader("Shaders/vsSrc.vs", "Shaders/fsSrcBoth.fs");
+	Shader lightCubeShader("Shaders/lightCube.vs", "Shaders/lightCube.fs");
+	Shader textShader("Shaders/text_2d.vs", "Shaders/text_2d.fs");
+	Shader shaderCurves("Shaders/vsSrcCurves.vs", "Shaders/fsSrcCurves.fs");
 
 
 	glEnable(GL_DEPTH_TEST);
@@ -187,7 +191,7 @@ int main()
 	Components component(WIN_WIDTH, WIN_HEIGHT);
 	World world;
 	Character protagonist;
-	Text text(textShader, SCR_WIDTH, SCR_HEIGHT);
+	// Text text(textShader, SCR_WIDTH, SCR_HEIGHT);
 	Curves hatCurves, treeCurves;
 	CollectorItems items;
 
@@ -199,31 +203,25 @@ int main()
 	}
 
 	glGetIntegerv(GL_VIEWPORT, viewport);
-	// cout << viewport[0] << " " << viewport[1] << " " << viewport[2] << " " << viewport[2] << "\n";
 
 	/*text.Load("Antonio-Bold.ttf", 48);
 	text.RenderText("This is a sample text", 0.0f, 0.0f, 1.0f, glm::vec3(0.5, 0.8f, 0.2f));
 	glfwMakeContextCurrent(window);*/
 
-	//curves.setControlPoints();
-
 	hatCurves.setViewport(viewport);
 	treeCurves.setViewport(viewport);
-	/*curves.setProjView(projection, view);*/
 
 	vector<float> dummycntrlpoints = { 223, 65, 232, 90, 232, 145, 219, 191, 210, 245, 232, 278, 268, 300, 309, 307, 351, 307, 384, 304 };
 	vector<float> treeTopPoints = { 632, 48, 612, 38, 595, 24, 575, 18, 552, 20, 531, 29, 507, 51, 498, 79, 499, 104, 514, 123, 524, 135, 506, 147, 486, 155, 461, 160, 433, 174, 419, 192, 404, 221, 399, 247, 419, 266, 442, 280, 474, 298, 485, 313, 465, 319, 443, 334, 418, 354, 395, 375, 364, 400, 351, 434, 347, 478, 364, 516, 394, 541, 425, 557, 481, 575, 521, 587, 566, 572, 592, 548, 620, 509, 631, 493, 647, 460 };
 	vector<float> tree2 = { 540, 39, 483, 100, 452, 164, 424, 247, 402, 316, 393, 393, 421, 447, 473, 485, 529, 492, 583, 480, 615, 431 };
 	vector<float> hat = { 642, 78, 569, 58, 495, 55, 459, 107, 416, 148, 340, 164, 289, 238, 192, 247, 119, 354, 45, 434 };
 	vector<float> tree3 = { 611, 48, 572, 46, 507, 56, 435, 89, 407, 133, 380, 207, 394, 260, 375, 297, 319, 357, 299, 440, 364, 511, 437, 554, 502, 568, 549, 559, 579, 519 };
-	//curves.setControlPoints(dummycntrlpoints);
+	
 	hatCurves.setControlPoints(hat);
 	treeCurves.setControlPointsV2(tree3);
 	hatCurves.setWinProperties(1200, 700);
 	treeCurves.setWinProperties(1200, 700);
 
-	//glEnable(GL_DEPTH_TEST);
-	// render
 	int temp;
 	for (int i = 0; i < 15; i++) {
 		temp = rand() % 5;
@@ -231,16 +229,10 @@ int main()
 		bonusItemZPositions.push_back(protagonistZinitial - 2.0f - i * 1.0f);
 		temp = rand() % 3;
 		bonusItemXPositions.push_back(0.0f + temp);
-		/*temp = rand() % 2;
-		bonusItemYPositions.push_back(0.3f + temp*1.0f);*/
 		bonusItemYPositions.push_back(0.4f);
 	}
 
 	float prevTime = 0.0f;
-
-	// cout << static_cast<float>(glfwGetTime()) << "\n";
-
-	//gameStarted = true;
 
 	writeWelcomMsgCmd();
 
@@ -254,7 +246,6 @@ int main()
 
 		if (ghostMode) ghostTImer += deltaTime;
 
-		// cout << static_cast<float>(glfwGetTime()) << "\n";
 		if (gameStarted && !ghostMode) protagonistDelay++;
 
 		if ((floor(currentFrame - gameStartTime) == 10.0f && !ten) || (floor(currentFrame - gameStartTime) == 20.0f && !twe) || (floor(currentFrame - gameStartTime) == 30.0f && !thi) || (floor(currentFrame - gameStartTime) == 40.0f && !fo) || (floor(currentFrame - gameStartTime) == 50.0f && !fi) || (floor(currentFrame - gameStartTime) == 60.0f && !si)) {
@@ -288,7 +279,6 @@ int main()
 		else if (ghostMode) processInputForGhostMode(window);
 		else processInput(window);
 
-
 		if (gameStarted && !ghostMode) prevTime += deltaTime;
 		if (prevTime >= 1.0f) {
 			if (fuel > 0) fuel--;
@@ -304,15 +294,6 @@ int main()
 		jumpCoolDown++;
 		if (jumpCoolDown > 20)
 			jumping = false;
-
-
-
-		/*if (menu) {
-			glDisable(GL_DEPTH_TEST);
-			text.RenderText("This is a sample text", 0.0f, 0.0f, 1.0f, glm::vec3(0.5, 0.8f, 0.2f));
-		}*/
-
-		//glEnable(GL_DEPTH_TEST);
 
 
 		if (dayNightSystem) {
@@ -334,7 +315,6 @@ int main()
 		}
 		else if (gameFinished) {
 			gameFreezeManager(shaderTex, shaderMP, component, protagonist);
-			// break;
 		}
 		else {
 
@@ -356,7 +336,6 @@ int main()
 
 		shaderCurves.setBool("overrideColor", false);
 		hatCurves.drawCurves(shaderCurves);
-		//treeCurves.drawCurves(shaderCurves);
 
 		currentBlockBase = 0.0f;
 		if ((-1 * camera.Position.z + initialCameraZ) - currentBlockNumber * 30.0f > 30.0f) {
@@ -367,8 +346,6 @@ int main()
 		worldExpansion(shaderTex, shaderMP, shaderCurves, lightCubeShader, world, component, sequence, translate);
 		translate = glm::translate(identity, glm::vec3(0.0f, 0.0f, currentBlockBase - 30.0f));
 		worldExpansion(shaderTex, shaderMP, shaderCurves, lightCubeShader, world, component, sequence, translate);
-		//bonusItemOffset = currentBlockNumber * 30.0f;
-		/**/
 
 		protagonistMoveManager(protagonist, shaderMP, lightCubeShader, revolve);
 		protagonistXcurrent = protagonistXinitial + protagonistXmove;
@@ -376,7 +353,6 @@ int main()
 		protagonistZcurrent = protagonistZinitial + protagonistZmove;
 		collectorItemsManager(shaderMP, lightCubeShader, items, world, component);
 
-		skyManager(shaderTex, shaderMP, shaderSky, world, component, glm::translate(identity, glm::vec3(1.0f, 0.0f, protagonistZmove)));
 		if (dayNightSystem) {
 			if (!nightMode) component.sun(lightCubeShader, glm::translate(identity, glm::vec3(sunX, sunY + 2.0f, protagonistZmove - 20.0f)));
 			if (streetLightOn) component.moon(lightCubeShader, glm::translate(identity, glm::vec3(moonX, moonY + 2.0f, protagonistZmove - 20.0f)));
@@ -385,37 +361,9 @@ int main()
 			if (!nightMode) component.sun(lightCubeShader, glm::translate(identity, glm::vec3(sunX, sunY + 2.0f, protagonistZmove - 20.0f)));
 			if (streetLightOn) component.moon(lightCubeShader, glm::translate(identity, glm::vec3(moonX, moonY + 2.0f, protagonistZmove - 20.0f)));
 		}
-		// world.hillSinglePeak(shaderTex, shaderCurves, false, glm::translate(identity, glm::vec3(0.0f, 3.0f, 0.0f)) * revolve);
-		//world.hills(shaderTex, shaderCurves, false, glm::translate(identity, glm::vec3(2.0f, 3.0f, 0.0f)) * glm::scale(identity, glm::vec3(1.0f, 0.75f, 1.0f)));
-		//world.hills(shaderTex, shaderCurves, false, glm::translate(identity, glm::vec3(-2.0f, 3.0f, 0.0f)) * glm::scale(identity, glm::vec3(1.0f, 0.45f, 1.0f)));
-		//if (gameWon) component.winMsg(shaderTex, identity * glm::translate(identity, glm::vec3(0.0f, 0.0f, protagonistZmove - 2.0f)));
-		// component.winMsg(shaderTex, glm::translate(identity, glm::vec3(0.0f, 0.0f, 3.0f)) * revolve);
-		//component.tree(shaderMP, shaderCurves, false,  glm::translate(identity, glm::vec3(0.0f, 0.0f, 3.0f)) * revolve);
-		//tree(shaderMP, shaderCurves, treeCurves, false,  glm::translate(identity, glm::vec3(0.0f, 0.0f, 3.0f)) * revolve);
-		//shaderTex.use();
-		//component.texturedSphere(shaderTex, glm::translate(identity, glm::vec3(0.0f, 2.0f, 3.0f)) * revolve);
-		// 
-		//component.waterTank(shaderMP, false, glm::translate(identity, glm::vec3(0.0f, 0.0f, 2.0f)) * revolve);
-		/*scale = glm::scale(identity, glm::vec3(0.8f, 0.5f, 0.5f));
-		rotate = glm::rotate(identity, glm::radians(-90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-		component.billboard_seventyone(shaderTex, shaderMP, glm::translate(identity, glm::vec3(0.0f, -0.5f, 1.0f)) * scale);*/
-
-		//if (camera.Position.x != px) cout << "cam x: " << camera.Position.x << "\n";
-		//if (camera.Position.y != py) cout << "cam y: " << camera.Position.y << "\n";
-		//if (camera.Position.z != pz) cout << "cam z: " << camera.Position.z << "\n";
-		px = camera.Position.x;
-		py = camera.Position.y;
-		pz = camera.Position.z;
-
-		/*text.RenderText(shader, "This is sample text", 25.0f, 25.0f, 1.0f,
-			glm::vec3(0.5, 0.8f, 0.2f));*/
-
-		//component.waterTank(shaderMP, false, glm::translate(identity, glm::vec3(0.0f, 0.0f, 2.0f)) * revolve);
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
-
-		//glDisable(GL_DEPTH_TEST);
 
 	}
 
@@ -471,19 +419,6 @@ void processInputForGhostMode(GLFWwindow* window)
 		}
 
 	}
-	/*if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
-		if (camera.permissionToMove()) {
-			camera.ProcessKeyboard(FORWARD, deltaTime);
-			currentCharacterPos += 0.05f;
-			protagonistZmove -= (camera.MovementSpeed * deltaTime);
-			if (jumpCoolDown >= 20) {
-				protagonistYmove = (25.0f * camera.MovementSpeed * deltaTime);
-				jumpCoolDown = 0;
-				jumping = true;
-			}
-		}
-
-	}*/
 	// camera movement control
 	if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
 		camera.ProcessKeyboard(UP, deltaTime);
@@ -534,15 +469,7 @@ void processInput(GLFWwindow* window)
 	}
 
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-		/*if (camera.permissionToMove()) {
-			camera.ProcessKeyboard(BACKWARD, deltaTime);
-			currentCharacterPos -= 0.05f;
-			protagonistZmove += (camera.MovementSpeed * deltaTime);
-			if (protagonistMovementFormCounter == 0) {
-				protagonistMovementForm = 1;
-			}
-		}*/
-
+		// no movement backwards in during game time -- only allowed in ghost mode
 	}
 
 	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
@@ -622,18 +549,11 @@ void processInput(GLFWwindow* window)
 		if (nightMode == false) {
 			dayNightCycleMode = false;
 			nightMode = true;
-			/*sunAmb = 0.0f;
-			sunDiff = 0.0f;
-			sunSpec = 1.0f;*/
 			dayNightDirectMode = true;
 			dayNightControl();
 		}
 		else {
-			/*dayNightCycleMode = true;*/
 			nightMode = false;
-			/*sunAmb = 0.3f;
-			sunDiff = 0.8f;
-			sunSpec = 1.0f;*/
 			dayNightDirectMode = false;
 			dayNightControl();
 		}
@@ -688,7 +608,6 @@ void processInput(GLFWwindow* window)
 		rotate_obj_axis_z = 1.0;
 	}
 	if (glfwGetKey(window, GLFW_KEY_0) == GLFW_PRESS) {
-		//dayNightCycleMode = !dayNightCycleMode;
 		sunX = 3.0f;
 		sunY = 3.0f;
 		moonX = 3.0f;
@@ -765,7 +684,6 @@ void dayNightControl()
 			if (sunAmb > 0.0f) sunAmb -= gradualSunLightChange;
 			if (sunDiff > 0.0f) sunDiff -= gradualSunLightChange;
 			if (sunSpec > 0.0f) sunSpec -= gradualSunLightChange;
-			//sunX = 6.0f;
 			if (sunDiff <= 0.0f) nightMode = true;
 			if (nightMode) {
 				nightDuration++;
@@ -826,42 +744,6 @@ void shaderSetup(Shader& lightCubeShader, Shader& shaderTex, Shader& shaderMP, S
 
 	// light properties
 	dayNightControl();
-	//if (dayNightCycleMode) {
-	//	float gradualSunLightChange = 0.001f;
-	//	float gradualSunPositionChange = 0.01f;
-	//	if (sunX > -6.0f) {
-	//		if (sunAmb < 0.3f) sunAmb += gradualSunLightChange;
-	//		if (sunDiff < 0.8f) sunDiff += gradualSunLightChange;
-	//		if (sunSpec < 1.0f) sunSpec += gradualSunLightChange;
-	//		if (sunAmb >= 0.3f && sunDiff >= 0.8f && sunSpec >= 1.0f) sunX -= gradualSunPositionChange;
-	//	}
-	//	else {
-	//		if (sunAmb > 0.0f) sunAmb -= gradualSunLightChange;
-	//		if (sunDiff > 0.0f) sunDiff -= gradualSunLightChange;
-	//		if (sunSpec > 0.0f) sunSpec -= gradualSunLightChange;
-	//		//sunX = 6.0f;
-	//		if (sunDiff <= 0.0f) nightMode = true;
-	//		if (nightMode) nightDuration++;
-	//		if (nightDuration == 1000) {
-	//			nightMode = false;
-	//			nightDuration = 0;
-	//			sunX = 6.0f;
-	//		}
-	//	}
-	//}
-	//else {
-	//	if (!dayNightDirectMode) {
-	//		sunX = 1.05f;
-	//		sunY = 3.0f;
-	//		sunZ = 5.0f;
-	//		nightDuration = 0;
-	//		sunAmb = 0.3f;
-	//		sunDiff = 0.8f;
-	//		sunSpec = 1.0f;
-	//		nightMode = false;
-	//	}
-	//	
-	//}
 
 	// shaderTex
 
@@ -873,13 +755,6 @@ void shaderSetup(Shader& lightCubeShader, Shader& shaderTex, Shader& shaderMP, S
 	shaderTex.setBool("flashlightOn", false);
 	shaderTex.setInt("numberofPointlights", 0);
 	shaderTex.setVec3("viewPos", camera.Position);
-
-	// directional light
-	/*shaderTex.setVec3("dirLight.direction", 1.0f, -3.0f, -3.0f);
-	shaderTex.setVec3("dirLight.ambient", 0.3f, 0.3f, 0.3f);
-	shaderTex.setVec3("dirLight.diffuse", 0.8f, 0.8f, 0.8f);
-	shaderTex.setVec3("dirLight.specular", 1.0f, 1.0f, 1.0f);
-	shaderTex.setBool("nightMode", nightMode);*/
 
 	shaderTex.setVec3("dirLight.direction", -sunX, -sunY, -sunZ);
 	shaderTex.setVec3("dirLight.ambient", sunAmb, sunAmb, sunAmb);
@@ -912,7 +787,6 @@ void shaderSetup(Shader& lightCubeShader, Shader& shaderTex, Shader& shaderMP, S
 	shaderMP.setBool("flashlightOn", false);
 	shaderMP.setInt("numberofPointlights", 0);
 	shaderMP.setVec3("viewPos", camera.Position);
-	//shaderCurves.setBool("curve", false);
 
 	// light properties
 
@@ -970,8 +844,6 @@ void shaderSetup(Shader& lightCubeShader, Shader& shaderTex, Shader& shaderMP, S
 	shaderSky.setFloat("spotLight.outerCutOff", glm::cos(glm::radians(15.0f)));
 	shaderSky.setBool("flashlightOn", torchOn);
 
-	//streetlightSetup(shaderSky, protagonistZmove);
-
 	// shaderCurves
 
 	shaderCurves.use();
@@ -1023,8 +895,6 @@ void shaderSetup(Shader& lightCubeShader, Shader& shaderTex, Shader& shaderMP, S
 		shaderSky.setBool("darkBonusAchieved", true);
 		lightCubeShader.use();
 		lightCubeShader.setBool("darkBonusAchieved", true);
-		/*shader.use();
-		shader.setBool("darkBonusAchieved", true);*/
 		shaderCurves.use();
 		shaderCurves.setBool("darkBonusAchieved", true);
 		dayNightSystem = false;
@@ -1039,8 +909,6 @@ void shaderSetup(Shader& lightCubeShader, Shader& shaderTex, Shader& shaderMP, S
 		shaderSky.setBool("darkBonusAchieved", false);
 		lightCubeShader.use();
 		lightCubeShader.setBool("darkBonusAchieved", false);
-		/*shader.use();
-		shader.setBool("darkBonusAchieved", false);*/
 		shaderCurves.use();
 		shaderCurves.setBool("darkBonusAchieved", false);
 		dayNightSystem = true;
@@ -1057,9 +925,6 @@ void streetlightSetup(Shader& shader, float moveZ, float slAmb, float slDiff, fl
 	glm::vec4 streetlightTogether;
 	int numOfStreetLight = 7;
 	int gap = -4.0f, index = 0;
-
-	//float slAmb = 0.1f, slDiff = 0.5f, slSpec = 0.5f, slConst = 1.0f, slLin = 0.09f, slQuad = 0.032f;
-
 
 	shader.use();
 	shader.setInt("numberofStreetlights", 14);
@@ -1207,17 +1072,9 @@ void streetlightSetup(Shader& shader, float moveZ, float slAmb, float slDiff, fl
 
 }
 
-void skyManager(Shader& shaderTex, Shader& shaderMP, Shader& shaderSky, World& world, Components& component, glm::mat4 alTogether)
-{
-	glm::mat4 identity = glm::mat4(1.0f);
-	// world.sky(shaderTex, shaderMP, shaderSky, sunAmb, sunDiff, sunSpec, alTogether * glm::translate(identity, glm::vec3(0.0f, 6.0f, 0.0f)));
-	// component.cloud(shaderSky, alTogether * glm::translate(identity, glm::vec3(0.0f, 4.0f, -20.0f)));
-}
-
 void worldExpansion(Shader& shaderTex, Shader& shaderMP, Shader& shaderCurves, Shader& lightCubeShader, World& world, Components& component, vector<int>& sequence, glm::mat4 alTogether)
 {
 	glm::mat4 rotate, scale, translate, identity = glm::mat4(1.0f), rotateMosque;
-	//int numOfBlockComponent = 7, numOfStreetLight = 7, numOfResidential = 2, typeOfBlockComponent = 2;
 
 	shaderTex.use();
 
@@ -1253,19 +1110,6 @@ void worldExpansion(Shader& shaderTex, Shader& shaderMP, Shader& shaderCurves, S
 			component.building(shaderTex, true, alTogether * glm::translate(identity, glm::vec3(-3.7f, -0.5f, 7.0f - 4.0f * i)) * rotate * scale);
 			component.building(shaderTex, true, alTogether * glm::translate(identity, glm::vec3(3.7f, -0.5f, 7.0f - 4.0f * i)) * rotate * scale);
 		}
-		/*if (sequence[i] == 0) {
-			component.building(shaderTex, true, alTogether * glm::translate(identity, glm::vec3(-3.5f, -0.5f, 7.0f - 4.0f * i)) * rotate * scale);
-			component.building(shaderTex, true, alTogether * glm::translate(identity, glm::vec3(3.5f, -0.5f, 7.0f - 4.0f * i)) * rotate * scale);
-		}
-		else if (sequence[i] == 1) {
-			component.waterTank(shaderMP, false, alTogether * glm::translate(identity, glm::vec3(-2.8f, -0.5f, 7.0f - 4.5f * i)));
-			component.waterTank(shaderMP, false, alTogether * glm::translate(identity, glm::vec3(3.8f, -0.5f, 7.0f - 4.5f * i)));
-		}*/
-		/*else if (sequence[i] == 3) {
-			scale = glm::scale(identity, glm::vec3(0.8f, 0.5f, 0.5f));
-			rotate = glm::rotate(identity, glm::radians(-90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-			component.billboard(shaderTex, shaderMP, glm::translate(identity, glm::vec3(0.0f, 0.0f, 3.0f)) * scale);
-		}*/
 
 	}
 
@@ -1352,9 +1196,6 @@ void collectorItemsManager(Shader& shader1, Shader& shader2, CollectorItems& ite
 	int numOfBonusItems = bonusItemSequence.size();
 
 	for (int i = 0; i < numOfBonusItems; i++) {
-		/*if (protagonistZinitial + protagonistZmove == bonusItemZPositions[i] && protagonistXinitial + protagonistXmove == bonusItemXPositions[i] && protagonistYinitial + protagonistYmove == bonusItemYPositions[i]) {
-			bonusItemZPositions[i] -= bonusItemOffset;
-		}*/
 		if (protagonistZcurrent >= bonusItemZPositions[i] - .05f && protagonistZcurrent <= bonusItemZPositions[i] + 0.05f) {
 			if (protagonistXcurrent >= bonusItemXPositions[i] - .2f && protagonistXcurrent <= bonusItemXPositions[i] + 0.2f) {
 				bonusItemZPositions[i] -= bonusItemOffset;
@@ -1384,7 +1225,6 @@ void collectorItemsManager(Shader& shader1, Shader& shader2, CollectorItems& ite
 			bonusItemZPositions[i] -= bonusItemOffset;
 		}
 	}
-	// && protagonistYinitial + protagonistYmove + 0.5f >= bonusItemYPositions[i]
 
 	for (int i = 0; i < numOfBonusItems; i++) {
 		if (bonusItemSequence[i] == 0) items.boostBonusItem(shader1, shader2, 2, glm::translate(identity, glm::vec3(bonusItemXPositions[i], bonusItemYPositions[i], bonusItemZPositions[i])) * rotate);
@@ -1448,49 +1288,8 @@ void gameFreezeManager(Shader& shaderTex, Shader& shaderMP, Components& componen
 		component.winMsg(shaderTex, identity * glm::translate(identity, glm::vec3(0.0f, 0.0f, protagonistZmove - 0.2f)));
 	}
 	else if (gameLost == true) {
-		/*if (bigRobotCameo == true) {
-			antagonist.drawAntagonist(shaderMP, shaderMP, glm::translate(identity, glm::vec3(protagonistXmove + 1.5f, protagonistYmove, protagonistZmove)));
-		}*/
 		component.loseMsg(shaderTex, identity * glm::translate(identity, glm::vec3(0.0f, 0.0f, protagonistZmove - 0.2f)));
 	}
-}
-
-void tree(Shader& shaderMP, Shader& shaderCurves, Curves& treeCurves, bool withTexture, glm::mat4 alTogether)
-{
-	Cube cube;
-	float baseHeight = 1.0f;
-	float baseWidth = 0.1f;
-
-	glm::vec3 amb = glm::vec3(0.45f, 0.36f, 0.26f);
-	glm::vec3 diff = glm::vec3(0.45f, 0.36f, 0.26f);
-	glm::vec3 spec = glm::vec3(0.0f, 0.0f, 0.0f);
-	float shininess = 32.0f;
-
-	glm::mat4 identity = glm::mat4(1.0f), scale, rotate, translate, model, modelTogether;
-
-	// trunk
-	shaderMP.use();
-	shaderMP.setBool("exposedToSun", true);
-	model = identity;
-	scale = glm::scale(identity, glm::vec3(baseWidth, baseHeight, baseWidth));
-	model = scale * model;
-	modelTogether = alTogether * model;
-	cube.drawCubeWithMaterialisticProperty(shaderMP, amb, diff, spec, shininess, modelTogether);
-
-	// top
-	amb = glm::vec3(0.f, 0.1f, 0.0f);
-	diff = glm::vec3(0.0f, 1.0f, 0.0f);
-	spec = glm::vec3(0.0f, 0.0f, 0.0f);
-
-	shaderCurves.use();
-	shaderCurves.setBool("exposedToSun", true);
-	model = identity;
-	translate = glm::translate(identity, glm::vec3(1.0f, 0.4f, 0.0f));
-	model = alTogether * translate;
-	treeCurves.setModel(model);
-	treeCurves.drawCurves(shaderCurves, amb, diff, spec);
-	cout << "here..\n";
-
 }
 
 void writeWelcomMsgCmd()

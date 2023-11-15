@@ -1,3 +1,11 @@
+/*
+	Developed by -
+	Bokhtiar Adil Prottoy,
+	Department of Computer Science and Engineering,
+	Khulna University of Engineering & Technology,
+	Khulna, Bangladesh
+*/
+
 #ifndef character_h 
 #define character_h  
 
@@ -70,14 +78,8 @@ private:
 
 	void loadAllTextures()
 	{
-		//grass = loadTexture("grass.jpg");
+		
 	}
-
-	/*void loadAllCurves()
-	{
-		vector<float> hatpoints = { 642, 78, 569, 58, 495, 55, 459, 107, 416, 148, 340, 164, 289, 238, 192, 247, 119, 354, 45, 434 };
-		hat.setControlPoints(hatpoints);
-	}*/
 
 public:
 
@@ -88,6 +90,8 @@ public:
 		loadAllTextures();
 	}
 
+	// this function doesn't draw the hat on the protagonist  -- that part is in main.cpp file
+	// too lazy to mitigate this issue -- hehe
 	void drawProtagonist(Shader& shader, Shader& shader2, glm::mat4 alTogether = glm::mat4(1.0f), string state = "still", float coins = 0.0f, float fuel = 0.0f, float boost = 0.0f)
 	{
 		shader.use();
@@ -145,19 +149,6 @@ public:
 		modelTogether = alTogether * spheremodel;
 		sphere.drawSphere(shader, modelTogether);
 
-		/*spheremodel2 = spheremodel;
-
-		translate = glm::translate(identity, glm::vec3(0.0f, -0.25f, 0.0f));
-		spheremodel = translate * spheremodel;
-		modelTogether = alTogether * spheremodel;
-		sphere.drawSphere(shader, modelTogether);
-
-		translate = glm::translate(identity, glm::vec3(0.455f, 0.0f, 0.0f));
-		spheremodel = translate * spheremodel;
-		modelTogether = alTogether * spheremodel;
-		sphere.drawSphere(shader, modelTogether);
-
-		spheremodel = spheremodel2;*/
 
 		//  torso-leg joint
 		translate = glm::translate(identity, glm::vec3(0.14f, -0.57f, 0.0f));
@@ -477,20 +468,6 @@ public:
 		spheremodel = translate * spheremodel;
 		modelTogether = alTogether * spheremodel;
 		sphere.drawSphere(shader, modelTogether);
-
-		/*spheremodel2 = spheremodel;
-
-		translate = glm::translate(identity, glm::vec3(0.0f, -0.25f, 0.0f));
-		spheremodel = translate * spheremodel;
-		modelTogether = alTogether * spheremodel;
-		sphere.drawSphere(shader, modelTogether);
-
-		translate = glm::translate(identity, glm::vec3(0.455f, 0.0f, 0.0f));
-		spheremodel = translate * spheremodel;
-		modelTogether = alTogether * spheremodel;
-		sphere.drawSphere(shader, modelTogether);
-
-		spheremodel = spheremodel2;*/
 
 		//  torso-leg joint
 		translate = glm::translate(identity, glm::vec3(0.14f, -0.57f, 0.0f));
