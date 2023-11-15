@@ -40,7 +40,6 @@ There are thre indicator bars over the robot's head. They show corresponding res
 1. Left gradient bar	  : Shows how much coin you have
 2. Middle gradient bar	: Shows how much fuel you have
 3. Right gradient bar	  : Shows remaining boost duration
-Beware of the reds!
 
 ## Controls
 Enter		    : Starts the game
