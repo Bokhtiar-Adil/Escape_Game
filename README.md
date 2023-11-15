@@ -18,7 +18,7 @@ If you don't have them installed, follow the guidelines in this pdf file to inst
 Now, copy the contents of the 'OpenGL' folder in the repository and paste and overwrite the contents in the 'opengl' folder you created while installation. After that, 
 1. Open the project with visual studio (you can double click the .sln file or open it from visual studio too).
 2. Just like in the pdf, update the 'Include' folder path and the 'Library' folder path
-3. Add "glfw3.lib", "opengl32.lib" and freetype.lib" in Linker -> Additional Dependency.
+3. Add "glfw3.lib", "opengl32.lib" and "freetype.lib" in Linker -> Additional Dependency.
 4. Click apply and ok.
 5. Delete the glad.c file from the 'Source files' folder, then add the glad.c file from your opengl folder as demonstrated in the pdf.
 <br />
