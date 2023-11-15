@@ -1229,7 +1229,7 @@ public:
 		rotate = glm::rotate(identity, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 		tires = translate * rotate * tires;
 		glm::mat4 tiresTogether = alTogether * tires;
-		theta = 10.0f;
+		theta = 1.0f;
 		setupCylinder(theta);
 		drawCylinder(shader, tiresTogether, theta);
 

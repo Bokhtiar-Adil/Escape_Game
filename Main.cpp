@@ -44,6 +44,7 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void processInput(GLFWwindow* window);
 void processInputForBeforeGameStarts(GLFWwindow* window);
 void processInputForGameFinishingMode(GLFWwindow* window);
+void processInputForGhostMode(GLFWwindow* window);
 //unsigned int loadTexture(char const* path);
 //void drawCube(unsigned int& cubeVAO, Shader& shader, glm::mat4 model);
 
@@ -135,6 +136,8 @@ int protagonistDelay = 0;
 bool bigRobotCameo = false;
 
 float wideView = false;
+bool ghostMode = false;
+float ghostTImer = 0.0f;
 
 int main()
 {
@@ -249,8 +252,10 @@ int main()
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
 
+		if (ghostMode) ghostTImer += deltaTime;
+
 		// cout << static_cast<float>(glfwGetTime()) << "\n";
-		if (gameStarted) protagonistDelay++;
+		if (gameStarted && !ghostMode) protagonistDelay++;
 
 		if ((floor(currentFrame - gameStartTime) == 10.0f && !ten) || (floor(currentFrame - gameStartTime) == 20.0f && !twe) || (floor(currentFrame - gameStartTime) == 30.0f && !thi) || (floor(currentFrame - gameStartTime) == 40.0f && !fo) || (floor(currentFrame - gameStartTime) == 50.0f && !fi) || (floor(currentFrame - gameStartTime) == 60.0f && !si)) {
 			cout << "Time played: " << floor(currentFrame - gameStartTime) << "s -- Fuel: " << fuel << " -- Coins: " << coins << "\n";
@@ -263,12 +268,12 @@ int main()
 
 		}
 
-		if (gameStarted && !gameLost && currentFrame - gameStartTime >= 60.0f) {
+		if (gameStarted && !ghostMode && !gameLost && currentFrame - gameStartTime >= 60.0f) {
 			gameWon = true;
 			gameLost = false;
 			gameFinished = true;
 		}
-		else if (gameStarted && !gameWon && (fuel == 0 || protagonistDelay >= 100)) {
+		else if (gameStarted && !ghostMode && !gameWon && (fuel == 0 || protagonistDelay >= 100)) {
 			gameLost = true;
 			gameWon = false;
 			gameFinished = true;
@@ -280,10 +285,11 @@ int main()
 			processInputForBeforeGameStarts(window);
 		}
 		else if (gameFinished) processInputForGameFinishingMode(window);
+		else if (ghostMode) processInputForGhostMode(window);
 		else processInput(window);
 
 
-		if (gameStarted) prevTime += deltaTime;
+		if (gameStarted && !ghostMode) prevTime += deltaTime;
 		if (prevTime >= 1.0f) {
 			if (fuel > 0) fuel--;
 			if (coins > 0) coins -= 2;
@@ -404,6 +410,7 @@ int main()
 		/*text.RenderText(shader, "This is sample text", 25.0f, 25.0f, 1.0f,
 			glm::vec3(0.5, 0.8f, 0.2f));*/
 
+		//component.waterTank(shaderMP, false, glm::translate(identity, glm::vec3(0.0f, 0.0f, 2.0f)) * revolve);
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
@@ -424,6 +431,83 @@ int main()
 
 void frame_buffer_size_callback(GLFWwindow* window, int width, int height) {
 	glViewport(0, 0, width, height);
+}
+
+void processInputForGhostMode(GLFWwindow* window)
+{
+	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+		glfwSetWindowShouldClose(window, true);
+
+	if (glfwGetKey(window, GLFW_KEY_M) == GLFW_PRESS)
+		menu = !menu;
+
+	float cameraSpeed = static_cast<float>(2.5 * deltaTime);
+
+	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
+		if (camera.permissionToMove()) {
+			camera.ProcessKeyboard(FORWARD, deltaTime);
+			
+		}
+
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
+		if (camera.permissionToMove()) {
+			camera.ProcessKeyboard(BACKWARD, deltaTime);
+		}
+
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
+		if (camera.permissionToMove()) {
+			camera.ProcessKeyboard(LEFT, deltaTime);
+		}
+
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
+		if (camera.permissionToMove()) {
+			camera.ProcessKeyboard(RIGHT, deltaTime);
+		}
+
+	}
+	/*if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
+		if (camera.permissionToMove()) {
+			camera.ProcessKeyboard(FORWARD, deltaTime);
+			currentCharacterPos += 0.05f;
+			protagonistZmove -= (camera.MovementSpeed * deltaTime);
+			if (jumpCoolDown >= 20) {
+				protagonistYmove = (25.0f * camera.MovementSpeed * deltaTime);
+				jumpCoolDown = 0;
+				jumping = true;
+			}
+		}
+
+	}*/
+	// camera movement control
+	if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
+		camera.ProcessKeyboard(UP, deltaTime);
+	if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS)
+		camera.ProcessKeyboard(DOWN, deltaTime);
+	if (glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS) {
+		camera.RotateAroundAxis(1, 5.0f);
+	}
+	if (glfwGetKey(window, GLFW_KEY_Y) == GLFW_PRESS) {
+		camera.RotateAroundAxis(2, 5.0f);
+	}
+	if (glfwGetKey(window, GLFW_KEY_U) == GLFW_PRESS) {
+		camera.RotateInverseAroundAxis(2, 5.0f);
+	}
+	if (glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS) {
+		camera.RotateAroundAxis(3, 3.0f);
+	}
+	if (glfwGetKey(window, GLFW_KEY_G) == GLFW_PRESS) {
+		camera.Orbit();
+	}
+	if (glfwGetKey(window, GLFW_KEY_H) == GLFW_PRESS) {
+		camera.ResetPosition();
+		ghostMode = false;
+	}
 }
 
 void processInput(GLFWwindow* window)
@@ -555,6 +639,16 @@ void processInput(GLFWwindow* window)
 		}
 
 	}
+
+	if (glfwGetKey(window, GLFW_KEY_7) == GLFW_PRESS) {
+		if (ghostMode == false) {
+			ghostMode = true;
+			camera.saveVectors();
+			
+		}
+
+	}
+
 	if (glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS) {
 		numOfPointLightRoom += 1;
 		numOfPointLightRoom %= 2;

@@ -102,6 +102,15 @@ public:
         Position.x = Position_init.x + 0.5f;
     }
 
+    void saveVectors()
+    {
+        if (!safeToRotate) {
+            Position_init = Position;
+            Front_init = Front;
+            safeToRotate = true;
+        }
+    }
+
     // processes input received from any keyboard-like input system. Accepts input parameter in the form of camera defined ENUM (to abstract it from windowing systems)
     void ProcessKeyboard(Camera_Movement direction, float deltaTime)
     {
