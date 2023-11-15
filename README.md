@@ -59,10 +59,6 @@ Command prompt wiil show all the necessary directives.
 11. 1, 2, 3, 4 : Robot rotates around axis x, y, z and resets respectively
 12. 7 : Ghost mode, pauses game to move the camera as you want without moving the robot, H resets it
 
-![Screenshot (216)](https://github.com/Bokhtiar-Adil/Escape_game_v2/assets/103052177/c9ba36a1-8264-4b2e-b03b-4941df0e34c1)
-
-![Screenshot (214)](https://github.com/Bokhtiar-Adil/Escape_game_v2/assets/103052177/35f15ced-f66e-4e0d-a0f2-7a9b986065eb)
-
 
 
 
