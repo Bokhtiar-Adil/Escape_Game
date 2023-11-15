@@ -2,9 +2,9 @@
 
 Escape game is a chaser/collector type game built with OpenGL 3.3 (core profile). It's a simple, short and basic game inspired by the widely popular game 'Temple Run'. Player will have to control a robot chased by another big robot and escape to safety. <br/>
 
-![Screenshot (211)](https://github.com/Bokhtiar-Adil/Escape_game_v2/assets/103052177/9653ae3d-f4e8-468b-9c61-203ca1deccb0)
+![Screenshot (211)](https://github.com/Bokhtiar-Adil/Escape_Game/assets/103052177/25b55ea0-a580-4b2e-948d-8c98d0518a3d)
 
-![Screenshot (220)](https://github.com/Bokhtiar-Adil/Escape_game_v2/assets/103052177/bfe23d5a-96be-4cfc-b071-b94a6d8854ec)
+![Screenshot (220)](https://github.com/Bokhtiar-Adil/Escape_Game/assets/103052177/9bee29a0-9387-4cc4-8784-92b28022dbea)
 
 ## Installation
 You need to install the following things -
