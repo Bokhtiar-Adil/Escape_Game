@@ -13,7 +13,7 @@ You need to install the following things -
 3. GLFW
 4. GLAD
 <br />
-If you don't have them installed, follow the guidelines in this pdf file to install them - [glfw glad installation guidelines.pdf](https://github.com/Bokhtiar-Adil/Escape_game_v2/files/13363734/glfw.glad.installation.guidelines.pdf) <br/>
+If you don't have them installed, follow the guidelines in this pdf file to install them - <br /> [glfw glad installation guidelines.pdf](https://github.com/Bokhtiar-Adil/Escape_game_v2/files/13363734/glfw.glad.installation.guidelines.pdf) <br/>
 
 Now, copy the contents of the 'OpenGL' folder in the repository and paste and overwrite the contents in the 'opengl' folder you created while installation. After that, 
 1. Open the project with visual studio (you can double click the .sln file or open it from visual studio too).
